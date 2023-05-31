@@ -1,0 +1,222 @@
+name: Test Code (Style, Tests)
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'CODEOWNERS'
+      - 'LICENSE'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Checkstyle:
+    permissions:
+      id-token: write
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
+
+  Check-Cosmos-Key:
+    runs-on: ubuntu-latest
+    outputs:
+      has-cosmos-key: ${{ steps.has-cosmos-key.outputs.has_cosmos_key }}
+    steps:
+      - name: Check if COSMOS_KEY secret exists
+        id: has-cosmos-key
+        run: |
+          [ ! -z "${{ secrets.COSMOS_KEY }}" ]  &&
+          echo "has_cosmos_key=true" >> $GITHUB_OUTPUT
+          exit 0
+
+
+  Unit-Tests:
+    runs-on: ubuntu-latest
+    env:
+      JACOCO: true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Run unit tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test jacocoTestReport
+
+  Azure-Storage-Integration-Tests:
+    runs-on: ubuntu-latest
+
+    services:
+      azurite:
+        image: mcr.microsoft.com/azure-storage/azurite
+        ports:
+          - 10000:10000
+        env:
+          AZURITE_ACCOUNTS: account1:key1;account2:key2
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Azure Storage Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: |
+            ./gradlew test -DincludeTags="AzureStorageIntegrationTest"
+
+
+
+  
+
+
+
+
+  Azure-CosmosDB-Integration-Tests:
+    # run only if COSMOS_KEY is present
+    needs: [ Check-Cosmos-Key ]
+    if: needs.Check-Cosmos-Key.outputs.has-cosmos-key == 'true'
+    runs-on: ubuntu-latest
+
+    env:
+      COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+      COSMOS_URL: ${{ secrets.COSMOS_URL }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Azure CosmosDB Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest"
+
+  #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
+  #  Azure-Cloud-Integration-Test:
+  #    needs: [ Check-Cloud-Environments ]
+  #    if: needs.Check-Cloud-Environments.outputs.has-azure == 'true'
+  #    environment: Azure-dev
+  #    runs-on: ubuntu-latest
+  #
+  #    # Grant permissions to obtain federated identity credentials
+  #    # see https://docs.github.com/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
+  #    permissions:
+  #      id-token: write
+  #      contents: read
+  #
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - uses: ./.github/actions/setup-build
+  #
+  #      - name: 'Az CLI login'
+  #        uses: azure/login@v1
+  #        with:
+  #          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #
+  #      - name: "Fetch Terraform outputs"
+  #        run: printf "$RUNTIME_SETTINGS" > resources/azure/testing/runtime_settings.properties
+  #        env:
+  #          RUNTIME_SETTINGS: ${{ secrets.RUNTIME_SETTINGS }}
+  #
+  #      - name: Data Plane Azure Data Factory Test
+  #        uses: ./.github/actions/run-tests
+  #        env:
+  #          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  #          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  #        with:
+  #          command: |
+  #            ./gradlew -p extensions/data-plane/data-plane-azure-data-factory test -DincludeTags="AzureDataFactoryIntegrationTest"
+  #            ./gradlew -p system-tests/azure-data-factory-tests test -DincludeTags="AzureDataFactoryIntegrationTest"
+
+  Component-Tests:
+    env:
+      JACOCO: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Component Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew jacocoTestReport -DincludeTags="ComponentTest"
+
+  End-To-End-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: End to End Integration Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test -DincludeTags="EndToEndTest"
+
+  API-Tests:
+    env:
+      JACOCO: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Component Tests
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test jacocoTestReport -DincludeTags="ApiTest"
+
+  Upload-Test-Report:
+    needs:
+      - Unit-Tests
+      - Azure-Storage-Integration-Tests
+      - Azure-CosmosDB-Integration-Tests
+      - End-To-End-Tests
+      - Component-Tests
+
+    permissions:
+      checks: write
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: "**/test-results/**/*.xml"
+
+  Upload-Coverage-Report-To-Codecov:
+    needs:
+      - Unit-Tests
+      - Component-Tests
+      - API-Tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      # Sources are needed for Codecov report
+      - uses: actions/checkout@v3
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: CodeCov
+        uses: codecov/codecov-action@v3

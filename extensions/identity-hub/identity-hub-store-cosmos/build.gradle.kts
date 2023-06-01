@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     api(libs.edc.ih.spi.store)
-    api(libs.edc.ext.azure.cosmos.core)
+    api(project(":extensions:common:azure:azure-cosmos-core"))
 
     implementation(libs.failsafe.core)
     implementation(libs.azure.cosmos)

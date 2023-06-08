@@ -20,9 +20,6 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-
-import static java.lang.String.format;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateBlobName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
@@ -55,22 +52,17 @@ class AzureDataFactoryTransferRequestValidator {
     }
 
     private void validateSource(DataAddress source) {
-        var properties = new HashMap<>(source.getProperties());
-        validateBlobName(properties.remove(AzureBlobStoreSchema.BLOB_NAME));
-        validateProperties(properties);
+        validateBlobName(source.getProperty(AzureBlobStoreSchema.BLOB_NAME));
+        validateCommon(source);
     }
 
     private void validateDestination(DataAddress destination) {
-        var properties = new HashMap<>(destination.getProperties());
-        validateProperties(properties);
+        validateCommon(destination);
     }
 
-    private void validateProperties(HashMap<String, String> properties) {
-        validateAccountName(properties.remove(AzureBlobStoreSchema.ACCOUNT_NAME));
-        validateContainerName(properties.remove(AzureBlobStoreSchema.CONTAINER_NAME));
-        validateKeyName(properties.remove(DataAddress.KEY_NAME));
-        properties.keySet().stream().filter(k -> !DataAddress.TYPE.equals(k)).findFirst().ifPresent(k -> {
-            throw new IllegalArgumentException(format("Unexpected property %s", k));
-        });
+    private void validateCommon(DataAddress dataAddress) {
+        validateAccountName(dataAddress.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME));
+        validateContainerName(dataAddress.getProperty(AzureBlobStoreSchema.CONTAINER_NAME));
+        validateKeyName(dataAddress.getKeyName());
     }
 }

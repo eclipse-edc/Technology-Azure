@@ -23,7 +23,6 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,7 +67,7 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
             validateAccountName(dataAddress.getProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getProperty(CONTAINER_NAME));
             validateBlobName(dataAddress.getProperty(BLOB_NAME));
-            validateKeyName(dataAddress.getProperty(DataAddress.KEY_NAME));
+            validateKeyName(dataAddress.getKeyName());
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
         }

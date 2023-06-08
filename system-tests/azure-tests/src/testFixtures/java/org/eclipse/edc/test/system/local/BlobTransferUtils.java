@@ -62,8 +62,7 @@ public class BlobTransferUtils {
                                 .add("contenttype", "text/plain")
                                 .add("version", "1.0"))
                 )
-                .add("dataAddress", createObjectBuilder()
-                        .add("properties", createObjectBuilder(dataAddressProperties)))
+                .add("dataAddress", createObjectBuilder(dataAddressProperties))
                 .build();
 
         return seedProviderData(ASSETS_PATH, requestBody);

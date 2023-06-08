@@ -34,7 +34,6 @@ import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyName;
-import static org.eclipse.edc.spi.types.domain.DataAddress.KEY_NAME;
 
 /**
  * Instantiates {@link AzureStorageDataSink}s for requests whose source data type is {@link AzureBlobStoreSchema#TYPE}.
@@ -72,7 +71,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         try {
             validateAccountName(dataAddress.getProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getProperty(CONTAINER_NAME));
-            validateKeyName(dataAddress.getProperty(KEY_NAME));
+            validateKeyName(dataAddress.getKeyName());
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
         }

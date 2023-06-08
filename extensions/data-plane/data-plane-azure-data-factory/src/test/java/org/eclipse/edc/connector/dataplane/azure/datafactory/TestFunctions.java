@@ -30,20 +30,26 @@ public class TestFunctions {
 
     public static Map<String, String> sourceProperties() {
         var srcStorageAccount = createAccountName();
-        return Map.of(
-                AzureBlobStoreSchema.ACCOUNT_NAME, srcStorageAccount,
-                AzureBlobStoreSchema.CONTAINER_NAME, createContainerName(),
-                AzureBlobStoreSchema.BLOB_NAME, createBlobName(),
-                DataAddress.KEY_NAME, srcStorageAccount + "-key1");
+        return DataAddress.Builder.newInstance()
+                .type(AzureBlobStoreSchema.TYPE)
+                .keyName(srcStorageAccount + "-key1")
+                .property(AzureBlobStoreSchema.ACCOUNT_NAME, srcStorageAccount)
+                .property(AzureBlobStoreSchema.CONTAINER_NAME, createContainerName())
+                .property(AzureBlobStoreSchema.BLOB_NAME, createBlobName())
+                .build()
+                .getProperties();
     }
 
     public static Map<String, String> destinationProperties() {
         var destStorageAccount = createAccountName();
 
-        return Map.of(
-                AzureBlobStoreSchema.ACCOUNT_NAME, destStorageAccount,
-                AzureBlobStoreSchema.CONTAINER_NAME, createContainerName(),
-                DataAddress.KEY_NAME, destStorageAccount + "-key1");
+        return DataAddress.Builder.newInstance()
+                .type(AzureBlobStoreSchema.TYPE)
+                .keyName(destStorageAccount + "-key1")
+                .property(AzureBlobStoreSchema.ACCOUNT_NAME, destStorageAccount)
+                .property(AzureBlobStoreSchema.CONTAINER_NAME, createContainerName())
+                .build()
+                .getProperties();
     }
 
     public static DataFlowRequest createFlowRequest() {

@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static org.eclipse.edc.spi.types.domain.DataAddress.KEY_NAME;
 
 /**
  * Factory class for Azure Data Factory object definitions, such as pipelines and datasets.
@@ -102,7 +101,7 @@ class DataFactoryPipelineFactory {
                         .withConnectionString(String.format("DefaultEndpointsProtocol=https;AccountName=%s;", accountName))
                         .withAccountKey(
                                 new AzureKeyVaultSecretReference()
-                                        .withSecretName(dataAddress.getProperty(KEY_NAME))
+                                        .withSecretName(dataAddress.getKeyName())
                                         .withStore(new LinkedServiceReference()
                                                 .withReferenceName(keyVaultLinkedService)
                                         ))
@@ -112,7 +111,7 @@ class DataFactoryPipelineFactory {
 
     private LinkedServiceResource createDestinationLinkedService(String name, DataAddress dataAddress) {
         var accountName = dataAddress.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
-        var secret = keyVaultClient.getSecret(dataAddress.getProperty(KEY_NAME));
+        var secret = keyVaultClient.getSecret(dataAddress.getKeyName());
         var token = typeManager.readValue(secret.getValue(), AzureSasToken.class);
         var sasTokenSecret = keyVaultClient.setSecret(name, token.getSas());
 

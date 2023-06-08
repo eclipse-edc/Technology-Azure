@@ -18,19 +18,23 @@ import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createDataAddress;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class AzureDataFactoryTransferRequestValidatorTest {
@@ -40,29 +44,10 @@ class AzureDataFactoryTransferRequestValidatorTest {
     private final Map<String, String> destinationProperties = TestFunctions.destinationProperties();
     private final DataAddress.Builder source = createDataAddress(AzureBlobStoreSchema.TYPE);
     private final DataAddress.Builder destination = createDataAddress(AzureBlobStoreSchema.TYPE);
-    private final String extraKey = "test-extra-key";
-    private final String extraValue = "test-extra-value";
     AzureDataFactoryTransferRequestValidator validator = new AzureDataFactoryTransferRequestValidator();
 
-    static Collection<String> sourcePropertyKeys() {
-        return TestFunctions.sourceProperties().keySet();
-    }
-
-    private static Stream<Arguments> canHandleArguments() {
-        return Stream.of(
-                arguments("Invalid source and valid destination", "Invalid source", AzureBlobStoreSchema.TYPE, false),
-                arguments("Valid source and invalid destination", AzureBlobStoreSchema.TYPE, "Invalid destination", false),
-                arguments("Invalid source and destination", "Invalid source", "Invalid destination", false),
-                arguments("Valid source and destination", AzureBlobStoreSchema.TYPE, AzureBlobStoreSchema.TYPE, true)
-        );
-    }
-
-    private static Collection<String> destinationPropertyKeys() {
-        return TestFunctions.destinationProperties().keySet();
-    }
-
     @ParameterizedTest(name = "{index} {0}")
-    @MethodSource("canHandleArguments")
+    @ArgumentsSource(CanHandle.class)
     void canHandle_onResult(String ignoredName, String sourceType, String destinationType, boolean expected) {
         // Arrange
         var source = createDataAddress(sourceType);
@@ -84,41 +69,70 @@ class AzureDataFactoryTransferRequestValidatorTest {
         assertThat(result.succeeded()).withFailMessage(result::getFailureDetail).isTrue();
     }
 
-    @Test
-    void validate_whenExtraSourceProperty_fails() {
-        assertThat(validator.validate(REQUEST
-                .sourceDataAddress(source.properties(sourceProperties).property(extraKey, extraValue).build())
+    @ParameterizedTest
+    @ArgumentsSource(InvalidSourceAddress.class)
+    void validate_whenMissingSourceProperty_fails(DataAddress.Builder<?, ?> dataAddressBuilder) {
+        var request = REQUEST
+                .sourceDataAddress(dataAddressBuilder.build())
                 .destinationDataAddress(destination.properties(destinationProperties).build())
-                .build()).failed()).isTrue();
-    }
+                .build();
 
-    @Test
-    void validate_whenExtraDestinationProperty_fails() {
-        assertThat(validator.validate(REQUEST
-                .sourceDataAddress(source.properties(sourceProperties).build())
-                .destinationDataAddress(destination.properties(destinationProperties).property(extraKey, extraValue).build())
-                .build()).failed()).isTrue();
+        var result = validator.validate(request);
+
+        assertThat(result).isFailed();
     }
 
     @ParameterizedTest
-    @MethodSource("sourcePropertyKeys")
-    void validate_whenMissingSourceProperty_fails(String property) {
-        var src = new HashMap<>(sourceProperties);
-        src.remove(property);
+    @ArgumentsSource(InvalidDestinationAddress.class)
+    void validate_whenMissingDestinationProperty_fails(DataAddress.Builder<?, ?> dataAddressBuilder) {
         assertThat(validator.validate(REQUEST
-                .sourceDataAddress(source.properties(src).build())
-                .destinationDataAddress(destination.properties(destinationProperties).build())
+                .sourceDataAddress(source.properties(sourceProperties).build())
+                .destinationDataAddress(dataAddressBuilder.build())
                 .build()).failed()).isTrue();
     }
 
-    @ParameterizedTest
-    @MethodSource("destinationPropertyKeys")
-    void validate_whenMissingDestinationProperty_fails(String property) {
-        var dest = new HashMap<>(destinationProperties);
-        dest.remove(property);
-        assertThat(validator.validate(REQUEST
-                .sourceDataAddress(source.properties(sourceProperties).build())
-                .destinationDataAddress(destination.properties(dest).build())
-                .build()).failed()).isTrue();
+    private static class InvalidSourceAddress implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    dataAddress().property(ACCOUNT_NAME, "accountName").property(CONTAINER_NAME, "containerName").property(BLOB_NAME, "blobName"),
+                    dataAddress().keyName("keyName").property(CONTAINER_NAME, "containerName").property(BLOB_NAME, "blobName"),
+                    dataAddress().keyName("keyName").property(ACCOUNT_NAME, "accountName").property(BLOB_NAME, "blobName"),
+                    dataAddress().keyName("keyName").property(ACCOUNT_NAME, "accountName").property(CONTAINER_NAME, "containerName")
+            ).map(Arguments::arguments);
+        }
+
+        private DataAddress.Builder<?, ?> dataAddress() {
+            return DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
+        }
     }
+
+    private static class InvalidDestinationAddress implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    dataAddress().property(ACCOUNT_NAME, "accountName").property(CONTAINER_NAME, "containerName"),
+                    dataAddress().keyName("keyName").property(CONTAINER_NAME, "containerName"),
+                    dataAddress().keyName("keyName").property(ACCOUNT_NAME, "accountName")
+            ).map(Arguments::arguments);
+        }
+
+        private DataAddress.Builder<?, ?> dataAddress() {
+            return DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
+        }
+    }
+
+    private static class CanHandle implements ArgumentsProvider {
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of(
+                    arguments("Invalid source and valid destination", "Invalid source", AzureBlobStoreSchema.TYPE, false),
+                    arguments("Valid source and invalid destination", AzureBlobStoreSchema.TYPE, "Invalid destination", false),
+                    arguments("Invalid source and destination", "Invalid source", "Invalid destination", false),
+                    arguments("Valid source and destination", AzureBlobStoreSchema.TYPE, AzureBlobStoreSchema.TYPE, true)
+            );
+        }
+    }
+
 }

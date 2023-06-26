@@ -60,6 +60,11 @@ public class TransferTestClient {
         this.consumerUrl = consumerUrl;
     }
 
+    static ContractId getContractId(JsonObject dataset) {
+        var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
+        return ContractId.parse(id);
+    }
+
     public JsonArray getCatalogDatasets(String providerUrl) {
         var datasetReference = new AtomicReference<JsonArray>();
         var requestBody = createObjectBuilder()
@@ -172,6 +177,7 @@ public class TransferTestClient {
                 .add("contractId", contractId)
                 .add("connectorAddress", providerUrl)
                 .add("managedResources", true)
+                .add("connectorId", "test-connector-id")
                 .build();
 
         return given()
@@ -188,11 +194,6 @@ public class TransferTestClient {
     private RequestSpecification givenConsumerRequest() {
         return given()
                 .baseUri(consumerUrl);
-    }
-
-    static ContractId getContractId(JsonObject dataset) {
-        var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parse(id);
     }
 
     public Map<String, String> getTransferProcess(String transferProcessId) {

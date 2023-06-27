@@ -20,9 +20,13 @@ import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -72,5 +76,25 @@ class AzureVaultTest {
 
         assertThat(result).isNull();
         verify(monitor).severe(anyString(), isA(RuntimeException.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"foo_bar", "foo%bar", "foo.bar", "foo^bar", "foo#bar", "foo;bar", "foo_&*_bar", "foo__bar", "foo%%@#$bar"})
+    void verify_sanitizeReplaceForbidden(String violatingKey) {
+
+        when(secretClient.setSecret(any())).thenAnswer(a -> a.getArgument(0));
+        vault.storeSecret(violatingKey, "test-value");
+
+        verify(secretClient).setSecret(eq("foo-bar"), eq("test-value"));
+    }
+
+    @Test
+    void verify_sanitizePrefix() {
+
+        var violatingKey = "123testkey";
+        when(secretClient.setSecret(any())).thenAnswer(a -> a.getArgument(0));
+        vault.storeSecret(violatingKey, "test-value");
+
+        verify(secretClient).setSecret(eq("x-123testkey"), eq("test-value"));
     }
 }

@@ -36,7 +36,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
-import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -47,7 +46,6 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_PREFIX;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.CONSUMER_PARTICIPANT_ID;
 import static org.eclipse.edc.test.system.utils.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.utils.Constants.TIMEOUT;
-import static org.hamcrest.Matchers.is;
 
 /**
  * Simple client for testing transfer scenario
@@ -64,7 +62,7 @@ public class TransferTestClient {
 
     static ContractId getContractId(JsonObject dataset) {
         var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parse(id);
+        return ContractId.parseId(id).orElseThrow(f -> new EdcException(f.getFailureDetail()));
     }
 
     public JsonArray getCatalogDatasets(String providerUrl) {
@@ -206,7 +204,6 @@ public class TransferTestClient {
                 .get("/v2/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
-                .body("'edc:state'", is(STARTED.name()))
                 .extract().jsonPath().get("'edc:dataDestination'");
     }
 

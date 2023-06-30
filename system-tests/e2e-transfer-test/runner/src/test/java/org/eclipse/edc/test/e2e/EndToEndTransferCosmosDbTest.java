@@ -23,6 +23,7 @@ import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTe
 import org.eclipse.edc.connector.contract.spi.ContractId;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -312,7 +313,7 @@ class EndToEndTransferCosmosDbTest {
 
     private ContractId getContractId(JsonObject dataset) {
         var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parse(id);
+        return ContractId.parseId(id).orElseThrow(f -> new EdcException(f.getFailureDetail()));
     }
 
     private JsonObject httpDataAddress(String baseUrl) {

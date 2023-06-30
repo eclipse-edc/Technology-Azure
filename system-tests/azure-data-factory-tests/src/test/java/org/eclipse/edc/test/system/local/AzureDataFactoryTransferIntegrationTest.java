@@ -173,7 +173,7 @@ class AzureDataFactoryTransferIntegrationTest {
 
         var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, account2Key, TestFunctions.getBlobServiceTestEndpoint(format("https://%s.blob.core.windows.net", CONSUMER_STORAGE_ACCOUNT_NAME)));
 
-        var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient, 360));
+        var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient));
 
         runner.executeTransfer();
     }

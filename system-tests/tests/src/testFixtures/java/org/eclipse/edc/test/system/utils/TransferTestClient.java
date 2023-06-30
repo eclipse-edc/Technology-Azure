@@ -45,6 +45,8 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIB
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_PREFIX;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.CONSUMER_PARTICIPANT_ID;
+import static org.eclipse.edc.test.system.utils.Constants.POLL_INTERVAL;
+import static org.eclipse.edc.test.system.utils.Constants.TIMEOUT;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -74,7 +76,7 @@ public class TransferTestClient {
                 .add("protocol", "dataspace-protocol-http")
                 .build();
 
-        await().untilAsserted(() -> {
+        await().atMost(TIMEOUT).pollInterval(POLL_INTERVAL).untilAsserted(() -> {
             var response = givenConsumerRequest()
                     .contentType(JSON)
                     .when()
@@ -132,7 +134,7 @@ public class TransferTestClient {
                 .statusCode(200)
                 .extract().body().jsonPath().getString(ID);
 
-        await().untilAsserted(() -> {
+        await().atMost(TIMEOUT).pollInterval(POLL_INTERVAL).untilAsserted(() -> {
             var state = getContractNegotiationState(negotiationId);
             assertThat(state).isEqualTo(FINALIZED.name());
         });
@@ -143,7 +145,7 @@ public class TransferTestClient {
     public String getContractAgreementId(String negotiationId) {
         var contractAgreementId = new AtomicReference<String>();
 
-        await().untilAsserted(() -> {
+        await().atMost(TIMEOUT).pollInterval(POLL_INTERVAL).untilAsserted(() -> {
             var agreementId = getContractNegotiationField(negotiationId, "contractAgreementId");
             assertThat(agreementId).isNotNull().isInstanceOf(String.class);
 

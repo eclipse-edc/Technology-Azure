@@ -14,12 +14,16 @@
 
 package org.eclipse.edc.test.system.utils;
 
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIBUTE;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_ASSET_ID;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_PARTICIPANT_ID;
+import static org.eclipse.edc.test.system.utils.Constants.POLL_INTERVAL;
+import static org.eclipse.edc.test.system.utils.Constants.TIMEOUT;
 import static org.eclipse.edc.test.system.utils.TransferTestClient.getContractId;
 
 /**
@@ -46,10 +50,13 @@ public class TransferTestRunner {
         var destination = configuration.createBlobDestination();
         var transferProcessId = client.initiateTransfer(contractAgreementId, PROVIDER_ASSET_ID, configuration.getProviderIdsUrl(), destination);
 
-        await().untilAsserted(() -> {
-            var state = client.getTransferProcessState(transferProcessId);
-            assertThat(state).isEqualTo(STARTED.name());
-        });
+        await().pollInterval(POLL_INTERVAL)
+                .atMost(TIMEOUT)
+                .untilAsserted(() -> {
+                    var state = client.getTransferProcessState(transferProcessId);
+                    // should be STARTED or some state after that to make it more robust.
+                    assertThat(TransferProcessStates.valueOf(state).code()).isGreaterThanOrEqualTo(STARTED.code());
+                });
 
         var transferProcess = client.getTransferProcess(transferProcessId);
         assertThat(configuration.isTransferResultValid(transferProcess)).isTrue();

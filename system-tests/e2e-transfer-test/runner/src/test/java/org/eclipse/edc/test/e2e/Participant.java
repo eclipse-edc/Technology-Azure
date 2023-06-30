@@ -469,7 +469,7 @@ public class Participant {
 
     private ContractId getContractId(JsonObject dataset) {
         var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parse(id);
+        return ContractId.parseId(id).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
     }
 
     private String getContractNegotiationField(String negotiationId, String fieldName) {

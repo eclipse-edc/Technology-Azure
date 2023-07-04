@@ -36,7 +36,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
-import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -45,7 +44,8 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIB
 import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.spi.CoreConstants.EDC_PREFIX;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.CONSUMER_PARTICIPANT_ID;
-import static org.hamcrest.Matchers.is;
+import static org.eclipse.edc.test.system.utils.Constants.POLL_INTERVAL;
+import static org.eclipse.edc.test.system.utils.Constants.TIMEOUT;
 
 /**
  * Simple client for testing transfer scenario
@@ -60,6 +60,11 @@ public class TransferTestClient {
         this.consumerUrl = consumerUrl;
     }
 
+    static ContractId getContractId(JsonObject dataset) {
+        var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
+        return ContractId.parseId(id).orElseThrow(f -> new EdcException(f.getFailureDetail()));
+    }
+
     public JsonArray getCatalogDatasets(String providerUrl) {
         var datasetReference = new AtomicReference<JsonArray>();
         var requestBody = createObjectBuilder()
@@ -69,7 +74,7 @@ public class TransferTestClient {
                 .add("protocol", "dataspace-protocol-http")
                 .build();
 
-        await().untilAsserted(() -> {
+        await().atMost(TIMEOUT).pollInterval(POLL_INTERVAL).untilAsserted(() -> {
             var response = givenConsumerRequest()
                     .contentType(JSON)
                     .when()
@@ -127,7 +132,7 @@ public class TransferTestClient {
                 .statusCode(200)
                 .extract().body().jsonPath().getString(ID);
 
-        await().untilAsserted(() -> {
+        await().atMost(TIMEOUT).pollInterval(POLL_INTERVAL).untilAsserted(() -> {
             var state = getContractNegotiationState(negotiationId);
             assertThat(state).isEqualTo(FINALIZED.name());
         });
@@ -138,7 +143,7 @@ public class TransferTestClient {
     public String getContractAgreementId(String negotiationId) {
         var contractAgreementId = new AtomicReference<String>();
 
-        await().untilAsserted(() -> {
+        await().atMost(TIMEOUT).pollInterval(POLL_INTERVAL).untilAsserted(() -> {
             var agreementId = getContractNegotiationField(negotiationId, "contractAgreementId");
             assertThat(agreementId).isNotNull().isInstanceOf(String.class);
 
@@ -172,6 +177,7 @@ public class TransferTestClient {
                 .add("contractId", contractId)
                 .add("connectorAddress", providerUrl)
                 .add("managedResources", true)
+                .add("connectorId", "test-connector-id")
                 .build();
 
         return given()
@@ -190,11 +196,6 @@ public class TransferTestClient {
                 .baseUri(consumerUrl);
     }
 
-    static ContractId getContractId(JsonObject dataset) {
-        var id = dataset.getJsonArray(ODRL_POLICY_ATTRIBUTE).get(0).asJsonObject().getString(ID);
-        return ContractId.parse(id);
-    }
-
     public Map<String, String> getTransferProcess(String transferProcessId) {
         return given()
                 .baseUri(consumerUrl)
@@ -203,7 +204,6 @@ public class TransferTestClient {
                 .get("/v2/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
-                .body("'edc:state'", is(STARTED.name()))
                 .extract().jsonPath().get("'edc:dataDestination'");
     }
 

@@ -38,8 +38,17 @@ import static java.lang.String.format;
  */
 public class AzureVault implements Vault {
 
+    private static final String ALLOWED_CHARACTERS_REGEX = "^[a-zA-Z0-9-]*$";
+    private static final String DISALLOWED_CHARACTERS_REGEX = "[^a-zA-Z0-9-]+";
+    private static final String STARTS_WITH_LETTER_REGEX = "^[A-Za-z].*$";
+    private static final String LETTER_PREFIX = "x-";
     private final SecretClient secretClient;
     private final Monitor monitor;
+
+    public AzureVault(Monitor monitor, SecretClient secretClient) {
+        this.monitor = monitor;
+        this.secretClient = secretClient;
+    }
 
     public static AzureVault authenticateWithSecret(Monitor monitor, String clientId, String tenantId, String clientSecret, String keyVaultName) {
         var credential = new ClientSecretCredentialBuilder()
@@ -61,9 +70,12 @@ public class AzureVault implements Vault {
         return new AzureVault(monitor, createSecretClient(credential, keyVaultName));
     }
 
-    public AzureVault(Monitor monitor, SecretClient secretClient) {
-        this.monitor = monitor;
-        this.secretClient = secretClient;
+    @NotNull
+    private static SecretClient createSecretClient(TokenCredential credential, String keyVaultName) {
+        return new SecretClientBuilder()
+                .vaultUrl("https://" + keyVaultName + ".vault.azure.net")
+                .credential(credential)
+                .buildClient();
     }
 
     @Override
@@ -133,18 +145,15 @@ public class AzureVault implements Vault {
 
     @NotNull
     private String sanitizeKey(String key) {
-        if (key.contains(".")) {
-            monitor.debug("AzureVault: key contained '.' which is not allowed. replaced with '-'");
-            return key.replace(".", "-");
+        if (!key.matches(STARTS_WITH_LETTER_REGEX)) {
+            monitor.debug("AzureVault: key does not start with a letter. Prefixing with " + LETTER_PREFIX);
+            key = LETTER_PREFIX + key;
         }
+        if (!key.matches(ALLOWED_CHARACTERS_REGEX)) {
+            monitor.debug("AzureVault: key contained a disallowed character. Only [a-zA-Z0-9-] are allowed. replaced with '-'");
+            key = key.replaceAll(DISALLOWED_CHARACTERS_REGEX, "-");
+        }
+        //should we truncate the size to 127 characters or let it blow up?
         return key;
-    }
-
-    @NotNull
-    private static SecretClient createSecretClient(TokenCredential credential, String keyVaultName) {
-        return new SecretClientBuilder()
-                .vaultUrl("https://" + keyVaultName + ".vault.azure.net")
-                .credential(credential)
-                .buildClient();
     }
 }

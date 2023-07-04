@@ -148,11 +148,9 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
 
         var blobServiceClient = TestFunctions.getBlobServiceClient(account2Name, account2Key, TestFunctions.getBlobServiceTestEndpoint(account2Name));
 
-        var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient, 30));
+        var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient));
 
         runner.executeTransfer();
-
     }
-
 
 }

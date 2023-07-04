@@ -62,13 +62,13 @@ class AzureEventGridPublisher implements TransferProcessListener {
     }
 
     @Override
-    public void preEnded(TransferProcess process) {
+    public void preTerminated(TransferProcess process) {
         sendEvent("ended", eventTypeTransferprocess, createTransferProcessDto(process)).subscribe(new LoggingSubscriber<>("Transfer process ended"));
 
     }
 
     @Override
-    public void preError(TransferProcess process) {
+    public void failed(TransferProcess process) {
         sendEvent("error", eventTypeTransferprocess, createTransferProcessDto(process)).subscribe(new LoggingSubscriber<>("Transfer process errored!"));
 
     }

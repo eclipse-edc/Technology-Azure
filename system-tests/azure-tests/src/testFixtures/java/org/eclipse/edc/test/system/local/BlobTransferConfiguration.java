@@ -32,13 +32,11 @@ public class BlobTransferConfiguration implements TransferConfiguration {
     private final String consumerManagementUrl;
     private final String providerIdsUrl;
     private final BlobServiceClient blobServiceClient;
-    private final int maxSeconds;
 
-    public BlobTransferConfiguration(String consumerManagementUrl, String providerIdsUrl, BlobServiceClient blobServiceClient, int maxSeconds) {
+    public BlobTransferConfiguration(String consumerManagementUrl, String providerIdsUrl, BlobServiceClient blobServiceClient) {
         this.consumerManagementUrl = consumerManagementUrl;
         this.providerIdsUrl = providerIdsUrl;
         this.blobServiceClient = blobServiceClient;
-        this.maxSeconds = maxSeconds;
     }
 
     @Override

@@ -92,4 +92,18 @@ class CosmosPathConditionExpressionTest {
                     assertThat(c.getValue(String.class)).isEqualTo("baz");
                 });
     }
+
+    @Test
+    void shouldWrapIntoBrackets_whenHasIllegalCharacters() {
+        var expr2 = new CosmosPathConditionExpression(new Criterion("https://w3id.org/edc/v0.0.1/ns/id", "=", "bar"), objectPrefix);
+
+        assertThat(expr2.toExpressionString()).isEqualToIgnoringWhitespace("test[\"https_//w3id.org/edc/v0.0.1/ns/id\"] = @https_wid_orgedcv__nsid");
+    }
+
+    @Test
+    void shouldNotWrapIntoBrackets_whenHasIllegalCharactersAlreadyWrapped() {
+        var expr2 = new CosmosPathConditionExpression(new Criterion("properties[\"https://w3id.org/edc/v0.0.1/ns/id\"]", "=", "bar"), objectPrefix);
+
+        assertThat(expr2.toExpressionString()).isEqualToIgnoringWhitespace("test.properties[\"https_//w3id.org/edc/v0.0.1/ns/id\"] = @properties_https_wid_orgedcv__nsid_");
+    }
 }

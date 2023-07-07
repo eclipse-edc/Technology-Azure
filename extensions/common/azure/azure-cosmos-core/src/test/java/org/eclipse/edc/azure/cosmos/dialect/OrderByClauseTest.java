@@ -29,4 +29,17 @@ class OrderByClauseTest {
         assertThat(new OrderByClause("description", false, null).asString()).isEqualTo("ORDER BY description DESC");
     }
 
+    @Test
+    void shouldPutFieldInSquareBrackets_whenIllegalCharacters() {
+        var clause = new OrderByClause("https://w3id.org/edc/v0.0.1/ns/id", true, "c.wrappedObject");
+
+        assertThat(clause.asString()).isEqualTo("ORDER BY c.wrappedObject[\"https://w3id.org/edc/v0.0.1/ns/id\"] ASC");
+    }
+
+    @Test
+    void shouldNotPutIllegalCharactersPartInSquareBrackets_whenItIsAlreadyInBrackets() {
+        var clause = new OrderByClause("properties[\"https://w3id.org/edc/v0.0.1/ns/id\"]", true, "c.wrappedObject");
+
+        assertThat(clause.asString()).isEqualTo("ORDER BY c.wrappedObject.properties[\"https://w3id.org/edc/v0.0.1/ns/id\"] ASC");
+    }
 }

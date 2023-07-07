@@ -58,9 +58,7 @@ class OrderByClause implements Clause {
     }
 
     private String getOrderByExpression() {
-
-
-        if (hasIllegalCharacters(orderField)) {
+        if (hasIllegalCharacters(orderField) && !orderField.contains("[")) {
             var pfx = objectPrefix != null ? objectPrefix : "";
             return format(ORDER_BY + " %s[\"%s\"] %s", pfx, orderField, sortAsc ? "ASC" : "DESC");
         } else {

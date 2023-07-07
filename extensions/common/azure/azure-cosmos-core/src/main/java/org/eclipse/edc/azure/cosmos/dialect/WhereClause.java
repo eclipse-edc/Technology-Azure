@@ -98,7 +98,7 @@ class WhereClause implements Clause {
         for (var newParam : newParams) {
 
             var counter = 0;
-            var name = newParam.getName();
+            var name = newParam.getName().replace("\"", "_");
             var newName = name;
             for (var existinParam : parameters) {
                 while (existinParam.getName().equals(newName)) {

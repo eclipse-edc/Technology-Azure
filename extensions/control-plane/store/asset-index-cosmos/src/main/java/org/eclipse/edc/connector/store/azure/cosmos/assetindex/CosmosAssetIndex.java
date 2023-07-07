@@ -18,7 +18,9 @@ import com.azure.cosmos.implementation.ConflictException;
 import com.azure.cosmos.implementation.NotFoundException;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.cosmos.CosmosDbApi;
+import org.eclipse.edc.azure.cosmos.CosmosDocument;
 import org.eclipse.edc.connector.store.azure.cosmos.assetindex.model.AssetDocument;
+import org.eclipse.edc.spi.CoreConstants;
 import org.eclipse.edc.spi.asset.AssetIndex;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.Criterion;
@@ -28,16 +30,17 @@ import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
-import org.eclipse.edc.spi.types.domain.asset.AssetEntry;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static dev.failsafe.Failsafe.with;
 import static java.lang.String.format;
+import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 
 public class CosmosAssetIndex implements AssetIndex {
 
@@ -67,31 +70,50 @@ public class CosmosAssetIndex implements AssetIndex {
 
     @Override
     public Stream<Asset> queryAssets(QuerySpec querySpec) {
-        var expr = querySpec.getFilterExpression();
+        var expr = querySpec.getFilterExpression().stream()
+                .map(it -> it.withLeftOperand(left -> left.toString().startsWith(EDC_NAMESPACE)
+                        ? format("properties[\"%s\"]", left)
+                        : "properties." + left))
+                .toList();
 
-        var sortField = querySpec.getSortField();
+        String sortField;
+        if (querySpec.getSortField() == null) {
+            sortField = null;
+        } else {
+            sortField = Optional.of(querySpec)
+                    .map(QuerySpec::getSortField)
+                    .filter(it -> it.startsWith(EDC_NAMESPACE))
+                    .map(it -> format("properties[\"%s\"]", it))
+                    .orElse("properties." + querySpec.getSortField());
+        }
+
+
         var limit = querySpec.getLimit();
         var sortAsc = querySpec.getSortOrder() == SortOrder.ASC;
 
         var sqlQuery = queryBuilder.from(expr, sortField, sortAsc, limit, querySpec.getOffset());
         var response = with(retryPolicy).get(() -> assetDb.queryItems(sqlQuery));
         return response.map(this::convertObject)
-                .map(AssetDocument::getWrappedAsset);
+                .map(AssetDocument::getAsset);
     }
 
     @Override
     public Asset findById(String assetId) {
         var result = queryByIdInternal(assetId);
-        return result.map(AssetDocument::getWrappedAsset).orElse(null);
+        return result.map(AssetDocument::getAsset).orElse(null);
     }
 
     @Override
-    public StoreResult<Void> create(AssetEntry item) {
-        var assetDocument = new AssetDocument(item.getAsset(), partitionKey, item.getDataAddress());
+    public StoreResult<Void> create(Asset asset) {
+        var assetDocument = new AssetDocument(asset, partitionKey);
         try {
+            if (asset.hasDuplicatePropertyKeys()) {
+                var msg = format(DUPLICATE_PROPERTY_KEYS_TEMPLATE);
+                return StoreResult.duplicateKeys(msg);
+            }
             assetDb.createItem(assetDocument);
         } catch (ConflictException ex) {
-            var id = item.getAsset().getId();
+            var id = assetDocument.getId();
             var msg = format(ASSET_EXISTS_TEMPLATE, id);
             monitor.debug(() -> msg);
             return StoreResult.alreadyExists(msg);
@@ -104,7 +126,8 @@ public class CosmosAssetIndex implements AssetIndex {
         try {
             var deletedItem = assetDb.deleteItem(assetId);
             // todo: the CosmosDbApi should not throw an exception when the item isn't found
-            return StoreResult.success(convertObject(deletedItem).getWrappedAsset());
+            AssetDocument assetDocument = convertObject(deletedItem);
+            return StoreResult.success(assetDocument.getAsset());
         } catch (NotFoundException nfe) {
             var msg = format(ASSET_NOT_FOUND_TEMPLATE, assetId);
             monitor.debug(() -> msg);
@@ -129,7 +152,7 @@ public class CosmosAssetIndex implements AssetIndex {
         var result = queryByIdInternal(assetId);
 
         return result.map(assetDocument -> {
-            var updated = new AssetDocument(asset, assetDocument.getPartitionKey(), assetDocument.getDataAddress());
+            var updated = new AssetDocument(asset, assetDocument.getPartitionKey());
 
             // the following statement could theoretically still raise a NotFoundException, but at that point we'll let it bubble up the stack
             assetDb.updateItem(updated);
@@ -143,7 +166,8 @@ public class CosmosAssetIndex implements AssetIndex {
         var result = queryByIdInternal(assetId);
 
         return result.map(assetDocument -> {
-            var updated = new AssetDocument(assetDocument.getWrappedAsset(), assetDocument.getPartitionKey(), dataAddress);
+            var asset = assetDocument.getAsset().toBuilder().dataAddress(dataAddress).build();
+            var updated = new AssetDocument(asset, assetDocument.getPartitionKey());
 
             // the following statement could theoretically still raise a NotFoundException, but at that point we'll let it bubble up the stack
             assetDb.updateItem(updated);
@@ -153,12 +177,11 @@ public class CosmosAssetIndex implements AssetIndex {
 
     @Override
     public DataAddress resolveForAsset(String assetId) {
-        return queryByIdInternal(assetId).map(AssetDocument::getDataAddress).orElse(null);
+        return queryByIdInternal(assetId).map(AssetDocument::getAsset).map(Asset::getDataAddress).orElse(null);
     }
 
     private long extractCount(Object result) {
-        if (result instanceof Map) {
-            var map = (Map) result;
+        if (result instanceof Map map) {
             return (Long) map.values().stream().findFirst().orElse(0L);
         }
 

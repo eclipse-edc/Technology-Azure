@@ -45,6 +45,10 @@ public abstract class CosmosDocument<T> {
         return key.replace(':', '_');
     }
 
+    public static String unsanitize(String key) {
+        return key.replace("_", ":");
+    }
+
     public String getPartitionKey() {
         return partitionKey;
     }

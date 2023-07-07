@@ -116,7 +116,7 @@ public abstract class ConditionExpression {
      * resulting String does not include the left-operand or the operator.
      */
     protected String toValuePlaceholder() {
-        var name = getName();
+        var name = getName().replace("\"", "_");
         var operandRight = getCriterion().getOperandRight();
         if (operandRight instanceof Iterable) {
             return "(" + String.join(", ", getPlaceholderValues()) + ")";
@@ -169,7 +169,7 @@ public abstract class ConditionExpression {
         var criterion = getCriterion();
 
         var operandRight = criterion.getOperandRight();
-        var name = getName();
+        var name = getName().replace("\"", "_");
         if (operandRight instanceof Iterable) {
             var size = (int) StreamSupport.stream(((Iterable) operandRight).spliterator(), false).count();
             return IntStream.range(0, size)

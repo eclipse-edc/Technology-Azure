@@ -15,48 +15,40 @@
 package org.eclipse.edc.connector.store.azure.cosmos.assetindex.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.eclipse.edc.azure.cosmos.CosmosDocument;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.azure.cosmos.CosmosDocument.unsanitize;
+import static org.eclipse.edc.spi.types.domain.asset.Asset.PROPERTY_ID;
 
 @JsonTypeName("dataspaceconnector:assetdocument")
-public class AssetDocument extends CosmosDocument<Map<String, Object>> {
+public class AssetDocument extends CosmosDocument<Asset> {
     private final String id;
-    private final DataAddress dataAddress;
-    private final long createdAt;
-
-    public AssetDocument(Asset wrappedInstance,
-                         String partitionKey,
-                         DataAddress dataAddress) {
-        super(sanitizeProperties(wrappedInstance), partitionKey);
-        id = wrappedInstance.getId();
-        this.dataAddress = dataAddress;
-        this.createdAt = wrappedInstance.getCreatedAt();
-    }
 
     @JsonCreator
-    public AssetDocument(@JsonProperty("wrappedInstance") Map<String, Object> wrappedInstance,
-                         @JsonProperty("partitionKey") String partitionKey,
-                         @JsonProperty("dataAddress") DataAddress dataAddress,
-                         @JsonProperty("createdAt") long createdAt) {
+    public AssetDocument(@JsonProperty("wrappedInstance") Asset wrappedInstance,
+                         @JsonProperty("partitionKey") String partitionKey) {
+//        super(sanitizeProperties(wrappedInstance), partitionKey);
         super(wrappedInstance, partitionKey);
-        id = wrappedInstance.get(sanitize(EDC_NAMESPACE) + "id").toString();
-        this.dataAddress = dataAddress;
-        this.createdAt = createdAt;
+        id = wrappedInstance.getId();
     }
 
-
-    private static Map<String, Object> sanitizeProperties(Asset asset) {
-        return asset.getProperties().entrySet().stream()
-                .collect(Collectors.toMap(entry -> sanitize(entry.getKey()), Map.Entry::getValue));
+    private static Asset sanitizeProperties(Asset asset) {
+        var properties = asset.getProperties();
+        properties.remove(PROPERTY_ID);
+        return Asset.Builder.newInstance()
+                .id(asset.getId())
+                .properties(sanitize(properties))
+                .privateProperties(sanitize(asset.getPrivateProperties()))
+                .dataAddress(asset.getDataAddress())
+                .createdAt(asset.getCreatedAt())
+                .build();
     }
 
     @Override
@@ -64,30 +56,30 @@ public class AssetDocument extends CosmosDocument<Map<String, Object>> {
         return id;
     }
 
-    @JsonIgnore
-    public Asset getWrappedAsset() {
-        return Asset.Builder.newInstance()
-                .id(id)
-                .createdAt(createdAt)
-                .properties(restoreProperties())
-                .build();
+    public Asset getAsset() {
+//        var asset = getWrappedInstance();
+//        var properties = asset.getProperties();
+//        properties.remove(unsanitize(PROPERTY_ID));
+//        return Asset.Builder.newInstance()
+//                .id(asset.getId())
+//                .properties(unsanitize(properties))
+//                .privateProperties(unsanitize(asset.getPrivateProperties()))
+//                .dataAddress(asset.getDataAddress())
+//                .createdAt(asset.getCreatedAt())
+//                .build();
+        return getWrappedInstance();
     }
 
-    public DataAddress getDataAddress() {
-        return dataAddress;
+    @NotNull
+    private static Map<String, Object> sanitize(Map<String, Object> properties) {
+        return properties.entrySet().stream()
+                .collect(Collectors.toMap(entry -> sanitize(entry.getKey()), Map.Entry::getValue));
     }
 
-    public long getCreatedAt() {
-        return createdAt;
+    @NotNull
+    private static Map<String, Object> unsanitize(Map<String, Object> properties) {
+        return properties.entrySet().stream()
+                .collect(Collectors.toMap(entry -> unsanitize(entry.getKey()), Map.Entry::getValue));
     }
 
-    private Map<String, Object> restoreProperties() {
-        var map = getWrappedInstance();
-
-        return map.entrySet().stream().collect(Collectors.toMap(entry -> unsanitize(entry.getKey()), Map.Entry::getValue));
-    }
-
-    private String unsanitize(String key) {
-        return key.replace("_", ":");
-    }
 }

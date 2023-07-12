@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.store.azure.cosmos.assetindex;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresDatasource;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
@@ -52,7 +52,7 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
 
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
-        dataSource = CosmosPostgresDatasource.create();
+        dataSource = CosmosPostgresFunctions.createDataSource();
         reg.register(dsName, dataSource);
 
         System.setProperty("edc.datasource.asset.name", dsName);

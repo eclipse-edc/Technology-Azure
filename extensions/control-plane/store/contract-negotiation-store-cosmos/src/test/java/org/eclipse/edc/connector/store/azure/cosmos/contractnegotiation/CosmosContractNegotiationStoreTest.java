@@ -15,235 +15,306 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation;
 
-import com.azure.cosmos.models.SqlQuerySpec;
-import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.azure.cosmos.CosmosDbApi;
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation;
-import org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates;
-import org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation.model.ContractNegotiationDocument;
-import org.eclipse.edc.junit.matchers.PredicateMatcher;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.eclipse.edc.connector.contract.spi.ContractId;
+import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
+import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions;
+import org.eclipse.edc.connector.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
+import org.eclipse.edc.connector.store.sql.contractnegotiation.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.policy.model.Action;
+import org.eclipse.edc.policy.model.AtomicConstraint;
+import org.eclipse.edc.policy.model.LiteralExpression;
+import org.eclipse.edc.policy.model.Operator;
+import org.eclipse.edc.policy.model.Permission;
+import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
+import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.query.SortOrder;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.SqlQueryExecutor;
+import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
+import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
+import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Clock;
-import java.util.Comparator;
+import java.time.Duration;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
+import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation.TestFunctions.createNegotiationBuilder;
-import static org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation.TestFunctions.generateDocument;
+import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContract;
+import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContractBuilder;
+import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createNegotiation;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation.Type.CONSUMER;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation.Type.PROVIDER;
+import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates.REQUESTED;
 import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-class CosmosContractNegotiationStoreTest {
-    private static final String PARTITION_KEY = "test-connector";
+/**
+ * This test aims to verify those parts of the contract negotiation store, that are specific to Postgres, e.g. JSON
+ * query operators.
+ */
+@ComponentTest
+@ExtendWith(EdcExtension.class)
+class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBase {
+    private static final String TEST_ASSET_ID = "test-asset-id";
     private final Clock clock = Clock.systemUTC();
-    private CosmosContractNegotiationStore store;
-    private CosmosDbApi cosmosDbApi;
+    private SqlContractNegotiationStore store;
+    private LeaseUtil leaseUtil;
+    private DataSource dataSource;
+    private NoopTransactionContext transactionContext;
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
 
     @BeforeEach
-    void setup() {
-        cosmosDbApi = mock(CosmosDbApi.class);
-        var typeManager = new TypeManager();
-        var retryPolicy = RetryPolicy.ofDefaults();
-        store = new CosmosContractNegotiationStore(cosmosDbApi, typeManager, retryPolicy, "test-connector", clock);
+    void setUp() throws IOException {
+        var statements = new PostgresDialectStatements();
+        var manager = new TypeManager();
+
+        manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
+
+        dataSource = CosmosPostgresFunctions.createDataSource();
+        var dsName = "test-ds";
+        var reg = new DefaultDataSourceRegistry();
+        reg.register(dsName, dataSource);
+
+        System.setProperty("edc.datasource.contractnegotiation.name", dsName);
+
+        transactionContext = new NoopTransactionContext();
+
+        store = new SqlContractNegotiationStore(reg, dsName, transactionContext, manager.getMapper(), statements, CONNECTOR_NAME, clock, queryExecutor);
+
+        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
+        runQuery(schema);
+        leaseUtil = new LeaseUtil(transactionContext, this::getConnection, statements, clock);
+    }
+
+
+
+    @AfterEach
+    void tearDown() {
+        var dialect = new PostgresDialectStatements();
+        runQuery("DROP TABLE " + dialect.getContractNegotiationTable() + " CASCADE");
+        runQuery("DROP TABLE " + dialect.getContractAgreementTable() + " CASCADE");
+        runQuery("DROP TABLE " + dialect.getLeaseTableName() + " CASCADE");
     }
 
     @Test
-    void find() {
-        var doc = generateDocument();
-        when(cosmosDbApi.queryItemById("test-id-1")).thenReturn(doc);
+    void query_byAgreementId() {
+        var contractId1 = ContractId.create("def1", "asset");
+        var contractId2 = ContractId.create("def2", "asset");
+        var negotiation1 = createNegotiation("neg1", createContract(contractId1));
+        var negotiation2 = createNegotiation("neg2", createContract(contractId2));
+        store.save(negotiation1);
+        store.save(negotiation2);
 
-        var result = store.findById("test-id-1");
+        var expression = criterion("contractAgreement.id", "=", contractId1.toString());
+        var query = QuerySpec.Builder.newInstance().filter(expression).build();
+        var result = store.queryNegotiations(query).collect(Collectors.toList());
 
-        assertThat(result).usingRecursiveComparison().isEqualTo(doc.getWrappedInstance());
-        verify(cosmosDbApi).queryItemById("test-id-1");
-        verifyNoMoreInteractions(cosmosDbApi);
+        assertThat(result).usingRecursiveFieldByFieldElementComparator().containsOnly(negotiation1);
     }
 
     @Test
-    void find_notFound() {
-        when(cosmosDbApi.queryItemById(anyString())).thenReturn(null);
+    void query_byPolicyAssignee() {
 
-        assertThat(store.findById("test-id-1")).isNull();
-        verify(cosmosDbApi).queryItemById(anyString());
-        verifyNoMoreInteractions(cosmosDbApi);
+        var policy = Policy.Builder.newInstance()
+                .assignee("test-assignee")
+                .assigner("test-assigner")
+                .permission(Permission.Builder.newInstance()
+                        .target("")
+                        .action(Action.Builder.newInstance()
+                                .type("USE")
+                                .build())
+                        .constraint(AtomicConstraint.Builder.newInstance()
+                                .leftExpression(new LiteralExpression("foo"))
+                                .operator(Operator.EQ)
+                                .rightExpression(new LiteralExpression("bar"))
+                                .build())
+                        .build())
+                .build();
+
+        var agreement1 = createContractBuilder("agr1").policy(policy).build();
+        var agreement2 = createContractBuilder("agr2").policy(policy).build();
+        var negotiation1 = createNegotiation("neg1", agreement1);
+        var negotiation2 = createNegotiation("neg2", agreement2);
+        store.save(negotiation1);
+        store.save(negotiation2);
+
+        var expression = criterion("contractAgreement.policy.assignee", "=", "test-assignee");
+        var query = QuerySpec.Builder.newInstance().filter(expression).build();
+        var result = store.queryNegotiations(query).collect(Collectors.toList());
+
+        assertThat(result).usingRecursiveFieldByFieldElementComparator().containsExactlyInAnyOrder(negotiation1, negotiation2);
     }
 
     @Test
-    void findForCorrelationId() {
-        var doc = generateDocument();
-        when(cosmosDbApi.queryItems(any(SqlQuerySpec.class))).thenReturn(Stream.of(doc));
+    void query_invalidKey_shouldThrowException() {
+        var contractId = ContractId.create("definition", "asset");
+        var agreement1 = createContract(contractId);
+        var negotiation1 = createNegotiation("neg1", agreement1);
+        store.save(negotiation1);
 
-        assertThat(store.findForCorrelationId("some-correlation-id")).usingRecursiveComparison().isEqualTo(doc.getWrappedInstance());
-        verify(cosmosDbApi).queryItems(any(SqlQuerySpec.class));
-        verifyNoMoreInteractions(cosmosDbApi);
+        var expression = criterion("contractAgreement.notexist", "=", contractId.toString());
+        var query = QuerySpec.Builder.newInstance().filter(expression).build();
+        assertThatThrownBy(() -> store.queryNegotiations(query))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("Translation failed for Model");
     }
 
     @Test
-    void findContractAgreement() {
-        var doc = generateDocument();
-        when(cosmosDbApi.queryItems(any(SqlQuerySpec.class))).thenReturn(Stream.of(doc));
+    void query_invalidKeyInJson() {
+        var contractId = ContractId.create("definition", "asset");
+        var agreement1 = createContract(contractId);
+        var negotiation1 = createNegotiation("neg1", agreement1);
+        store.save(negotiation1);
 
-        assertThat(store.findContractAgreement("test-contract-id")).usingRecursiveComparison().isEqualTo(doc.getWrappedInstance().getContractAgreement());
-        verify(cosmosDbApi).queryItems(any(SqlQuerySpec.class));
+        var expression = criterion("contractAgreement.policy.permissions.notexist", "=", "foobar");
+        var query = QuerySpec.Builder.newInstance().filter(expression).build();
+        assertThat(store.queryNegotiations(query)).isEmpty();
     }
 
     @Test
-    void save() {
-        var negotiation = TestFunctions.createNegotiation();
+    void queryAgreements_withQuerySpec() {
+        IntStream.range(0, 10).forEach(i -> {
+            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+                    .assetId("asset-" + i)
+                    .build();
+            var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
+            store.save(negotiation);
+        });
 
+        var query = QuerySpec.Builder.newInstance().filter(criterion("assetId", "=", "asset-2")).build();
+        var all = store.queryAgreements(query);
+
+        assertThat(all).hasSize(1);
+    }
+
+    @Test
+    void queryAgreements_withQuerySpec_invalidOperand() {
+        IntStream.range(0, 10).forEach(i -> {
+            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+                    .assetId("asset-" + i)
+                    .build();
+            var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
+            store.save(negotiation);
+        });
+
+        var query = QuerySpec.Builder.newInstance().filter(criterion("notexistprop", "=", "asset-2")).build();
+        assertThatThrownBy(() -> store.queryAgreements(query));
+    }
+
+    @Test
+    void queryAgreements_withQuerySpec_noFilter() {
+        IntStream.range(0, 10).forEach(i -> {
+            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+                    .assetId("asset-" + i)
+                    .build();
+            var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
+            store.save(negotiation);
+        });
+
+        var query = QuerySpec.Builder.newInstance().offset(2).limit(2).build();
+        assertThat(store.queryAgreements(query)).hasSize(2);
+    }
+
+    @Test
+    void queryAgreements_withQuerySpec_invalidValue() {
+        IntStream.range(0, 10).forEach(i -> {
+            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+                    .assetId("asset-" + i)
+                    .build();
+            var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
+            store.save(negotiation);
+        });
+
+        var query = QuerySpec.Builder.newInstance().filter(criterion("assetId", "=", "notexist")).build();
+        assertThat(store.queryAgreements(query)).isEmpty();
+    }
+
+    @Test
+    void create_and_cancel_contractAgreement() {
+        var negotiationId = "test-cn1";
+        var negotiation = createNegotiation(negotiationId);
         store.save(negotiation);
 
-        verify(cosmosDbApi).queryItemById(eq(negotiation.getId()));
-        verify(cosmosDbApi).createItem(any(ContractNegotiationDocument.class));
-        verify(cosmosDbApi, times(2)).invokeStoredProcedure(eq("lease"), eq(PARTITION_KEY), any(), any(), any());
-        verifyNoMoreInteractions(cosmosDbApi);
+        // now add the agreement
+        var agreement = createContract(ContractId.create("definition", "asset"));
+        var updatedNegotiation = createNegotiation(negotiationId, agreement);
+
+        store.save(updatedNegotiation);
+        assertThat(store.queryAgreements(QuerySpec.none()))
+                .hasSize(1)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(agreement);
+
+        // cancel the agreement
+        updatedNegotiation.transitionTerminating("Cancelled");
+        store.save(updatedNegotiation);
     }
 
     @Test
-    void delete() {
-        var cn = createNegotiationBuilder("test-id").build();
-        when(cosmosDbApi.queryItemById(any())).thenReturn(generateDocument(cn));
+    void nextNotLeased_typeFilter() {
+        range(0, 5).mapToObj(it -> TestFunctions.createNegotiationBuilder("1" + it)
+                .state(REQUESTED.code())
+                .type(PROVIDER)
+                .build()).forEach(store::save);
+        range(5, 10).mapToObj(it -> TestFunctions.createNegotiationBuilder("1" + it)
+                .state(REQUESTED.code())
+                .type(CONSUMER)
+                .build()).forEach(store::save);
+        var criteria = new Criterion[] {hasState(REQUESTED.code()), new Criterion("type", "=", "CONSUMER")};
 
-        store.delete("test-id");
+        var result = store.nextNotLeased(10, criteria);
 
-        verify(cosmosDbApi).queryItemById("test-id");
-        verify(cosmosDbApi).deleteItem("test-id");
-        verify(cosmosDbApi, times(2)).invokeStoredProcedure(eq("lease"), eq(PARTITION_KEY), any(), any(), any());
-        verifyNoMoreInteractions(cosmosDbApi);
+        assertThat(result).hasSize(5).allMatch(it -> it.getType() == CONSUMER);
     }
 
-    @Test
-    void delete_hasAgreement() {
-        when(cosmosDbApi.queryItemById(any())).thenReturn(generateDocument());
-
-        assertThatThrownBy(() -> store.delete("test-id")).isInstanceOf(IllegalStateException.class);
-
-        verify(cosmosDbApi).queryItemById("test-id");
-        verify(cosmosDbApi, never()).deleteItem("test-id");
-        verifyNoMoreInteractions(cosmosDbApi);
+    @Override
+    protected SqlContractNegotiationStore getContractNegotiationStore() {
+        return store;
     }
 
-    @Test
-    void delete_notFound() {
-        when(cosmosDbApi.queryItemById(any())).thenReturn(null);
-
-        store.delete("test-id");
-
-        verify(cosmosDbApi).queryItemById("test-id");
-        verify(cosmosDbApi, never()).deleteItem("test-id");
-        verifyNoMoreInteractions(cosmosDbApi);
+    @Override
+    protected void lockEntity(String negotiationId, String owner, Duration duration) {
+        leaseUtil.leaseEntity(negotiationId, owner, duration);
     }
 
-    @Test
-    void nextNotLeased() {
-        var state = ContractNegotiationStates.AGREED;
-        when(cosmosDbApi.invokeStoredProcedure("nextForState", PARTITION_KEY, state.code(), 100, "test-connector"))
-                .thenReturn("[]");
-
-        var result = store.nextNotLeased(100, hasState(state.code()));
-
-        assertThat(result).isEmpty();
-        verify(cosmosDbApi).invokeStoredProcedure("nextForState", PARTITION_KEY, state.code(), 100, "test-connector");
-        verifyNoMoreInteractions(cosmosDbApi);
+    @Override
+    protected boolean isLockedBy(String negotiationId, String owner) {
+        return leaseUtil.isLeased(negotiationId, owner);
     }
 
-    @Test
-    void findAll_noQuerySpec() {
-
-        when(cosmosDbApi.queryItems(isA(SqlQuerySpec.class))).thenReturn(IntStream.range(0, 10).mapToObj(i -> generateDocument()));
-
-        var all = store.queryNegotiations(QuerySpec.Builder.newInstance().build());
-        assertThat(all).hasSize(10);
+    private void runQuery(String schema) {
+        try (var connection = dataSource.getConnection()) {
+            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Test
-    void findAll_verifyPaging() {
-
-        when(cosmosDbApi.queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().equals("SELECT * FROM ContractNegotiationDocument OFFSET 3 LIMIT 4"))))).thenReturn(IntStream.range(0, 4).mapToObj(i -> generateDocument()));
-
-        // page size fits
-        assertThat(store.queryNegotiations(QuerySpec.Builder.newInstance().offset(3).limit(4).build())).hasSize(4);
-
-
-    }
-
-    @Test
-    void findAll_verifyPaging_tooLarge() {
-
-        when(cosmosDbApi.queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().equals("SELECT * FROM ContractNegotiationDocument OFFSET 5 LIMIT 100"))))).thenReturn(IntStream.range(0, 5).mapToObj(i -> generateDocument()));
-
-        // page size too large
-        assertThat(store.queryNegotiations(QuerySpec.Builder.newInstance().offset(5).limit(100).build())).hasSize(5);
-
-        verify(cosmosDbApi).queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().equals("SELECT * FROM ContractNegotiationDocument OFFSET 5 LIMIT 100"))));
-    }
-
-    @Test
-    void findAll_verifyFiltering() {
-        var doc = generateDocument();
-        when(cosmosDbApi.queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().startsWith("SELECT * FROM ContractNegotiationDocument WHERE ContractNegotiationDocument.wrappedInstance.id = @id")))))
-                .thenReturn(Stream.of(doc));
-
-        var querySpec = QuerySpec.Builder.newInstance().filter(criterion("id", "=", "foobar")).build();
-        var all = store.queryNegotiations(querySpec);
-        assertThat(all).hasSize(1).extracting(ContractNegotiation::getId).containsOnly(doc.getId());
-        verify(cosmosDbApi).queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().startsWith("SELECT * FROM ContractNegotiationDocument WHERE ContractNegotiationDocument.wrappedInstance.id = @id"))));
-    }
-
-    @Test
-    void findAll_verifyFiltering_invalidFilterExpression() {
-        var querySpec = QuerySpec.Builder.newInstance().filter(criterion("something", "foobar", "other")).build();
-
-        assertThatThrownBy(() -> store.queryNegotiations(querySpec)).isInstanceOfAny(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findAll_verifySorting_asc() {
-        when(cosmosDbApi.queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().contains("SELECT * FROM ContractNegotiationDocument ORDER BY ContractNegotiationDocument.wrappedInstance.id DESC")))))
-                .thenReturn(IntStream.range(0, 10).mapToObj(i -> generateDocument()).sorted(Comparator.comparing(ContractNegotiationDocument::getId).reversed()).map(c -> c));
-
-        var all = store.queryNegotiations(QuerySpec.Builder.newInstance().sortField("id").sortOrder(SortOrder.DESC).build()).collect(Collectors.toList());
-        assertThat(all).hasSize(10).isSortedAccordingTo((c1, c2) -> c2.getId().compareTo(c1.getId()));
-
-        verify(cosmosDbApi).queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().contains("SELECT * FROM ContractNegotiationDocument ORDER BY ContractNegotiationDocument.wrappedInstance.id DESC"))));
-    }
-
-    @Test
-    void findAll_verifySorting_desc() {
-        when(cosmosDbApi.queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().contains("SELECT * FROM ContractNegotiationDocument ORDER BY ContractNegotiationDocument.wrappedInstance.id ASC")))))
-                .thenReturn(IntStream.range(0, 10).mapToObj(i -> generateDocument()).sorted(Comparator.comparing(ContractNegotiationDocument::getId)).map(c -> c));
-
-
-        var all = store.queryNegotiations(QuerySpec.Builder.newInstance().sortField("id").sortOrder(SortOrder.ASC).build()).collect(Collectors.toList());
-        assertThat(all).hasSize(10).isSortedAccordingTo(Comparator.comparing(ContractNegotiation::getId));
-
-
-        verify(cosmosDbApi).queryItems(argThat(new PredicateMatcher<SqlQuerySpec>(qs -> qs.getQueryText().contains("SELECT * FROM ContractNegotiationDocument ORDER BY ContractNegotiationDocument.wrappedInstance.id ASC"))));
-    }
-
-    @Test
-    void findAll_verifySorting_invalidField() {
-        when(cosmosDbApi.queryItems(isA(SqlQuerySpec.class))).thenReturn(Stream.empty());
-
-        assertThat(store.queryNegotiations(QuerySpec.Builder.newInstance().sortField("nonexist").sortOrder(SortOrder.DESC).build())).isEmpty();
+    private Connection getConnection() {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

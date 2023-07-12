@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.store.azure.cosmos.contractdefinition;
 
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresDatasource;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
 import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.ContractDefinitionStoreTestBase;
 import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.TestFunctions;
@@ -42,7 +42,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -68,7 +67,7 @@ class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBas
 
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
-        dataSource = CosmosPostgresDatasource.create();
+        dataSource = CosmosPostgresFunctions.createDataSource();
         reg.register(dsName, dataSource);
 
         System.setProperty("edc.datasource.contractdefinition.name", dsName);

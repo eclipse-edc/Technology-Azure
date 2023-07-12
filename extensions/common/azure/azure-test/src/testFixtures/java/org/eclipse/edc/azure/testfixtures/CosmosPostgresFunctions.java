@@ -13,7 +13,7 @@ public class CosmosPostgresDatasource {
 
     public static DataSource create() {
 
-        var connectionString = propOrEnv(PG_CONNECTION_STRING, null);
+        var connectionString = propOrEnv(PG_CONNECTION_STRING, "jdbc:postgresql://c-edc-pg-test-cluster.pnrboctaun4gkt.postgres.cosmos.azure.com:5432/edc-pg-test?user=citus&password=QGF*bqr!vdv.mnj3fcj&sslMode=require");
         Objects.requireNonNull(connectionString, "CosmosDB Postgres connection string not found");
 
         var ds = new PGSimpleDataSource();

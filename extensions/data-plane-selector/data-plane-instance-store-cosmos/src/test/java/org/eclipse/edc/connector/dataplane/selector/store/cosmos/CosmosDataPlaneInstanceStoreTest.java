@@ -17,10 +17,11 @@ package org.eclipse.edc.connector.dataplane.store.cosmos;
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
-import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
-import org.eclipse.edc.connector.dataplane.spi.testfixtures.store.DataPlaneStoreTestBase;
-import org.eclipse.edc.connector.dataplane.store.sql.SqlDataPlaneStore;
-import org.eclipse.edc.connector.dataplane.store.sql.schema.postgres.PostgresDataPlaneStatements;
+import org.eclipse.edc.connector.dataplane.selector.spi.store.DataPlaneInstanceStore;
+import org.eclipse.edc.connector.dataplane.selector.spi.testfixtures.store.DataPlaneInstanceStoreTestBase;
+import org.eclipse.edc.connector.dataplane.selector.store.sql.SqlDataPlaneInstanceStore;
+import org.eclipse.edc.connector.dataplane.selector.store.sql.schema.DataPlaneInstanceStatements;
+import org.eclipse.edc.connector.dataplane.selector.store.sql.schema.postgres.PostgresDataPlaneInstanceStatements;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
@@ -35,16 +36,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.time.Clock;
 
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
-public class CosmosDataPlaneInstanceStoreTest extends DataPlaneStoreTestBase {
+public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTestBase {
 
-    private final Clock clock = Clock.systemUTC();
-    private final PostgresDataPlaneStatements statements = new PostgresDataPlaneStatements();
+
+    private final DataPlaneInstanceStatements statements = new PostgresDataPlaneInstanceStatements();
     private final QueryExecutor queryExecutor = new SqlQueryExecutor();
-    private SqlDataPlaneStore store;
+    SqlDataPlaneInstanceStore store;
     private DataSource dataSource;
     private NoopTransactionContext transactionContext;
 
@@ -65,18 +65,18 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneStoreTestBase {
 
         transactionContext = new NoopTransactionContext();
 
-        store = new SqlDataPlaneStore(reg, dsName, transactionContext, statements, typeManager.getMapper(), clock, queryExecutor);
+        store = new SqlDataPlaneInstanceStore(reg, dsName, transactionContext, statements, typeManager.getMapper(), queryExecutor);
         var schema = TestUtils.getResourceFileContentAsString("schema.sql");
         runQuery(schema);
     }
 
     @AfterEach
     void tearDown() {
-        runQuery("DROP TABLE " + statements.getDataPlaneTable() + " CASCADE");
+        runQuery("DROP TABLE " + statements.getDataPlaneInstanceTable() + " CASCADE");
     }
 
     @Override
-    protected DataPlaneStore getStore() {
+    protected DataPlaneInstanceStore getStore() {
         return store;
     }
 

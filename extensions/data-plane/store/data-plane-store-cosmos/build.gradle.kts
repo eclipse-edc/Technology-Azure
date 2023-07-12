@@ -10,7 +10,7 @@ dependencies {
     implementation(libs.failsafe.core)
 
     testImplementation(libs.edc.sql.core)
-    testImplementation(libs.edc.sql.dataplane.instancestore)
+    testImplementation(libs.edc.sql.dataplane.store)
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(libs.edc.spi.dataplane))
     testImplementation(testFixtures(libs.edc.dpf.selector.spi))

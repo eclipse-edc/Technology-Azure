@@ -29,7 +29,7 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
 
-  Check-PG-ConnectionString:
+  Check-Actions-Secrets:
     runs-on: ubuntu-latest
     outputs:
       has-pg-connectionstring: ${{ steps.has-pg-connectionstring.outputs.has-pg-connectionstring }}
@@ -78,8 +78,8 @@ jobs:
 
   Azure-CosmosDB-Integration-Tests:
     # run only if PG_CONNECTION_STRING is present
-    needs: [ Check-PG-ConnectionString ]
-    if: needs.Check-PG-ConnectionString.outputs.has-pg-connectionstring == 'true'
+    needs: [ Check-Actions-Secrets ]
+    if: needs.Check-Actions-Secrets.outputs.has-pg-connectionstring == 'true'
     runs-on: ubuntu-latest
 
     env:

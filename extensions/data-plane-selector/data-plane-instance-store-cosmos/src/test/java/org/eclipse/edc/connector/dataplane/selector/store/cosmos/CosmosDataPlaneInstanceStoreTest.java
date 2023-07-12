@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.edc.connector.dataplane.store.cosmos;
+package org.eclipse.edc.connector.dataplane.selector.store.cosmos;
 
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
@@ -61,8 +61,6 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);
-
-        System.setProperty("edc.datasource.contractnegotiation.name", dsName);
 
         transactionContext = new NoopTransactionContext();
 

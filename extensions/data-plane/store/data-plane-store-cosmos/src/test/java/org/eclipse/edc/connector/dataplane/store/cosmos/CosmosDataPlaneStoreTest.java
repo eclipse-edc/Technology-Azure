@@ -40,7 +40,7 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
-public class CosmosDataPlaneInstanceStoreTest extends DataPlaneStoreTestBase {
+public class CosmosDataPlaneStoreTest extends DataPlaneStoreTestBase {
 
     private final Clock clock = Clock.systemUTC();
     private final PostgresDataPlaneStatements statements = new PostgresDataPlaneStatements();
@@ -61,8 +61,6 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneStoreTestBase {
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);
-
-        System.setProperty("edc.datasource.contractnegotiation.name", dsName);
 
         transactionContext = new NoopTransactionContext();
 

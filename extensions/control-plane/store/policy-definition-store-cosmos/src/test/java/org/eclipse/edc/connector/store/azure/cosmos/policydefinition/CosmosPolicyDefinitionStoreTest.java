@@ -15,11 +15,11 @@
 package org.eclipse.edc.connector.store.azure.cosmos.policydefinition;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
 import org.eclipse.edc.connector.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
 import org.eclipse.edc.connector.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.IntStream;
 
@@ -45,16 +44,15 @@ import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.cr
 import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicyBuilder;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
 
-@ComponentTest
+@AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
 
     private final PostgresDialectStatements statements = new PostgresDialectStatements();
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     private SqlPolicyDefinitionStore sqlPolicyStore;
     private DataSource dataSource;
     private NoopTransactionContext transactionContext;
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
-
 
     @BeforeEach
     void setUp() {

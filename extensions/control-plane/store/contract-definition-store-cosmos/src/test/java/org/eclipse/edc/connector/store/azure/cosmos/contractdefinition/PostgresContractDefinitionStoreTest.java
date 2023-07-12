@@ -16,6 +16,7 @@ package org.eclipse.edc.connector.store.azure.cosmos.contractdefinition;
 
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
 import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.ContractDefinitionStoreTestBase;
 import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.TestFunctions;
@@ -48,7 +49,7 @@ import java.util.List;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ComponentTest
+@AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBase {
 

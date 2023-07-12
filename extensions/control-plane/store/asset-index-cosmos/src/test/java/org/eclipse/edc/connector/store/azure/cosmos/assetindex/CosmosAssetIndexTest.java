@@ -16,6 +16,7 @@ package org.eclipse.edc.connector.store.azure.cosmos.assetindex;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
@@ -36,7 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
-@ComponentTest
+@AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 public class CosmosAssetIndexTest extends AssetIndexTestBase {
     private final BaseSqlDialectStatements sqlStatements = new PostgresDialectStatements();

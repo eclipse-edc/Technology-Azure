@@ -2,13 +2,13 @@ package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TransferProcessStoreTestBase;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResourceSet;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceManifest;
-import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
@@ -41,7 +41,7 @@ import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunc
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcess;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcessBuilder;
 
-@ComponentTest
+@AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 

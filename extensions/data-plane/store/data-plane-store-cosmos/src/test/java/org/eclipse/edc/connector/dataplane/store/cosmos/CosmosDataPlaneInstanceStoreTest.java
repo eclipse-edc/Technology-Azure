@@ -15,13 +15,13 @@
 package org.eclipse.edc.connector.dataplane.store.cosmos;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.selector.spi.store.DataPlaneInstanceStore;
 import org.eclipse.edc.connector.dataplane.selector.spi.testfixtures.store.DataPlaneInstanceStoreTestBase;
 import org.eclipse.edc.connector.dataplane.selector.store.sql.SqlDataPlaneInstanceStore;
 import org.eclipse.edc.connector.dataplane.selector.store.sql.schema.DataPlaneInstanceStatements;
 import org.eclipse.edc.connector.dataplane.selector.store.sql.schema.postgres.PostgresDataPlaneInstanceStatements;
-import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
@@ -35,25 +35,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 
-@ComponentTest
+@AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTestBase {
 
 
     private final DataPlaneInstanceStatements statements = new PostgresDataPlaneInstanceStatements();
-
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     SqlDataPlaneInstanceStore store;
     private DataSource dataSource;
     private NoopTransactionContext transactionContext;
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
 
         var typeManager = new TypeManager();
         typeManager.registerTypes(DataPlaneInstance.class);
@@ -69,7 +65,7 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
 
         transactionContext = new NoopTransactionContext();
 
-        store = new SqlDataPlaneInstanceStore(reg,dsName,transactionContext, statements, typeManager.getMapper(), queryExecutor);
+        store = new SqlDataPlaneInstanceStore(reg, dsName, transactionContext, statements, typeManager.getMapper(), queryExecutor);
         var schema = TestUtils.getResourceFileContentAsString("schema.sql");
         runQuery(schema);
     }

@@ -44,7 +44,6 @@ include(":extensions:common:azure:azure-eventgrid")
 include(":extensions:common:azure:azure-resource-manager")
 include(":extensions:common:azure:azure-test")
 include(":extensions:common:azure:azure-blob-core")
-include(":extensions:common:azure:azure-cosmos-core")
 include(":extensions:common:vault:vault-azure")
 
 // controlplane extensions
@@ -52,7 +51,6 @@ include(":extensions:common:vault:vault-azure")
 include(":extensions:control-plane:store:asset-index-cosmos")
 include(":extensions:control-plane:store:contract-definition-store-cosmos")
 include(":extensions:control-plane:store:contract-negotiation-store-cosmos")
-include(":extensions:control-plane:store:control-plane-cosmos")
 include(":extensions:control-plane:store:policy-definition-store-cosmos")
 include(":extensions:control-plane:store:transfer-process-store-cosmos")
 include(":extensions:control-plane:provision:provision-blob")
@@ -62,9 +60,6 @@ include(":extensions:data-plane:data-plane-azure-storage")
 include(":extensions:data-plane:store:data-plane-store-cosmos")
 include(":extensions:data-plane:data-plane-azure-data-factory")
 include(":extensions:data-plane-selector:data-plane-instance-store-cosmos")
-
-// federated catalog
-include(":extensions:federated-catalog:fcc-node-directory-cosmos")
 
 // identity hub
 include(":extensions:identity-hub:identity-hub-store-cosmos")

@@ -22,7 +22,6 @@ import org.eclipse.edc.connector.dataplane.spi.testfixtures.store.DataPlaneStore
 import org.eclipse.edc.connector.dataplane.store.sql.SqlDataPlaneStore;
 import org.eclipse.edc.connector.dataplane.store.sql.schema.postgres.PostgresDataPlaneStatements;
 import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -36,6 +35,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.Clock;
+
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
@@ -66,7 +67,7 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneStoreTestBase {
         transactionContext = new NoopTransactionContext();
 
         store = new SqlDataPlaneStore(reg, dsName, transactionContext, statements, typeManager.getMapper(), clock, queryExecutor);
-        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
+        var schema = getResourceFileContentAsString("schema.sql");
         runQuery(schema);
     }
 

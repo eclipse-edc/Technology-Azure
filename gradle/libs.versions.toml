@@ -84,6 +84,7 @@ edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
 edc-sql-dataplane-instancestore = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 edc-sql-dataplane-store = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
 edc-sql-identityhub-store = { module = "org.eclipse.edc:identity-hub-store-sql", version.ref = "edc" }
+edc-sql-participant-store = { module = "org.eclipse.edc:participant-store-sql", version.ref = "edc" }
 
 # third-partyi deps
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }

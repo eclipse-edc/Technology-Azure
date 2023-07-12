@@ -89,10 +89,15 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-build
 
-      - name: Azure CosmosDB Tests
+      - name: Cosmos PostgreSQL Tests (parallelizable)
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest" --no-parallel
+          command: ./gradlew test -DincludeTags="ParallelPostgresCosmosTest"
+
+      - name: Cosmos PostgreSQL Tests (not parallelizable)
+        uses: ./.github/actions/run-tests
+        with:
+          command: ./gradlew test -DincludeTags="PostgresCosmosTest" --no-parallel
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:

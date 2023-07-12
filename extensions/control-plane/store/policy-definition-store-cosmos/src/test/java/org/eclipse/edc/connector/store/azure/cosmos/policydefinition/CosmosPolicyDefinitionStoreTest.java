@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.policydefinition;
 
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
 import org.eclipse.edc.connector.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
@@ -44,7 +44,7 @@ import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.cr
 import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicyBuilder;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
 
-@AzureCosmosDbIntegrationTest
+@ParallelPostgresCosmosTest
 @ExtendWith(EdcExtension.class)
 class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
 

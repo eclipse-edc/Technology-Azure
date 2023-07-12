@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.connector.dataplane.selector.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.selector.spi.store.DataPlaneInstanceStore;
 import org.eclipse.edc.connector.dataplane.selector.spi.testfixtures.store.DataPlaneInstanceStoreTestBase;
@@ -38,7 +38,7 @@ import javax.sql.DataSource;
 
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 
-@AzureCosmosDbIntegrationTest
+@ParallelPostgresCosmosTest
 @ExtendWith(EdcExtension.class)
 public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTestBase {
 

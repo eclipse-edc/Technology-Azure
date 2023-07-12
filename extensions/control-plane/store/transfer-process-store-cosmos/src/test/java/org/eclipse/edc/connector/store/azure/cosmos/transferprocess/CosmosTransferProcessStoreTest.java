@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 import org.awaitility.Awaitility;
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions;
@@ -58,7 +58,7 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
 import static org.hamcrest.Matchers.hasSize;
 
-@AzureCosmosDbIntegrationTest
+@ParallelPostgresCosmosTest
 @ExtendWith(EdcExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 

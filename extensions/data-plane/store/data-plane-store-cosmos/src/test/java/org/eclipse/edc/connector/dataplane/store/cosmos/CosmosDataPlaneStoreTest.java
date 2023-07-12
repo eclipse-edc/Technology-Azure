@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.connector.dataplane.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.connector.dataplane.spi.testfixtures.store.DataPlaneStoreTestBase;
@@ -38,7 +38,7 @@ import javax.sql.DataSource;
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
-@AzureCosmosDbIntegrationTest
+@ParallelPostgresCosmosTest
 @ExtendWith(EdcExtension.class)
 public class CosmosDataPlaneStoreTest extends DataPlaneStoreTestBase {
 

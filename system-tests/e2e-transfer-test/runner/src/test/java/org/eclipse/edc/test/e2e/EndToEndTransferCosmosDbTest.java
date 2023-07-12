@@ -15,7 +15,7 @@
 package org.eclipse.edc.test.e2e;
 
 import jakarta.json.JsonObject;
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
 import org.eclipse.edc.connector.contract.spi.ContractId;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
@@ -50,7 +50,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-@AzureCosmosDbIntegrationTest
+@PostgresCosmosTest
 @Disabled
 class EndToEndTransferCosmosDbTest {
 

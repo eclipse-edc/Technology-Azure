@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.identityhub.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStore;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStoreTestBase;
 import org.eclipse.edc.identityhub.store.sql.SqlIdentityHubStore;
@@ -35,7 +35,7 @@ import javax.sql.DataSource;
 
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 
-@AzureCosmosDbIntegrationTest
+@ParallelPostgresCosmosTest
 @ExtendWith(EdcExtension.class)
 public class CosmosIdentityHubStoreTest extends IdentityHubStoreTestBase {
     private final QueryExecutor queryExecutor = new SqlQueryExecutor();

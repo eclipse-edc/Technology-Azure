@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.registration.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.registration.spi.model.Participant;
 import org.eclipse.edc.registration.store.spi.ParticipantStore;
 import org.eclipse.edc.registration.store.spi.ParticipantStoreTestBase;
@@ -40,7 +40,7 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 import static org.eclipse.edc.registration.spi.model.ParticipantStatus.AUTHORIZED;
 import static org.eclipse.edc.registration.store.spi.TestUtils.createParticipant;
 
-@AzureCosmosDbIntegrationTest
+@ParallelPostgresCosmosTest
 class CosmosParticipantStoreIntegrationTest extends ParticipantStoreTestBase {
 
     private final QueryExecutor queryExecutor = new SqlQueryExecutor();

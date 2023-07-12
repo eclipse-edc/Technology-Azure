@@ -15,7 +15,7 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation;
 
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
 import org.eclipse.edc.connector.contract.spi.ContractId;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions;
@@ -69,7 +69,7 @@ import static org.eclipse.edc.spi.query.Criterion.criterion;
  * This test aims to verify those parts of the contract negotiation store, that are specific to Postgres, e.g. JSON
  * query operators.
  */
-@AzureCosmosDbIntegrationTest
+@PostgresCosmosTest
 @ExtendWith(EdcExtension.class)
 class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBase {
     private static final String TEST_ASSET_ID = "test-asset-id";

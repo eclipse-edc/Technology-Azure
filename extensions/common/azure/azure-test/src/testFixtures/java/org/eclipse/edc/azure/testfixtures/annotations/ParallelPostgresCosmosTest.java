@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 /**
  * Composite annotation for Azure Cosmos DB integration testing.It applies specific Junit Tag.
  */
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @IntegrationTest
-@Tag("AzureCosmosDbIntegrationTest")
-public @interface AzureCosmosDbIntegrationTest {
+@Tag("ParallelPostgresCosmosTest")
+public @interface ParallelPostgresCosmosTest {
 }

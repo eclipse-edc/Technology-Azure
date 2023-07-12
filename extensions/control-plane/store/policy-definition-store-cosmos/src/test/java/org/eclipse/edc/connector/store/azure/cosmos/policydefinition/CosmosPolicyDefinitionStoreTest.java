@@ -14,206 +14,128 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.policydefinition;
 
-import com.azure.cosmos.implementation.NotFoundException;
-import com.azure.cosmos.models.SqlQuerySpec;
-import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.azure.cosmos.CosmosDbApi;
-import org.eclipse.edc.azure.cosmos.CosmosDocument;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
-import org.eclipse.edc.connector.store.azure.cosmos.policydefinition.model.PolicyDocument;
-import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.persistence.EdcPersistenceException;
+import org.eclipse.edc.connector.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
+import org.eclipse.edc.connector.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
+import org.eclipse.edc.connector.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.query.SortOrder;
-import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.SqlQueryExecutor;
+import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
+import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.connector.store.azure.cosmos.policydefinition.TestFunctions.generateDocument;
-import static org.eclipse.edc.connector.store.azure.cosmos.policydefinition.TestFunctions.generatePolicy;
+import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicy;
+import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicyBuilder;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
-import static org.eclipse.edc.spi.result.StoreFailure.Reason.NOT_FOUND;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
-class CosmosPolicyDefinitionStoreTest {
-    private static final String TEST_PART_KEY = "test_part_key";
-    private CosmosPolicyDefinitionStore store;
-    private CosmosDbApi cosmosDbApiMock;
+@ComponentTest
+@ExtendWith(EdcExtension.class)
+class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
+
+    private final PostgresDialectStatements statements = new PostgresDialectStatements();
+    private SqlPolicyDefinitionStore sqlPolicyStore;
+    private DataSource dataSource;
+    private NoopTransactionContext transactionContext;
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
+
 
     @BeforeEach
-    void setup() {
-        cosmosDbApiMock = mock(CosmosDbApi.class);
-        var typeManager = new TypeManager();
-        var retryPolicy = RetryPolicy.ofDefaults();
-        store = new CosmosPolicyDefinitionStore(cosmosDbApiMock, typeManager, retryPolicy, TEST_PART_KEY, mock(Monitor.class));
+    void setUp() {
+        var statements = new PostgresDialectStatements();
+        var manager = new TypeManager();
+
+        manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
+
+        dataSource = CosmosPostgresFunctions.createDataSource();
+        var dsName = "test-ds";
+        var reg = new DefaultDataSourceRegistry();
+        reg.register(dsName, dataSource);
+
+        System.setProperty("edc.datasource.policy.name", dsName);
+
+        transactionContext = new NoopTransactionContext();
+
+        sqlPolicyStore = new SqlPolicyDefinitionStore(reg, dsName, transactionContext, manager.getMapper(), statements, queryExecutor);
+
+        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
+        runQuery(schema);
+    }
+
+    @AfterEach
+    void tearDown() {
+        runQuery("DROP TABLE " + statements.getPolicyTable() + " CASCADE");
     }
 
     @Test
-    void findAll() {
-        var doc1 = generateDocument(TEST_PART_KEY);
-        var doc2 = generateDocument(TEST_PART_KEY);
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(Stream.of(doc1, doc2));
+    void find_queryByProperty_notExist() {
+        var policy = createPolicyBuilder("test-policy")
+                .assigner("test-assigner")
+                .assignee("test-assignee")
+                .build();
 
-        var all = store.findAll(QuerySpec.none());
+        var policyDef1 = PolicyDefinition.Builder.newInstance().id("test-policy").policy(policy).build();
+        getPolicyDefinitionStore().create(policyDef1);
 
-        assertThat(all).hasSize(2).containsExactlyInAnyOrder(doc1.getWrappedInstance(), doc2.getWrappedInstance());
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
+        // query by prohibition assignee
+        var querySpec = QuerySpec.Builder.newInstance().filter(criterion("notexist", "=", "foobar")).build();
+        assertThatThrownBy(() -> getPolicyDefinitionStore().findAll(querySpec))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("Translation failed for Model");
     }
 
     @Test
-    void findAll_noReload() {
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(Stream.empty());
+    void findAll_sorting_nonExistentProperty() {
 
-        var all = store.findAll(QuerySpec.none());
-        assertThat(all).isEmpty();
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
+        IntStream.range(0, 10).mapToObj(i -> createPolicy("test-policy")).forEach((d) -> getPolicyDefinitionStore().create(d));
+        var query = QuerySpec.Builder.newInstance().sortField("notexist").sortOrder(SortOrder.DESC).build();
+        assertThatThrownBy(() -> getPolicyDefinitionStore().findAll(query))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("Translation failed for Model");
+
     }
 
-    @Test
-    void save() {
-        var captor = ArgumentCaptor.forClass(CosmosDocument.class);
-        doNothing().when(cosmosDbApiMock).createItem(captor.capture());
-        var definition = generatePolicy();
-
-        store.create(definition);
-
-        assertThat(captor.getValue().getWrappedInstance()).isEqualTo(definition);
-        verify(cosmosDbApiMock).createItem(captor.capture());
+    @Override
+    protected SqlPolicyDefinitionStore getPolicyDefinitionStore() {
+        return sqlPolicyStore;
     }
 
-    @Test
-    void save_verifyWriteThrough() {
-        var captor = ArgumentCaptor.forClass(PolicyDocument.class);
-        doNothing().when(cosmosDbApiMock).createItem(captor.capture());
-        var definition = generatePolicy();
-
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(IntStream.range(0, 1).mapToObj((i) -> captor.getValue()));
-
-        store.create(definition); //should write through the cache
-
-        var all = store.findAll(QuerySpec.none());
-
-        assertThat(all).isNotEmpty().containsExactlyInAnyOrder(captor.getValue().getWrappedInstance());
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
-        verify(cosmosDbApiMock).createItem(captor.capture());
+    @Override
+    protected boolean supportCollectionQuery() {
+        return true;
     }
 
-    @Test
-    void update() {
-        var captor = ArgumentCaptor.forClass(CosmosDocument.class);
-        doNothing().when(cosmosDbApiMock).createItem(captor.capture());
-        var definition = generatePolicy();
-
-        store.create(definition);
-
-        assertThat(captor.getValue().getWrappedInstance()).isEqualTo(definition);
-        verify(cosmosDbApiMock).createItem(captor.capture());
+    @Override
+    protected boolean supportCollectionIndexQuery() {
+        return false;
     }
 
-    @Test
-    void deleteById_whenMissing_returnsNull() {
-        when(cosmosDbApiMock.deleteItem(any())).thenThrow(new NotFoundException());
-        var contractDefinition = store.delete("some-id");
-        assertThat(contractDefinition).isNotNull().extracting(StoreResult::reason).isEqualTo(NOT_FOUND);
-        verify(cosmosDbApiMock).deleteItem(notNull());
+    @Override
+    protected Boolean supportSortOrder() {
+        return true;
     }
 
-    @Test
-    void delete_whenContractDefinitionPresent_deletes() {
-        var contractDefinition = generatePolicy();
-        var document = new PolicyDocument(contractDefinition, TEST_PART_KEY);
-        when(cosmosDbApiMock.deleteItem(document.getId())).thenReturn(document);
-
-        var deletedDefinition = store.delete(document.getId());
-        assertThat(deletedDefinition.succeeded()).isTrue();
-        assertThat(deletedDefinition.getContent()).isEqualTo(contractDefinition);
-    }
-
-    @Test
-    void delete_whenCosmoDbApiThrows_throws() {
-        var id = "some-id";
-        when(cosmosDbApiMock.deleteItem(id)).thenThrow(new EdcPersistenceException("Something went wrong"));
-        assertThatThrownBy(() -> store.delete(id)).isInstanceOf(EdcPersistenceException.class);
-    }
-
-    @Test
-    void findAll_noQuerySpec() {
-
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(IntStream.range(0, 10).mapToObj(i -> generateDocument(TEST_PART_KEY)));
-
-        var all = store.findAll(QuerySpec.Builder.newInstance().build());
-        assertThat(all).hasSize(10);
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
-        verifyNoMoreInteractions(cosmosDbApiMock);
-    }
-
-    @Test
-    void findAll_verifyFiltering() {
-        var doc = generateDocument(TEST_PART_KEY);
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(Stream.of(doc));
-        store.reload();
-        var query = QuerySpec.Builder.newInstance().filter(criterion("id", "=", doc.getId())).build();
-
-        var all = store.findAll(query);
-
-        assertThat(all).hasSize(1).extracting(PolicyDefinition::getUid).containsOnly(doc.getId());
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
-        verifyNoMoreInteractions(cosmosDbApiMock);
-    }
-
-    @Test
-    void findAll_verifyFiltering_invalidFilterExpression() {
-        var querySpec = QuerySpec.Builder.newInstance().filter(criterion("something", "foobar", "other")).build();
-
-        assertThatThrownBy(() -> store.findAll(querySpec)).isInstanceOfAny(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findAll_verifySorting_asc() {
-        var stream = IntStream.range(0, 10).mapToObj(i -> generateDocument(TEST_PART_KEY)).sorted(Comparator.comparing(PolicyDocument::getId).reversed()).map(Object.class::cast);
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(stream);
-        store.reload();
-
-        var all = store.findAll(QuerySpec.Builder.newInstance().sortField("id").sortOrder(SortOrder.DESC).build()).collect(Collectors.toList());
-        assertThat(all).hasSize(10).isSortedAccordingTo((c1, c2) -> c2.getUid().compareTo(c1.getUid()));
-
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
-        verifyNoMoreInteractions(cosmosDbApiMock);
-    }
-
-    @Test
-    void findAll_verifySorting_desc() {
-        var stream = IntStream.range(0, 10).mapToObj(i -> generateDocument(TEST_PART_KEY)).sorted(Comparator.comparing(PolicyDocument::getId)).map(Object.class::cast);
-        when(cosmosDbApiMock.queryItems(any(SqlQuerySpec.class))).thenReturn(stream);
-        store.reload();
-
-        var all = store.findAll(QuerySpec.Builder.newInstance().sortField("id").sortOrder(SortOrder.ASC).build()).collect(Collectors.toList());
-        assertThat(all).hasSize(10).isSortedAccordingTo(Comparator.comparing(PolicyDefinition::getUid));
-
-        verify(cosmosDbApiMock).queryItems(any(SqlQuerySpec.class));
-        verifyNoMoreInteractions(cosmosDbApiMock);
-    }
-
-    @Test
-    void findAll_verifySorting_invalidField() {
-        when(cosmosDbApiMock.queryItems(isA(SqlQuerySpec.class))).thenReturn(Stream.empty());
-
-        assertThat(store.findAll(QuerySpec.Builder.newInstance().sortField("nonexist").sortOrder(SortOrder.DESC).build())).isEmpty();
+    private void runQuery(String schema) {
+        try (var connection = dataSource.getConnection()) {
+            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

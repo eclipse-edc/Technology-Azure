@@ -70,7 +70,7 @@ include(":extensions:registration-service:participant-store-cosmos")
 // system test modules
 include(":system-tests:azure-data-factory-tests")
 include(":system-tests:azure-tests")
-include(":system-tests:e2e-transfer-test:control-plane-cosmosdb")
+//include(":system-tests:e2e-transfer-test:control-plane-cosmosdb")
 include(":system-tests:e2e-transfer-test:control-plane")
 include(":system-tests:e2e-transfer-test:runner")
 include(":system-tests:tests")

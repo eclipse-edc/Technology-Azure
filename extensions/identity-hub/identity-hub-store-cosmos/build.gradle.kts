@@ -19,7 +19,7 @@ plugins {
 dependencies {
     testImplementation(libs.edc.ih.spi.store)
 
-
+    testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(project(":extensions:common:azure:azure-test"))
     testImplementation(libs.edc.sql.core)
     testImplementation(libs.edc.sql.identityhub.store)

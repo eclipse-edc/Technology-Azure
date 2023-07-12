@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.policydefinition;
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
@@ -40,6 +39,7 @@ import java.sql.SQLException;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicy;
 import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicyBuilder;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
@@ -61,7 +61,7 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
 
         manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);

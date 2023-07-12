@@ -14,19 +14,14 @@
 
 package org.eclipse.edc.test.e2e;
 
-import com.azure.cosmos.CosmosDatabase;
-import com.azure.cosmos.models.CosmosDatabaseResponse;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.azure.cosmos.CosmosDbApiImpl;
-import org.eclipse.edc.azure.testfixtures.CosmosTestClient;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.contract.spi.ContractId;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.spi.EdcException;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -36,7 +31,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.json.Json.createArrayBuilder;
@@ -57,6 +51,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 @AzureCosmosDbIntegrationTest
+@Disabled
 class EndToEndTransferCosmosDbTest {
 
     protected static final Participant CONSUMER = new Participant("consumer", "urn:connector:consumer");
@@ -107,41 +102,41 @@ class EndToEndTransferCosmosDbTest {
                 }
             }
     );
-    private static CosmosDatabase database;
+    //    private static CosmosDatabase database;
     protected final Duration timeout = Duration.ofSeconds(60);
 
-    @BeforeAll
-    static void beforeAll() {
-        var client = CosmosTestClient.createClient();
-        var response = client.createDatabaseIfNotExists(E2E_TEST_NAME);
-        database = client.getDatabase(response.getProperties().getId());
-
-        Stream.of("provider", "consumer")
-                .flatMap(str -> Stream.of(
-                        str + "-assetindex",
-                        str + "-contractdefinitionstore",
-                        str + "-contractnegotiationstore",
-                        str + "-nodedirectory",
-                        str + "-policystore",
-                        str + "-transfer-process-store"))
-
-                .map(name -> database.createContainerIfNotExists(name, "/partitionKey"))
-                .map(r -> database.getContainer(r.getProperties().getId()))
-                .forEach(container -> {
-                    var api = new CosmosDbApiImpl(container, false);
-                    api.uploadStoredProcedure("nextForState");
-                    api.uploadStoredProcedure("lease");
-                });
-
-    }
-
-    @AfterAll
-    static void cleanup() {
-        if (database != null) {
-            CosmosDatabaseResponse delete = database.delete();
-            assertThat(delete.getStatusCode()).isGreaterThanOrEqualTo(200).isLessThan(300);
-        }
-    }
+//    @BeforeAll
+//    static void beforeAll() {
+//        var client = CosmosTestClient.createClient();
+//        var response = client.createDatabaseIfNotExists(E2E_TEST_NAME);
+//        database = client.getDatabase(response.getProperties().getId());
+//
+//        Stream.of("provider", "consumer")
+//                .flatMap(str -> Stream.of(
+//                        str + "-assetindex",
+//                        str + "-contractdefinitionstore",
+//                        str + "-contractnegotiationstore",
+//                        str + "-nodedirectory",
+//                        str + "-policystore",
+//                        str + "-transfer-process-store"))
+//
+//                .map(name -> database.createContainerIfNotExists(name, "/partitionKey"))
+//                .map(r -> database.getContainer(r.getProperties().getId()))
+//                .forEach(container -> {
+//                    var api = new CosmosDbApiImpl(container, false);
+//                    api.uploadStoredProcedure("nextForState");
+//                    api.uploadStoredProcedure("lease");
+//                });
+//
+//    }
+//
+//    @AfterAll
+//    static void cleanup() {
+//        if (database != null) {
+//            CosmosDatabaseResponse delete = database.delete();
+//            assertThat(delete.getStatusCode()).isGreaterThanOrEqualTo(200).isLessThan(300);
+//        }
+//    }
 
     @Test
     void httpPullDataTransfer() {

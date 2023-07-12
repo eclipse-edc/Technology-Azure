@@ -15,12 +15,10 @@
 package org.eclipse.edc.connector.store.azure.cosmos.assetindex;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
@@ -34,8 +32,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.sql.SQLException;
 import javax.sql.DataSource;
+import java.sql.SQLException;
+
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
@@ -53,7 +53,7 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
 
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         reg.register(dsName, dataSource);
 
         System.setProperty("edc.datasource.asset.name", dsName);

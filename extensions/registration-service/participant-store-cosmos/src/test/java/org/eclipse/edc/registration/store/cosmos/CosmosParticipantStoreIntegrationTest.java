@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.registration.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.registration.spi.model.Participant;
 import org.eclipse.edc.registration.store.spi.ParticipantStore;
@@ -36,6 +35,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 import static org.eclipse.edc.registration.spi.model.ParticipantStatus.AUTHORIZED;
 import static org.eclipse.edc.registration.store.spi.TestUtils.createParticipant;
@@ -54,7 +54,7 @@ class CosmosParticipantStoreIntegrationTest extends ParticipantStoreTestBase {
 
         var manager = new TypeManager();
         manager.registerTypes(Participant.class);
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);

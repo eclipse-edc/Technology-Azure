@@ -15,14 +15,12 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation;
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.contract.spi.ContractId;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions;
 import org.eclipse.edc.connector.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
 import org.eclipse.edc.connector.store.sql.contractnegotiation.store.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.Action;
@@ -46,9 +44,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Clock;
@@ -60,6 +55,7 @@ import java.util.stream.IntStream;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContract;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContractBuilder;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createNegotiation;
@@ -78,11 +74,11 @@ import static org.eclipse.edc.spi.query.Criterion.criterion;
 class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBase {
     private static final String TEST_ASSET_ID = "test-asset-id";
     private final Clock clock = Clock.systemUTC();
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     private SqlContractNegotiationStore store;
     private LeaseUtil leaseUtil;
     private DataSource dataSource;
     private NoopTransactionContext transactionContext;
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
 
     @BeforeEach
     void setUp() {
@@ -91,7 +87,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
 
         manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);
@@ -106,7 +102,6 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
         runQuery(schema);
         leaseUtil = new LeaseUtil(transactionContext, this::getConnection, statements, clock);
     }
-
 
 
     @AfterEach

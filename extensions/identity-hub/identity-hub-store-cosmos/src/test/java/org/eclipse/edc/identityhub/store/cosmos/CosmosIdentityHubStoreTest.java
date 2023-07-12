@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.identityhub.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStore;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStoreTestBase;
@@ -34,6 +33,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 public class CosmosIdentityHubStoreTest extends IdentityHubStoreTestBase {
@@ -46,7 +47,7 @@ public class CosmosIdentityHubStoreTest extends IdentityHubStoreTestBase {
     void setUp() {
         var statements = new BaseSqlIdentityHubStatements();
         var typeManager = new TypeManager();
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);

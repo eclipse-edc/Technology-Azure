@@ -15,7 +15,6 @@
 package org.eclipse.edc.connector.store.azure.cosmos.contractdefinition;
 
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
 import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.ContractDefinitionStoreTestBase;
@@ -23,7 +22,6 @@ import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.TestFunct
 import org.eclipse.edc.connector.store.sql.contractdefinition.SqlContractDefinitionStore;
 import org.eclipse.edc.connector.store.sql.contractdefinition.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.store.sql.contractdefinition.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.annotations.ComponentTest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
@@ -48,17 +46,17 @@ import java.util.List;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
 class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBase {
 
     private final BaseSqlDialectStatements statements = new PostgresDialectStatements();
-
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     private SqlContractDefinitionStore sqlContractDefinitionStore;
     private DataSource dataSource;
     private TransactionContext transactionContext;
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
 
     @BeforeEach
     void setUp() {
@@ -68,7 +66,7 @@ class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBas
 
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         reg.register(dsName, dataSource);
 
         System.setProperty("edc.datasource.contractdefinition.name", dsName);

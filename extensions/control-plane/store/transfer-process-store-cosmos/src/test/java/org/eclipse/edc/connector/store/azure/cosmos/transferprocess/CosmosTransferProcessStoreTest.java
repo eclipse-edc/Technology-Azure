@@ -1,7 +1,7 @@
 package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
+import org.awaitility.Awaitility;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
@@ -10,7 +10,6 @@ import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TransferProcess
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResourceSet;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceManifest;
 import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -37,9 +36,14 @@ import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createDataRequest;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcess;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcessBuilder;
+import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.INITIAL;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
+import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
+import static org.hamcrest.Matchers.hasSize;
 
 @AzureCosmosDbIntegrationTest
 @ExtendWith(EdcExtension.class)
@@ -61,18 +65,17 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
 
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);
 
-        System.setProperty("edc.datasource.contractnegotiation.name", dsName);
+        System.setProperty("edc.datasource.transferprocess.name", dsName);
 
         transactionContext = new NoopTransactionContext();
-        leaseUtil = new LeaseUtil(transactionContext, this::getConnection, statements, clock);
         store = new SqlTransferProcessStore(reg, dsName, transactionContext, typeManager.getMapper(), statements, "test-connector", clock, queryExecutor);
 
-        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
+        var schema = getResourceFileContentAsString("schema.sql");
         runQuery(schema);
         leaseUtil = new LeaseUtil(transactionContext, this::getConnection, statements, clock);
     }
@@ -180,6 +183,19 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
                 .dataRequest(null)
                 .build();
         assertThatIllegalArgumentException().isThrownBy(() -> getTransferProcessStore().updateOrCreate(t1));
+    }
+
+
+    @Test
+    void nextNotLeased_expiredLease() {
+        var t = createTransferProcess("id1", INITIAL);
+        getTransferProcessStore().updateOrCreate(t);
+
+        lockEntity(t.getId(), CONNECTOR_NAME, Duration.ofMillis(100));
+
+        Awaitility.await().atLeast(Duration.ofMillis(100))
+                .atMost(Duration.ofMillis(5000)) //this is different from the superclass - with the connection to cosmos it may take longer than 500ms
+                .until(() -> getTransferProcessStore().nextNotLeased(10, hasState(INITIAL.code())), hasSize(1));
     }
 
     @Override

@@ -19,6 +19,7 @@ plugins {
 dependencies {
     testRuntimeOnly(libs.edc.rs.spi.store)
     testImplementation(project(":extensions:common:azure:azure-test"))
+    testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(libs.edc.sql.core)
     testImplementation(libs.edc.sql.participant.store)
     testImplementation(testFixtures(libs.edc.rs.spi.store))

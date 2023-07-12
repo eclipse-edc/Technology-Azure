@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.connector.dataplane.store.cosmos;
 
-import org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
@@ -36,6 +35,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.Clock;
 
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @AzureCosmosDbIntegrationTest
@@ -57,7 +57,7 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneStoreTestBase {
 
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        dataSource = CosmosPostgresFunctions.createDataSource();
+        dataSource = createDataSource();
         var dsName = "test-ds";
         var reg = new DefaultDataSourceRegistry();
         reg.register(dsName, dataSource);

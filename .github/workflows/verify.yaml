@@ -29,16 +29,16 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
 
-  Check-Cosmos-Key:
+  Check-PG-ConnectionString:
     runs-on: ubuntu-latest
     outputs:
-      has-cosmos-key: ${{ steps.has-cosmos-key.outputs.has_cosmos_key }}
+      has-pg-connectionstring: ${{ steps.has-pg-connectionstring.outputs.has-pg-connectionstring }}
     steps:
-      - name: Check if COSMOS_KEY secret exists
-        id: has-cosmos-key
+      - name: Check if PG_CONNECTION_STRING secret exists
+        id: has-pg-connectionstring
         run: |
-          [ ! -z "${{ secrets.COSMOS_KEY }}" ]  &&
-          echo "has_cosmos_key=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.PG_CONNECTION_STRING }}" ]  &&
+          echo "has-pg-connectionstring=true" >> $GITHUB_OUTPUT
           exit 0
 
 
@@ -76,22 +76,14 @@ jobs:
           command: |
             ./gradlew test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
 
-
-
-  
-
-
-
-
   Azure-CosmosDB-Integration-Tests:
-    # run only if COSMOS_KEY is present
-    needs: [ Check-Cosmos-Key ]
-    if: needs.Check-Cosmos-Key.outputs.has-cosmos-key == 'true'
+    # run only if PG_CONNECTION_STRING is present
+    needs: [ Check-PG-ConnectionString ]
+    if: needs.Check-PG-ConnectionString.outputs.has-pg-connectionstring == 'true'
     runs-on: ubuntu-latest
 
     env:
-      COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
-      COSMOS_URL: ${{ secrets.COSMOS_URL }}
+      PG_CONNECTION_STRING: ${{ secrets.PG_CONNECTION_STRING }}
 
     steps:
       - uses: actions/checkout@v3
@@ -100,7 +92,7 @@ jobs:
       - name: Azure CosmosDB Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest"
+          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest" --no-parallel
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:

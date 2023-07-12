@@ -20,7 +20,7 @@ plugins {
 dependencies {
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
-    testImplementation(testFixtures(project(":extensions:common:azure:azure-cosmos-core")))
+//    testImplementation(testFixtures(project(":extensions:common:azure:azure-cosmos-core")))
     testImplementation(libs.edc.junit)
     testImplementation(libs.edc.jsonld)
     testImplementation(libs.jakartaJson)
@@ -35,7 +35,7 @@ dependencies {
 
     testCompileOnly(project(":system-tests:e2e-transfer-test:backend-service"))
     testCompileOnly(project(":system-tests:e2e-transfer-test:control-plane"))
-    testCompileOnly(project(":system-tests:e2e-transfer-test:control-plane-cosmosdb"))
+//    testCompileOnly(project(":system-tests:e2e-transfer-test:control-plane-cosmosdb"))
     testCompileOnly(project(":system-tests:e2e-transfer-test:data-plane"))
 }
 

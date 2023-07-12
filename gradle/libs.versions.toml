@@ -10,7 +10,6 @@ failsafe = "3.3.1"
 httpMockServer = "5.15.0"
 jakarta-json = "2.0.1"
 junit = "5.9.3"
-junit-platform = "1.9.3"
 mockito = "5.2.0"
 nimbus = "9.31"
 openTelemetry = "1.18.0"
@@ -97,7 +96,6 @@ jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-js
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-jupiter-suite = { module = "org.junit.platform:junit-platform-suite", version.ref = "junit-platform" }
 edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
 mockserver-client = { module = "org.mock-server:mockserver-client-java", version.ref = "httpMockServer" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "httpMockServer" }

@@ -20,10 +20,10 @@ plugins {
 
 dependencies {
     api(libs.edc.controlplane.spi)
+    testFixturesApi(libs.postgres)
 
     testFixturesApi(libs.edc.util)
     testFixturesApi(libs.edc.junit)
-    testFixturesApi(libs.azure.cosmos)
     testFixturesApi(libs.azure.storageblob)
     testFixturesApi(libs.junit.jupiter.api)
 }

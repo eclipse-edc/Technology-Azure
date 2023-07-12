@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020, 2021 Microsoft Corporation
+ *  Copyright (c) 2023 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -8,210 +8,79 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Microsoft Corporation - initial API and implementation
+ *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
  *
  */
 
 package org.eclipse.edc.connector.store.azure.cosmos.assetindex;
 
-import com.azure.cosmos.implementation.NotFoundException;
-import com.azure.cosmos.models.SqlQuerySpec;
-import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.azure.cosmos.CosmosDbApi;
-import org.eclipse.edc.connector.store.azure.cosmos.assetindex.model.AssetDocument;
-import org.eclipse.edc.junit.matchers.PredicateMatcher;
-import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.query.SortOrder;
-import org.eclipse.edc.spi.result.StoreResult;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresDatasource;
+import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
+import org.eclipse.edc.connector.store.sql.assetindex.schema.BaseSqlDialectStatements;
+import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.junit.annotations.ComponentTest;
+import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
+import org.eclipse.edc.spi.testfixtures.asset.AssetIndexTestBase;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.asset.Asset;
-import org.jetbrains.annotations.NotNull;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.SqlQueryExecutor;
+import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
+import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.eclipse.edc.spi.query.Criterion.criterion;
-import static org.eclipse.edc.spi.result.StoreFailure.Reason.NOT_FOUND;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-class CosmosAssetIndexTest {
-
-    private static final String TEST_PARTITION_KEY = "test-partition-key";
-    private static final String TEST_ID = "id-test";
-    private CosmosDbApi api;
-    private TypeManager typeManager;
-    private RetryPolicy<Object> retryPolicy;
-    private CosmosAssetIndex assetIndex;
-
-    private static AssetDocument createDocument(String id) {
-        return new AssetDocument(Asset.Builder.newInstance().id(id).build(), "partitionkey-test", null);
-    }
+@ComponentTest
+@ExtendWith(EdcExtension.class)
+public class CosmosAssetIndexTest extends AssetIndexTestBase {
+    private final BaseSqlDialectStatements sqlStatements = new PostgresDialectStatements();
+    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
+    private SqlAssetIndex sqlAssetIndex;
+    private NoopTransactionContext transactionContext;
+    private DataSource dataSource;
 
     @BeforeEach
-    public void setUp() {
-        typeManager = new TypeManager();
-        typeManager.registerTypes(AssetDocument.class, Asset.class);
-        retryPolicy = RetryPolicy.builder().withMaxRetries(1).build();
-        api = mock(CosmosDbApi.class);
-        assetIndex = new CosmosAssetIndex(api, TEST_PARTITION_KEY, typeManager, retryPolicy, mock(Monitor.class));
+    void setUp() {
+        var typeManager = new TypeManager();
+        typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
+
+        var dsName = "test-ds";
+        var reg = new DefaultDataSourceRegistry();
+        dataSource = CosmosPostgresDatasource.create();
+        reg.register(dsName, dataSource);
+
+        System.setProperty("edc.datasource.asset.name", dsName);
+
+        transactionContext = new NoopTransactionContext();
+        sqlAssetIndex = new SqlAssetIndex(reg, dsName, transactionContext, new ObjectMapper(), sqlStatements, queryExecutor);
+
+        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
+        runQuery(schema);
     }
 
-    @Test
-    void inputValidation() {
-        // null cosmos api
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new CosmosAssetIndex(null, TEST_PARTITION_KEY, null, retryPolicy, mock(Monitor.class)));
-
-        // type manager is null
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new CosmosAssetIndex(api, TEST_PARTITION_KEY, null, retryPolicy, mock(Monitor.class)));
-
-        // retry policy is null
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new CosmosAssetIndex(api, TEST_PARTITION_KEY, typeManager, null, mock(Monitor.class)));
+    @AfterEach
+    void tearDown() {
+        runQuery("DROP TABLE " + sqlStatements.getAssetTable() + " CASCADE");
+        runQuery("DROP TABLE " + sqlStatements.getDataAddressTable() + " CASCADE");
+        runQuery("DROP TABLE " + sqlStatements.getAssetPropertyTable() + " CASCADE");
     }
 
-    @Test
-    void findById() {
-
-        AssetDocument document = createDocument(TEST_ID);
-        when(api.queryItemById(TEST_ID)).thenReturn(document);
-
-        Asset actualAsset = assetIndex.findById(TEST_ID);
-
-        assertThat(actualAsset.getProperties()).isEqualTo(document.getWrappedAsset().getProperties());
-        verify(api).queryItemById(TEST_ID);
+    @Override
+    protected SqlAssetIndex getAssetIndex() {
+        return sqlAssetIndex;
     }
 
-    @Test
-    void findByIdThrowEdcException() {
-        String id = "id-test";
-        when(api.queryItemById(eq(id)))
-                .thenThrow(new EdcException("Failed to fetch object"))
-                .thenThrow(new EdcException("Failed again to find object"));
-
-        assertThatExceptionOfType(EdcException.class).isThrownBy(() -> assetIndex.findById(id));
-        verify(api, atLeastOnce()).queryItemById(eq(id));
-        verifyNoMoreInteractions(api);
+    private void runQuery(String schema) {
+        try (var connection = dataSource.getConnection()) {
+            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    @Test
-    void findByIdReturnsNull() {
-        String id = "id-test";
-        when(api.queryItemById(eq(id))).thenReturn(null);
-
-        Asset actualAsset = assetIndex.findById(id);
-
-        assertThat(actualAsset).isNull();
-        verify(api).queryItemById(eq(id));
-        verifyNoMoreInteractions(api);
-    }
-
-    @Test
-    void findAll_noQuerySpec() {
-        AssetDocument document = createDocument(TEST_ID);
-        var expectedQuery = "SELECT * FROM AssetDocument OFFSET 0 LIMIT 50";
-        when(api.queryItems(argThat(queryMatches(expectedQuery)))).thenReturn(Stream.of(document));
-
-        List<Asset> assets = assetIndex.queryAssets(QuerySpec.none()).collect(Collectors.toList());
-
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
-        verify(api).queryItems(any(SqlQuerySpec.class));
-    }
-
-    @Test
-    void findAll_withPaging_SortingDesc() {
-        AssetDocument document = createDocument(TEST_ID);
-        var expectedQuery = "SELECT * FROM AssetDocument ORDER BY AssetDocument.wrappedInstance.anyField DESC OFFSET 5 LIMIT 100";
-        when(api.queryItems(argThat(queryMatches(expectedQuery)))).thenReturn(Stream.of(document));
-
-        List<Asset> assets = assetIndex.queryAssets(QuerySpec.Builder.newInstance()
-                        .offset(5)
-                        .limit(100)
-                        .sortField("anyField")
-                        .sortOrder(SortOrder.DESC)
-                        .build())
-                .collect(Collectors.toList());
-
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
-        verify(api).queryItems(any(SqlQuerySpec.class));
-    }
-
-    @Test
-    void findAll_withPaging_SortingAsc() {
-        AssetDocument document = createDocument(TEST_ID);
-        var expectedQuery = "SELECT * FROM AssetDocument ORDER BY AssetDocument.wrappedInstance.anyField ASC OFFSET 5 LIMIT 100";
-        when(api.queryItems(argThat(queryMatches(expectedQuery)))).thenReturn(Stream.of(document));
-
-        List<Asset> assets = assetIndex.queryAssets(QuerySpec.Builder.newInstance()
-                        .offset(5)
-                        .limit(100)
-                        .sortField("anyField")
-                        .sortOrder(SortOrder.ASC)
-                        .build())
-                .collect(Collectors.toList());
-
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
-        verify(api).queryItems(any(SqlQuerySpec.class));
-    }
-
-    @Test
-    void findAll_withFiltering() {
-        AssetDocument document = createDocument(TEST_ID);
-        var expectedQuery = "SELECT * FROM AssetDocument WHERE AssetDocument.wrappedInstance.someField = @someField OFFSET 5 LIMIT 100";
-        when(api.queryItems(argThat(queryMatches(expectedQuery)))).thenReturn(Stream.of(document));
-
-        List<Asset> assets = assetIndex.queryAssets(QuerySpec.Builder.newInstance()
-                        .offset(5)
-                        .limit(100)
-                        .filter(criterion("someField", "=", "randomValue"))
-                        .build())
-                .collect(Collectors.toList());
-
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
-        verify(api).queryItems(any(SqlQuerySpec.class));
-    }
-
-    @Test
-    void deleteById_whenPresent_deletesItem() {
-        AssetDocument document = createDocument(TEST_ID);
-        when(api.deleteItem(TEST_ID)).thenReturn(document);
-
-        var deletedAsset = assetIndex.deleteById(TEST_ID);
-        assertThat(deletedAsset.succeeded()).isTrue();
-        assertThat(deletedAsset.getContent().getProperties()).isEqualTo(document.getWrappedAsset().getProperties());
-        verify(api).deleteItem(TEST_ID);
-    }
-
-    @Test
-    void deleteById_whenMissing_returnsNotFound() {
-        var id = "not-exists";
-        when(api.deleteItem(id)).thenThrow(new NotFoundException());
-        assertThat(assetIndex.deleteById(id)).isNotNull()
-                .extracting(StoreResult::reason).isEqualTo(NOT_FOUND);
-    }
-
-    @NotNull
-    private PredicateMatcher<SqlQuerySpec> queryMatches(String expectedQuery) {
-        return new PredicateMatcher<>(sqlQuerySpec -> sqlQuerySpec.getQueryText().equals(expectedQuery));
-    }
-
 }

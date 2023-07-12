@@ -105,38 +105,38 @@ class EndToEndTransferCosmosDbTest {
     //    private static CosmosDatabase database;
     protected final Duration timeout = Duration.ofSeconds(60);
 
-//    @BeforeAll
-//    static void beforeAll() {
-//        var client = CosmosTestClient.createClient();
-//        var response = client.createDatabaseIfNotExists(E2E_TEST_NAME);
-//        database = client.getDatabase(response.getProperties().getId());
-//
-//        Stream.of("provider", "consumer")
-//                .flatMap(str -> Stream.of(
-//                        str + "-assetindex",
-//                        str + "-contractdefinitionstore",
-//                        str + "-contractnegotiationstore",
-//                        str + "-nodedirectory",
-//                        str + "-policystore",
-//                        str + "-transfer-process-store"))
-//
-//                .map(name -> database.createContainerIfNotExists(name, "/partitionKey"))
-//                .map(r -> database.getContainer(r.getProperties().getId()))
-//                .forEach(container -> {
-//                    var api = new CosmosDbApiImpl(container, false);
-//                    api.uploadStoredProcedure("nextForState");
-//                    api.uploadStoredProcedure("lease");
-//                });
-//
-//    }
-//
-//    @AfterAll
-//    static void cleanup() {
-//        if (database != null) {
-//            CosmosDatabaseResponse delete = database.delete();
-//            assertThat(delete.getStatusCode()).isGreaterThanOrEqualTo(200).isLessThan(300);
-//        }
-//    }
+    //    @BeforeAll
+    //    static void beforeAll() {
+    //        var client = CosmosTestClient.createClient();
+    //        var response = client.createDatabaseIfNotExists(E2E_TEST_NAME);
+    //        database = client.getDatabase(response.getProperties().getId());
+    //
+    //        Stream.of("provider", "consumer")
+    //                .flatMap(str -> Stream.of(
+    //                        str + "-assetindex",
+    //                        str + "-contractdefinitionstore",
+    //                        str + "-contractnegotiationstore",
+    //                        str + "-nodedirectory",
+    //                        str + "-policystore",
+    //                        str + "-transfer-process-store"))
+    //
+    //                .map(name -> database.createContainerIfNotExists(name, "/partitionKey"))
+    //                .map(r -> database.getContainer(r.getProperties().getId()))
+    //                .forEach(container -> {
+    //                    var api = new CosmosDbApiImpl(container, false);
+    //                    api.uploadStoredProcedure("nextForState");
+    //                    api.uploadStoredProcedure("lease");
+    //                });
+    //
+    //    }
+    //
+    //    @AfterAll
+    //    static void cleanup() {
+    //        if (database != null) {
+    //            CosmosDatabaseResponse delete = database.delete();
+    //            assertThat(delete.getStatusCode()).isGreaterThanOrEqualTo(200).isLessThan(300);
+    //        }
+    //    }
 
     @Test
     void httpPullDataTransfer() {

@@ -1,5 +1,18 @@
-package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
+/*
+ *  Copyright (c) 2023 Bayerische Motorenwerke Aktiengesellschaft
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Bayerische Motorenwerke Aktiengesellschaft - initial API and implementation
+ *
+ */
 
+package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 import org.awaitility.Awaitility;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
@@ -25,12 +38,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
+import javax.sql.DataSource;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;

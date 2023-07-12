@@ -40,9 +40,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

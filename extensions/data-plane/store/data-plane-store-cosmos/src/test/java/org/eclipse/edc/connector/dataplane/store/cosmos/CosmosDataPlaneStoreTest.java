@@ -31,9 +31,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.Clock;
+import javax.sql.DataSource;
 
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;

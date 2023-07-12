@@ -84,7 +84,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     private final QueryExecutor queryExecutor = new SqlQueryExecutor();
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         var statements = new PostgresDialectStatements();
         var manager = new TypeManager();
 

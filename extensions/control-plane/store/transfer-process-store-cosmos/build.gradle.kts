@@ -17,17 +17,17 @@ plugins {
 }
 
 dependencies {
-    api(project(":extensions:common:azure:azure-cosmos-core"))
     api(libs.edc.spi.transfer)
     api(libs.edc.util)
 
-    implementation(libs.azure.cosmos)
     implementation(libs.failsafe.core)
 
 
+    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.transferprocess)
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
-    testImplementation(testFixtures(project(":extensions:common:azure:azure-cosmos-core")))
     testImplementation(libs.awaitility)
+    testImplementation(testFixtures(libs.edc.sql.lease))
     testImplementation(testFixtures(libs.edc.spi.transfer))
 }
 

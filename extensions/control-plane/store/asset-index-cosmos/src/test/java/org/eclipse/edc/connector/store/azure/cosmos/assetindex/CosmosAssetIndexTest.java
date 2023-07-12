@@ -58,7 +58,7 @@ class CosmosAssetIndexTest {
     private CosmosAssetIndex assetIndex;
 
     private static AssetDocument createDocument(String id) {
-        return new AssetDocument(Asset.Builder.newInstance().id(id).build(), "partitionkey-test", null);
+        return new AssetDocument(Asset.Builder.newInstance().id(id).build(), "partitionkey-test");
     }
 
     @BeforeEach
@@ -93,7 +93,7 @@ class CosmosAssetIndexTest {
 
         Asset actualAsset = assetIndex.findById(TEST_ID);
 
-        assertThat(actualAsset.getProperties()).isEqualTo(document.getWrappedAsset().getProperties());
+        assertThat(actualAsset.getProperties()).isEqualTo(document.getWrappedInstance().getProperties());
         verify(api).queryItemById(TEST_ID);
     }
 
@@ -129,8 +129,8 @@ class CosmosAssetIndexTest {
 
         List<Asset> assets = assetIndex.queryAssets(QuerySpec.none()).collect(Collectors.toList());
 
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
+        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedInstance().getId());
+        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedInstance().getProperties()));
         verify(api).queryItems(any(SqlQuerySpec.class));
     }
 
@@ -148,8 +148,8 @@ class CosmosAssetIndexTest {
                         .build())
                 .collect(Collectors.toList());
 
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
+        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedInstance().getId());
+        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedInstance().getProperties()));
         verify(api).queryItems(any(SqlQuerySpec.class));
     }
 
@@ -167,8 +167,8 @@ class CosmosAssetIndexTest {
                         .build())
                 .collect(Collectors.toList());
 
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
+        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedInstance().getId());
+        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedInstance().getProperties()));
         verify(api).queryItems(any(SqlQuerySpec.class));
     }
 
@@ -185,8 +185,8 @@ class CosmosAssetIndexTest {
                         .build())
                 .collect(Collectors.toList());
 
-        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedAsset().getId());
-        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedAsset().getProperties()));
+        assertThat(assets).hasSize(1).extracting(Asset::getId).containsExactly(document.getWrappedInstance().getId());
+        assertThat(assets).extracting(Asset::getProperties).allSatisfy(m -> assertThat(m).containsAllEntriesOf(document.getWrappedInstance().getProperties()));
         verify(api).queryItems(any(SqlQuerySpec.class));
     }
 
@@ -197,7 +197,7 @@ class CosmosAssetIndexTest {
 
         var deletedAsset = assetIndex.deleteById(TEST_ID);
         assertThat(deletedAsset.succeeded()).isTrue();
-        assertThat(deletedAsset.getContent().getProperties()).isEqualTo(document.getWrappedAsset().getProperties());
+        assertThat(deletedAsset.getContent().getProperties()).isEqualTo(document.getWrappedInstance().getProperties());
         verify(api).deleteItem(TEST_ID);
     }
 

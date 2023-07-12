@@ -36,6 +36,7 @@ class AssetDocumentSerializationTest {
                 .contentType("application/json")
                 .version("123")
                 .property("foo", "bar")
+                .dataAddress(DataAddress.Builder.newInstance().type("testtype").build())
                 .build();
     }
 
@@ -49,7 +50,7 @@ class AssetDocumentSerializationTest {
     void testSerialization() {
         var asset = createAsset();
 
-        var document = new AssetDocument(asset, "partitionkey-test", DataAddress.Builder.newInstance().type("type").build());
+        var document = new AssetDocument(asset, "partitionkey-test");
 
         String s = typeManager.writeValueAsString(document);
 
@@ -69,8 +70,7 @@ class AssetDocumentSerializationTest {
     void testDeserialization() {
         var asset = createAsset();
 
-        var document = new AssetDocument(asset, "partitionkey-test", DataAddress.Builder.newInstance()
-                .type("testtype").build());
+        var document = new AssetDocument(asset, "partitionkey-test");
         String json = typeManager.writeValueAsString(document);
 
         var deserialized = typeManager.readValue(json, AssetDocument.class);

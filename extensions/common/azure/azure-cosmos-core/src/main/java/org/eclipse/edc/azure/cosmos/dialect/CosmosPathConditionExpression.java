@@ -45,15 +45,14 @@ class CosmosPathConditionExpression extends ConditionExpression {
      */
     @Override
     public String toExpressionString() {
-        var operandLeft = CosmosDocument.sanitize(getCriterion().getOperandLeft().toString());
+        var operandLeft = getCriterion().getOperandLeft().toString();
         return objectPrefix != null ?
                 getExpressionWithPrefix(operandLeft) :
                 String.format(" %s %s %s", operandLeft, getCriterion().getOperator(), toValuePlaceholder());
     }
 
-
     private String getExpressionWithPrefix(String operandLeft) {
-        if (hasIllegalCharacters(operandLeft)) {
+        if (hasIllegalCharacters(operandLeft) && !operandLeft.contains("[")) {
             return String.format(" %s[\"%s\"] %s %s", objectPrefix, operandLeft, getCriterion().getOperator(), toValuePlaceholder());
         } else {
             return String.format(" %s.%s %s %s", objectPrefix, operandLeft, getCriterion().getOperator(), toValuePlaceholder());

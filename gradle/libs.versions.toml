@@ -81,6 +81,7 @@ edc-sql-contractnegotiation = { module = "org.eclipse.edc:contract-negotiation-s
 edc-sql-policydefinition = { module = "org.eclipse.edc:policy-definition-store-sql", version.ref = "edc" }
 edc-sql-transferprocess = { module = "org.eclipse.edc:transfer-process-store-sql", version.ref = "edc" }
 edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
+edc-sql-dataplane-instancestore = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 
 # third-party deps
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }

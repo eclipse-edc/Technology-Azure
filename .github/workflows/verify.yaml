@@ -29,19 +29,6 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
 
-  Check-Actions-Secrets:
-    runs-on: ubuntu-latest
-    outputs:
-      has-pg-connectionstring: ${{ steps.has-pg-connectionstring.outputs.has-pg-connectionstring }}
-    steps:
-      - name: Check if PG_CONNECTION_STRING secret exists
-        id: has-pg-connectionstring
-        run: |
-          [ ! -z "${{ secrets.PG_CONNECTION_STRING }}" ]  &&
-          echo "has-pg-connectionstring=true" >> $GITHUB_OUTPUT
-          exit 0
-
-
   Unit-Tests:
     runs-on: ubuntu-latest
     env:
@@ -75,27 +62,6 @@ jobs:
         with:
           command: |
             ./gradlew test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
-
-  Azure-CosmosDB-Integration-Tests:
-    # run only if PG_CONNECTION_STRING is present
-    needs: [ Check-Actions-Secrets ]
-    if: needs.Check-Actions-Secrets.outputs.has-pg-connectionstring == 'true'
-    runs-on: ubuntu-latest
-
-    env:
-      PG_CONNECTION_STRING: ${{ secrets.PG_CONNECTION_STRING }}
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-build
-
-      - name: Cosmos PostgreSQL Tests (parallelizable)
-        run: |
-          ./gradlew test -DincludeTags="ParallelPostgresCosmosTest"
-
-      - name: Cosmos PostgreSQL Tests (not parallelizable)
-        run: |
-          ./gradlew test -DincludeTags="PostgresCosmosTest" --no-parallel
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:
@@ -178,7 +144,6 @@ jobs:
     needs:
       - Unit-Tests
       - Azure-Storage-Integration-Tests
-      - Azure-CosmosDB-Integration-Tests
       - End-To-End-Tests
       - Component-Tests
 

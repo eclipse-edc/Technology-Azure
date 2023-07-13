@@ -1,45 +1,48 @@
 maven/mavencentral/com.apicatalog/titanium-json-ld/1.3.2, Apache-2.0, approved, #8912
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.27.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.27.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.27.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.27.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.27.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.28.0, , restricted, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-datafactory/1.0.0-beta.22, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.27.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.27.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.28.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.28.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.3, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.4, MIT AND Apache-2.0, approved, #7948
+maven/mavencentral/com.azure/azure-core-http-netty/1.13.5, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-management/1.10.2, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core-management/1.11.1, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-core-management/1.11.2, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.37.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.39.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.40.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-core/1.41.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.9.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.0.1, MIT AND Apache-2.0, approved, #7933
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.17.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-security-keyvault-keys/4.6.2, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.2, MIT, approved, #7940
-maven/mavencentral/com.azure/azure-storage-blob/12.22.2, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-storage-common/12.21.1, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-storage-file-share/12.18.1, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-storage-internal-avro/12.7.1, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-security-keyvault-keys/4.6.3, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.3, MIT, approved, #7940
+maven/mavencentral/com.azure/azure-storage-blob/12.23.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-storage-common/12.21.2, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-storage-common/12.22.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-storage-file-share/12.18.2, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-storage-internal-avro/12.8.0, , restricted, clearlydefined
 maven/mavencentral/com.ethlo.time/itu/1.7.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.12.1, Apache-2.0, approved, CQ22965
@@ -162,7 +165,6 @@ maven/mavencentral/commons-io/commons-io/2.11.0, Apache-2.0, approved, CQ23745
 maven/mavencentral/commons-logging/commons-logging/1.1.1, Apache-2.0, approved, CQ1907
 maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ10162
 maven/mavencentral/dev.failsafe/failsafe-okhttp/3.3.2, Apache-2.0, approved, #9178
-maven/mavencentral/dev.failsafe/failsafe/3.3.1, Apache-2.0, approved, #9268
 maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
 maven/mavencentral/info.picocli/picocli/4.6.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.github.classgraph/classgraph/4.8.138, MIT, approved, CQ22530
@@ -170,68 +172,103 @@ maven/mavencentral/io.github.classgraph/classgraph/4.8.154, MIT, approved, CQ225
 maven/mavencentral/io.netty/netty-buffer/4.1.86.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.89.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.91.Final, Apache-2.0, approved, CQ21842
+maven/mavencentral/io.netty/netty-buffer/4.1.93.Final, Apache-2.0, approved, CQ21842
+maven/mavencentral/io.netty/netty-buffer/4.1.94.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-codec-dns/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-dns/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-dns/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-http/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-http/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-http2/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-http2/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-socks/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-common/4.1.86.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
 maven/mavencentral/io.netty/netty-common/4.1.89.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
 maven/mavencentral/io.netty/netty-common/4.1.91.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
+maven/mavencentral/io.netty/netty-common/4.1.93.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
+maven/mavencentral/io.netty/netty-common/4.1.94.Final, Apache-2.0 AND MIT AND CC0-1.0, approved, CQ21843
 maven/mavencentral/io.netty/netty-handler-proxy/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler-proxy/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler-proxy/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-handler-proxy/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-handler-proxy/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-handler/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-handler/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver-dns-classes-macos/4.1.89.Final, Apache-2.0, approved, #6367
 maven/mavencentral/io.netty/netty-resolver-dns-classes-macos/4.1.91.Final, Apache-2.0, approved, #6367
+maven/mavencentral/io.netty/netty-resolver-dns-classes-macos/4.1.93.Final, Apache-2.0, approved, #6367
 maven/mavencentral/io.netty/netty-resolver-dns-native-macos/4.1.89.Final, Apache-2.0, approved, #7004
 maven/mavencentral/io.netty/netty-resolver-dns-native-macos/4.1.91.Final, Apache-2.0, approved, #7004
+maven/mavencentral/io.netty/netty-resolver-dns-native-macos/4.1.93.Final, Apache-2.0, approved, #7004
 maven/mavencentral/io.netty/netty-resolver-dns/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver-dns/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-resolver-dns/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-resolver/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-resolver/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.56.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.59.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
+maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.61.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-classes/2.0.56.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.netty/netty-tcnative-classes/2.0.59.Final, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.netty/netty-tcnative-classes/2.0.61.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.89.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.91.Final, Apache-2.0, approved, #6366
+maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.94.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.89.Final, Apache-2.0, approved, #4107
 maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.91.Final, Apache-2.0, approved, #4107
+maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.94.Final, Apache-2.0, approved, #4107
 maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.89.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.91.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.27.0, Apache-2.0, approved, #9270
+maven/mavencentral/io.netty/netty-transport/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-transport/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.28.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.proto/opentelemetry-proto/0.14.0-alpha, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.18.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-api/1.27.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-api/1.28.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.18.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-context/1.27.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-context/1.28.0, , restricted, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.28, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.31, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.33, , restricted, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.28, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.31, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.33, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor/reactor-core/3.4.27, Apache-2.0, approved, #7517
 maven/mavencentral/io.projectreactor/reactor-core/3.4.29, Apache-2.0, approved, #7517
+maven/mavencentral/io.projectreactor/reactor-core/3.4.30, Apache-2.0, approved, #7517
 maven/mavencentral/io.prometheus/simpleclient/0.16.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.prometheus/simpleclient_common/0.16.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.prometheus/simpleclient_httpserver/0.16.0, Apache-2.0, approved, clearlydefined
@@ -393,7 +430,6 @@ maven/mavencentral/org.eclipse.edc/dsp-transfer-process-api/0.1.4-SNAPSHOT, Apac
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-http-dispatcher/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/dsp-transform/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http-spi/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/http/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -439,6 +475,7 @@ maven/mavencentral/org.eclipse.edc/transfer-process-store-sql/0.1.4-SNAPSHOT, Ap
 maven/mavencentral/org.eclipse.edc/transfer-pull-http-dynamic-receiver/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-pull-http-receiver/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transfer-spi/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/transform-core/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/transform-spi/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/util/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/validator-core/0.1.4-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -512,9 +549,8 @@ maven/mavencentral/org.junit.platform/junit-platform-commons/1.9.2, EPL-2.0, app
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.9.3, EPL-2.0, approved, #3130
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.9.2, EPL-2.0, approved, #3128
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.9.3, EPL-2.0, approved, #3128
-maven/mavencentral/org.junit.platform/junit-platform-launcher/1.9.3, EPL-2.0, approved, #3132
+maven/mavencentral/org.junit.platform/junit-platform-launcher/1.9.2, EPL-2.0, approved, #3132
 maven/mavencentral/org.junit/junit-bom/5.9.2, EPL-2.0, approved, #4711
-maven/mavencentral/org.junit/junit-bom/5.9.3, EPL-2.0, approved, #4711
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.mock-server/mockserver-client-java/5.15.0, Apache-2.0 AND LGPL-3.0-only, approved, #9324
 maven/mavencentral/org.mock-server/mockserver-core/5.15.0, Apache-2.0, approved, clearlydefined

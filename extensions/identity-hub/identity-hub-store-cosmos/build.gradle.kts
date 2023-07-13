@@ -17,12 +17,12 @@ plugins {
 }
 
 dependencies {
-    api(libs.edc.ih.spi.store)
-    api(project(":extensions:common:azure:azure-cosmos-core"))
+    testImplementation(libs.edc.ih.spi.store)
 
-    implementation(libs.failsafe.core)
-    implementation(libs.azure.cosmos)
-
+    testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
+    testImplementation(project(":extensions:common:azure:azure-test"))
+    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.identityhub.store)
     testImplementation(testFixtures(libs.edc.ih.spi.store))
     testImplementation(testFixtures(libs.edc.ext.azure.test))
 

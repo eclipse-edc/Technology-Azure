@@ -14,56 +14,47 @@
 
 package org.eclipse.edc.identityhub.store.cosmos;
 
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStore;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStoreTestBase;
 import org.eclipse.edc.identityhub.store.sql.SqlIdentityHubStore;
 import org.eclipse.edc.identityhub.store.sql.schema.BaseSqlIdentityHubStatements;
-import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.SqlQueryExecutor;
-import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
-import org.eclipse.edc.transaction.spi.NoopTransactionContext;
-import org.junit.jupiter.api.AfterEach;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
+import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.sql.SQLException;
-import javax.sql.DataSource;
-
-import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @ParallelPostgresCosmosTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(CosmosPostgresTestExtension.class)
 public class CosmosIdentityHubStoreTest extends IdentityHubStoreTestBase {
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
+    public static final BaseSqlIdentityHubStatements STATEMENTS = new BaseSqlIdentityHubStatements();
     private SqlIdentityHubStore store;
-    private DataSource dataSource;
-    private NoopTransactionContext transactionContext;
 
-    @BeforeEach
-    void setUp() {
-        var statements = new BaseSqlIdentityHubStatements();
-        var typeManager = new TypeManager();
-        dataSource = createDataSource();
-        var dsName = "test-ds";
-        var reg = new DefaultDataSourceRegistry();
-        reg.register(dsName, dataSource);
-
-        transactionContext = new NoopTransactionContext();
-
-        store = new SqlIdentityHubStore(reg, dsName, transactionContext, statements, typeManager.getMapper(), queryExecutor);
-
-        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
-        runQuery(schema);
+    @BeforeAll
+    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
     }
 
-    @AfterEach
-    void tearDown() {
-        var dialect = new BaseSqlIdentityHubStatements();
-        runQuery("DROP TABLE " + dialect.getTable());
+    @AfterAll
+    static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getTable());
+    }
+
+    @BeforeEach
+    void setUp(TransactionContext transactionContext, DataSourceRegistry reg, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper) {
+        var statements = new BaseSqlIdentityHubStatements();
+        var typeManager = new TypeManager();
+
+        store = new SqlIdentityHubStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, statements, typeManager.getMapper(), queryExecutor);
+        helper.truncateTable(STATEMENTS.getTable());
     }
 
     @Override
@@ -71,11 +62,4 @@ public class CosmosIdentityHubStoreTest extends IdentityHubStoreTestBase {
         return store;
     }
 
-    private void runQuery(String schema) {
-        try (var connection = dataSource.getConnection()) {
-            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

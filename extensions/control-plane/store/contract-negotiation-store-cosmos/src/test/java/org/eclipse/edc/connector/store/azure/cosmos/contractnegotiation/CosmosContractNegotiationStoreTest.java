@@ -15,14 +15,13 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation;
 
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
 import org.eclipse.edc.connector.contract.spi.ContractId;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions;
 import org.eclipse.edc.connector.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
 import org.eclipse.edc.connector.store.sql.contractnegotiation.store.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.Action;
 import org.eclipse.edc.policy.model.AtomicConstraint;
 import org.eclipse.edc.policy.model.LiteralExpression;
@@ -34,16 +33,15 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.SqlQueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
-import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
-import org.eclipse.edc.transaction.spi.NoopTransactionContext;
-import org.junit.jupiter.api.AfterEach;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
+import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
@@ -55,13 +53,14 @@ import javax.sql.DataSource;
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContract;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContractBuilder;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createNegotiation;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation.Type.CONSUMER;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiation.Type.PROVIDER;
 import static org.eclipse.edc.connector.contract.spi.types.negotiation.ContractNegotiationStates.REQUESTED;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
 import static org.eclipse.edc.spi.query.Criterion.criterion;
 
@@ -70,46 +69,45 @@ import static org.eclipse.edc.spi.query.Criterion.criterion;
  * query operators.
  */
 @PostgresCosmosTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBase {
     private static final String TEST_ASSET_ID = "test-asset-id";
+    private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements();
     private final Clock clock = Clock.systemUTC();
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     private SqlContractNegotiationStore store;
     private LeaseUtil leaseUtil;
-    private DataSource dataSource;
-    private NoopTransactionContext transactionContext;
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getContractNegotiationTable());
+        helper.dropTable(STATEMENTS.getContractAgreementTable());
+        helper.dropTable(STATEMENTS.getLeaseTableName());
+    }
+
+    @BeforeAll
+    static void setupDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
 
     @BeforeEach
-    void setUp() {
+    void setUp(DataSource dataSource, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
         var statements = new PostgresDialectStatements();
         var manager = new TypeManager();
 
         manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        dataSource = createDataSource();
-        var dsName = "test-ds";
-        var reg = new DefaultDataSourceRegistry();
-        reg.register(dsName, dataSource);
+        store = new SqlContractNegotiationStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, manager.getMapper(), statements, CONNECTOR_NAME, clock, queryExecutor);
+        leaseUtil = new LeaseUtil(transactionContext, () -> {
+            try {
+                return dataSource.getConnection();
+            } catch (SQLException e) {
+                throw new AssertionError(e);
+            }
+        }, statements, clock);
 
-        System.setProperty("edc.datasource.contractnegotiation.name", dsName);
-
-        transactionContext = new NoopTransactionContext();
-
-        store = new SqlContractNegotiationStore(reg, dsName, transactionContext, manager.getMapper(), statements, CONNECTOR_NAME, clock, queryExecutor);
-
-        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
-        runQuery(schema);
-        leaseUtil = new LeaseUtil(transactionContext, this::getConnection, statements, clock);
-    }
-
-
-    @AfterEach
-    void tearDown() {
-        var dialect = new PostgresDialectStatements();
-        runQuery("DROP TABLE " + dialect.getContractNegotiationTable() + " CASCADE");
-        runQuery("DROP TABLE " + dialect.getContractAgreementTable() + " CASCADE");
-        runQuery("DROP TABLE " + dialect.getLeaseTableName() + " CASCADE");
+        helper.truncateTable(STATEMENTS.getContractNegotiationTable());
+        helper.truncateTable(STATEMENTS.getContractAgreementTable());
+        helper.truncateTable(STATEMENTS.getLeaseTableName());
     }
 
     @Test
@@ -296,21 +294,5 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     @Override
     protected boolean isLockedBy(String negotiationId, String owner) {
         return leaseUtil.isLeased(negotiationId, owner);
-    }
-
-    private void runQuery(String schema) {
-        try (var connection = dataSource.getConnection()) {
-            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Connection getConnection() {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

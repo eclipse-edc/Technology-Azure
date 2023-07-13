@@ -14,56 +14,58 @@
 
 package org.eclipse.edc.registration.store.cosmos;
 
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.registration.spi.model.Participant;
 import org.eclipse.edc.registration.store.spi.ParticipantStore;
 import org.eclipse.edc.registration.store.spi.ParticipantStoreTestBase;
 import org.eclipse.edc.registration.store.sql.SqlParticipantStore;
+import org.eclipse.edc.registration.store.sql.schema.ParticipantStatements;
 import org.eclipse.edc.registration.store.sql.schema.PostgresSqlParticipantStatements;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.SqlQueryExecutor;
-import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
-import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.sql.SQLException;
-import javax.sql.DataSource;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 import static org.eclipse.edc.registration.spi.model.ParticipantStatus.AUTHORIZED;
 import static org.eclipse.edc.registration.store.spi.TestUtils.createParticipant;
 
+@ExtendWith(CosmosPostgresTestExtension.class)
 @ParallelPostgresCosmosTest
 class CosmosParticipantStoreIntegrationTest extends ParticipantStoreTestBase {
 
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
+    private static final ParticipantStatements STATEMENTS = new PostgresSqlParticipantStatements();
     private SqlParticipantStore store;
-    private DataSource dataSource;
-    private TransactionContext transactionContext = new NoopTransactionContext();
+
+    @BeforeAll
+    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getParticipantTable());
+    }
+
 
     @BeforeEach
-    void setUp() {
+    void setUp(DataSourceRegistry reg, QueryExecutor queryExecutor, TransactionContext transactionContext, CosmosPostgresTestExtension.SqlHelper helper) {
         var statements = new PostgresSqlParticipantStatements();
 
         var manager = new TypeManager();
         manager.registerTypes(Participant.class);
-        dataSource = createDataSource();
-        var dsName = "test-ds";
-        var reg = new DefaultDataSourceRegistry();
-        reg.register(dsName, dataSource);
 
-        transactionContext = new NoopTransactionContext();
-        store = new SqlParticipantStore(reg, dsName, transactionContext, manager.getMapper(), statements, queryExecutor);
-
-        var schema = getResourceFileContentAsString("schema.sql");
-        runQuery(schema);
+        store = new SqlParticipantStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, manager.getMapper(), statements, queryExecutor);
+        helper.truncateTable(STATEMENTS.getParticipantTable());
     }
 
     @Test
@@ -77,22 +79,8 @@ class CosmosParticipantStoreIntegrationTest extends ParticipantStoreTestBase {
                 .withMessageStartingWith(String.format("Failed to update Participant with did %s", participant2.getDid()));
     }
 
-    @AfterEach
-    void tearDown() {
-        var dialect = new PostgresSqlParticipantStatements();
-        runQuery("DROP TABLE " + dialect.getParticipantTable());
-    }
-
     @Override
     protected ParticipantStore getStore() {
         return store;
-    }
-
-    private void runQuery(String schema) {
-        try (var connection = dataSource.getConnection()) {
-            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

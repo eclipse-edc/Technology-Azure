@@ -15,6 +15,7 @@
 package org.eclipse.edc.connector.store.azure.cosmos.contractdefinition;
 
 
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
 import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.ContractDefinitionStoreTestBase;
@@ -22,65 +23,53 @@ import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.TestFunct
 import org.eclipse.edc.connector.store.sql.contractdefinition.SqlContractDefinitionStore;
 import org.eclipse.edc.connector.store.sql.contractdefinition.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.store.sql.contractdefinition.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.junit.extensions.EdcExtension;
-import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.query.SortOrder;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.SqlQueryExecutor;
-import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
-import org.eclipse.edc.transaction.spi.NoopTransactionContext;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.sql.SQLException;
 import java.util.List;
-import javax.sql.DataSource;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @ParallelPostgresCosmosTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(CosmosPostgresTestExtension.class)
 class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBase {
 
-    private final BaseSqlDialectStatements statements = new PostgresDialectStatements();
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
+    private static final BaseSqlDialectStatements SQL_STATEMENTS = new PostgresDialectStatements();
     private SqlContractDefinitionStore sqlContractDefinitionStore;
-    private DataSource dataSource;
-    private TransactionContext transactionContext;
+
+    @BeforeAll
+    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.dropTable(SQL_STATEMENTS.getContractDefinitionTable());
+    }
 
     @BeforeEach
-    void setUp() {
+    void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
 
         var typeManager = new TypeManager();
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        var dsName = "test-ds";
-        var reg = new DefaultDataSourceRegistry();
-        dataSource = createDataSource();
-        reg.register(dsName, dataSource);
-
-        System.setProperty("edc.datasource.contractdefinition.name", dsName);
-
-        transactionContext = new NoopTransactionContext();
-        sqlContractDefinitionStore = new SqlContractDefinitionStore(reg, dsName,
-                transactionContext, statements, typeManager.getMapper(), queryExecutor);
-        var schema = TestUtils.getResourceFileContentAsString("schema.sql");
-        runQuery(schema);
-    }
-
-    @AfterEach
-    void tearDown() {
-        runQuery("DROP TABLE " + statements.getContractDefinitionTable() + " CASCADE");
+        sqlContractDefinitionStore = new SqlContractDefinitionStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, SQL_STATEMENTS, typeManager.getMapper(), queryExecutor);
+        helper.truncateTable(SQL_STATEMENTS.getContractDefinitionTable());
     }
 
     @Test
@@ -124,11 +113,4 @@ class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBas
         return false;
     }
 
-    private void runQuery(String schema) {
-        try (var connection = dataSource.getConnection()) {
-            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

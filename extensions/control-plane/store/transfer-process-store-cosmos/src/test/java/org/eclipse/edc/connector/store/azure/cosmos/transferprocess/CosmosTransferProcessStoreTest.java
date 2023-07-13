@@ -15,6 +15,7 @@
 package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 import org.awaitility.Awaitility;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
@@ -22,23 +23,21 @@ import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TransferProcessStoreTestBase;
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResourceSet;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceManifest;
-import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.query.SortOrder;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.SqlQueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
-import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
-import org.eclipse.edc.transaction.spi.NoopTransactionContext;
-import org.junit.jupiter.api.AfterEach;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
+import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
@@ -49,7 +48,7 @@ import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createDataRequest;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcess;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcessBuilder;
@@ -59,45 +58,47 @@ import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
 import static org.hamcrest.Matchers.hasSize;
 
 @ParallelPostgresCosmosTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
+    private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements();
     private final Clock clock = Clock.systemUTC();
-    private final PostgresDialectStatements statements = new PostgresDialectStatements();
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     private SqlTransferProcessStore store;
     private LeaseUtil leaseUtil;
-    private DataSource dataSource;
-    private NoopTransactionContext transactionContext;
+
+    @BeforeAll
+    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getTransferProcessTableName());
+        helper.dropTable(STATEMENTS.getDataRequestTable());
+        helper.dropTable(STATEMENTS.getLeaseTableName());
+    }
 
     @BeforeEach
-    void setUp() {
+    void setUp(DataSourceRegistry reg, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSource datasource) {
 
         var typeManager = new TypeManager();
         typeManager.registerTypes(TestFunctions.TestResourceDef.class, TestFunctions.TestProvisionedResource.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
 
-        dataSource = createDataSource();
-        var dsName = "test-ds";
-        var reg = new DefaultDataSourceRegistry();
-        reg.register(dsName, dataSource);
+        store = new SqlTransferProcessStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, typeManager.getMapper(), STATEMENTS, "test-connector", clock, queryExecutor);
 
-        System.setProperty("edc.datasource.transferprocess.name", dsName);
+        leaseUtil = new LeaseUtil(transactionContext, () -> {
+            try {
+                return datasource.getConnection();
+            } catch (SQLException e) {
+                throw new AssertionError(e);
+            }
+        }, STATEMENTS, clock);
 
-        transactionContext = new NoopTransactionContext();
-        store = new SqlTransferProcessStore(reg, dsName, transactionContext, typeManager.getMapper(), statements, "test-connector", clock, queryExecutor);
-
-        var schema = getResourceFileContentAsString("schema.sql");
-        runQuery(schema);
-        leaseUtil = new LeaseUtil(transactionContext, this::getConnection, statements, clock);
-    }
-
-    @AfterEach
-    void tearDown() {
-        runQuery("DROP TABLE " + statements.getTransferProcessTableName() + " CASCADE");
-        runQuery("DROP TABLE " + statements.getDataRequestTable() + " CASCADE");
-        runQuery("DROP TABLE " + statements.getLeaseTableName() + " CASCADE");
+        helper.truncateTable(STATEMENTS.getTransferProcessTableName());
+        helper.truncateTable(STATEMENTS.getDataRequestTable());
+        helper.truncateTable(STATEMENTS.getLeaseTableName());
     }
 
     @Test
@@ -252,20 +253,5 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         return leaseUtil;
     }
 
-    private void runQuery(String schema) {
-        try (var connection = dataSource.getConnection()) {
-            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Connection getConnection() {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
 

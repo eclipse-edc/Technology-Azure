@@ -14,77 +14,58 @@
 
 package org.eclipse.edc.connector.dataplane.store.cosmos;
 
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.connector.dataplane.spi.testfixtures.store.DataPlaneStoreTestBase;
 import org.eclipse.edc.connector.dataplane.store.sql.SqlDataPlaneStore;
 import org.eclipse.edc.connector.dataplane.store.sql.schema.postgres.PostgresDataPlaneStatements;
-import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.SqlQueryExecutor;
-import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
-import org.eclipse.edc.transaction.spi.NoopTransactionContext;
-import org.junit.jupiter.api.AfterEach;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
+import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.sql.SQLException;
 import java.time.Clock;
-import javax.sql.DataSource;
 
-import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @ParallelPostgresCosmosTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(CosmosPostgresTestExtension.class)
 public class CosmosDataPlaneStoreTest extends DataPlaneStoreTestBase {
 
+    private static final PostgresDataPlaneStatements STATEMENTS = new PostgresDataPlaneStatements();
     private final Clock clock = Clock.systemUTC();
-    private final PostgresDataPlaneStatements statements = new PostgresDataPlaneStatements();
-    private final QueryExecutor queryExecutor = new SqlQueryExecutor();
     private SqlDataPlaneStore store;
-    private DataSource dataSource;
-    private NoopTransactionContext transactionContext;
 
-    @BeforeEach
-    void setUp() {
-
-        var typeManager = new TypeManager();
-        typeManager.registerTypes(DataPlaneInstance.class);
-
-        typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
-
-        dataSource = createDataSource();
-        var dsName = "test-ds";
-        var reg = new DefaultDataSourceRegistry();
-        reg.register(dsName, dataSource);
-
-        transactionContext = new NoopTransactionContext();
-
-        store = new SqlDataPlaneStore(reg, dsName, transactionContext, statements, typeManager.getMapper(), clock, queryExecutor);
-        var schema = getResourceFileContentAsString("schema.sql");
-        runQuery(schema);
+    @BeforeAll
+    static void setupDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
     }
 
-    @AfterEach
-    void tearDown() {
-        runQuery("DROP TABLE " + statements.getDataPlaneTable() + " CASCADE");
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getDataPlaneTable());
+    }
+
+    @BeforeEach
+    void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, DataSourceRegistry reg, CosmosPostgresTestExtension.SqlHelper helper) {
+        var typeManager = new TypeManager();
+        typeManager.registerTypes(DataPlaneInstance.class);
+        typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
+        store = new SqlDataPlaneStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, typeManager.getMapper(), clock, queryExecutor);
+        helper.truncateTable(STATEMENTS.getDataPlaneTable());
     }
 
     @Override
     protected DataPlaneStore getStore() {
         return store;
-    }
-
-    private void runQuery(String schema) {
-        try (var connection = dataSource.getConnection()) {
-            transactionContext.execute(() -> queryExecutor.execute(connection, schema));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

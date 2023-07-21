@@ -287,12 +287,12 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     }
 
     @Override
-    protected void lockEntity(String negotiationId, String owner, Duration duration) {
+    protected void leaseEntity(String negotiationId, String owner, Duration duration) {
         leaseUtil.leaseEntity(negotiationId, owner, duration);
     }
 
     @Override
-    protected boolean isLockedBy(String negotiationId, String owner) {
+    protected boolean isLeasedBy(String negotiationId, String owner) {
         return leaseUtil.isLeased(negotiationId, owner);
     }
 }

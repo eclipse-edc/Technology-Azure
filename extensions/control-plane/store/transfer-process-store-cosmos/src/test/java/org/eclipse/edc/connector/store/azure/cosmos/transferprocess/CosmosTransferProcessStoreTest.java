@@ -107,8 +107,8 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var tp = createTransferProcessBuilder("testprocess1")
                 .dataRequest(da)
                 .build();
-        store.updateOrCreate(tp);
-        store.updateOrCreate(createTransferProcess("testprocess2"));
+        store.save(tp);
+        store.save(createTransferProcess("testprocess2"));
 
         var query = QuerySpec.Builder.newInstance()
                 .filter(List.of(new Criterion("dataRequest.notexist", "=", "somevalue")))
@@ -126,8 +126,8 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var tp = createTransferProcessBuilder("testprocess1")
                 .resourceManifest(rm)
                 .build();
-        store.updateOrCreate(tp);
-        store.updateOrCreate(createTransferProcess("testprocess2"));
+        store.save(tp);
+        store.save(createTransferProcess("testprocess2"));
 
         // throws exception when an explicit mapping exists
         var query = QuerySpec.Builder.newInstance()
@@ -159,8 +159,8 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var tp = createTransferProcessBuilder("testprocess1")
                 .provisionedResourceSet(prs)
                 .build();
-        store.updateOrCreate(tp);
-        store.updateOrCreate(createTransferProcess("testprocess2"));
+        store.save(tp);
+        store.save(createTransferProcess("testprocess2"));
 
         // throws exception when an explicit mapping exists
         var query = QuerySpec.Builder.newInstance()
@@ -180,7 +180,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
     @Test
     void find_queryByLease() {
-        store.updateOrCreate(createTransferProcess("testprocess1"));
+        store.save(createTransferProcess("testprocess1"));
 
         var query = QuerySpec.Builder.newInstance()
                 .filter(List.of(new Criterion("lease.leasedBy", "=", "foobar")))
@@ -196,16 +196,16 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var t1 = TestFunctions.createTransferProcessBuilder("id1")
                 .dataRequest(null)
                 .build();
-        assertThatIllegalArgumentException().isThrownBy(() -> getTransferProcessStore().updateOrCreate(t1));
+        assertThatIllegalArgumentException().isThrownBy(() -> getTransferProcessStore().save(t1));
     }
 
 
     @Test
     void nextNotLeased_expiredLease() {
         var t = createTransferProcess("id1", INITIAL);
-        getTransferProcessStore().updateOrCreate(t);
+        getTransferProcessStore().save(t);
 
-        lockEntity(t.getId(), CONNECTOR_NAME, Duration.ofMillis(100));
+        leaseEntity(t.getId(), CONNECTOR_NAME, Duration.ofMillis(100));
 
         Awaitility.await().atLeast(Duration.ofMillis(100))
                 .atMost(Duration.ofMillis(5000)) //this is different from the superclass - with the connection to cosmos it may take longer than 500ms
@@ -215,7 +215,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     @Override
     @Test
     protected void findAll_verifySorting_invalidProperty() {
-        range(0, 10).forEach(i -> getTransferProcessStore().updateOrCreate(createTransferProcess("test-neg-" + i)));
+        range(0, 10).forEach(i -> getTransferProcessStore().save(createTransferProcess("test-neg-" + i)));
 
         var query = QuerySpec.Builder.newInstance().sortField("notexist").sortOrder(SortOrder.DESC).build();
 
@@ -240,12 +240,12 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     }
 
     @Override
-    protected void lockEntity(String negotiationId, String owner, Duration duration) {
+    protected void leaseEntity(String negotiationId, String owner, Duration duration) {
         getLeaseUtil().leaseEntity(negotiationId, owner, duration);
     }
 
     @Override
-    protected boolean isLockedBy(String negotiationId, String owner) {
+    protected boolean isLeasedBy(String negotiationId, String owner) {
         return getLeaseUtil().isLeased(negotiationId, owner);
     }
 

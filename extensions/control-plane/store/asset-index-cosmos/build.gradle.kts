@@ -19,13 +19,12 @@ plugins {
 dependencies {
     api(libs.edc.spi.core)
     api(libs.edc.util)
-    api(project(":extensions:common:azure:azure-cosmos-core"))
-
-    implementation(libs.azure.cosmos)
     implementation(libs.failsafe.core)
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(libs.edc.spi.core))
+    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.assetindex)
 
 }
 

@@ -17,13 +17,13 @@ plugins {
 }
 
 dependencies {
-    api(libs.edc.spi.contract)
-    api(libs.edc.util)
-    api(project(":extensions:common:azure:azure-cosmos-core"))
+    testImplementation(libs.edc.spi.contract)
+    testImplementation(libs.edc.util)
 
-    implementation(libs.azure.cosmos)
     implementation(libs.failsafe.core)
 
+    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.contractdefinition)
     testImplementation(testFixtures(libs.edc.spi.contract))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
 }

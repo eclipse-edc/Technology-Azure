@@ -29,19 +29,6 @@ jobs:
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
 
-  Check-Cosmos-Key:
-    runs-on: ubuntu-latest
-    outputs:
-      has-cosmos-key: ${{ steps.has-cosmos-key.outputs.has_cosmos_key }}
-    steps:
-      - name: Check if COSMOS_KEY secret exists
-        id: has-cosmos-key
-        run: |
-          [ ! -z "${{ secrets.COSMOS_KEY }}" ]  &&
-          echo "has_cosmos_key=true" >> $GITHUB_OUTPUT
-          exit 0
-
-
   Unit-Tests:
     runs-on: ubuntu-latest
     env:
@@ -75,32 +62,6 @@ jobs:
         with:
           command: |
             ./gradlew test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
-
-
-
-  
-
-
-
-
-  Azure-CosmosDB-Integration-Tests:
-    # run only if COSMOS_KEY is present
-    needs: [ Check-Cosmos-Key ]
-    if: needs.Check-Cosmos-Key.outputs.has-cosmos-key == 'true'
-    runs-on: ubuntu-latest
-
-    env:
-      COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
-      COSMOS_URL: ${{ secrets.COSMOS_URL }}
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-build
-
-      - name: Azure CosmosDB Tests
-        uses: ./.github/actions/run-tests
-        with:
-          command: ./gradlew -p extensions test -DincludeTags="AzureCosmosDbIntegrationTest"
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:
@@ -183,7 +144,6 @@ jobs:
     needs:
       - Unit-Tests
       - Azure-Storage-Integration-Tests
-      - Azure-CosmosDB-Integration-Tests
       - End-To-End-Tests
       - Component-Tests
 

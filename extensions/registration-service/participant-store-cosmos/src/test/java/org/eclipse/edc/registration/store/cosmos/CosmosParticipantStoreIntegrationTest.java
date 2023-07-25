@@ -14,86 +14,73 @@
 
 package org.eclipse.edc.registration.store.cosmos;
 
-import com.azure.cosmos.CosmosContainer;
-import com.azure.cosmos.CosmosDatabase;
-import com.azure.cosmos.models.CosmosDatabaseResponse;
-import com.azure.cosmos.models.PartitionKey;
-import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.azure.cosmos.CosmosDbApiImpl;
-import org.eclipse.edc.azure.testfixtures.CosmosTestClient;
-import org.eclipse.edc.azure.testfixtures.annotations.AzureCosmosDbIntegrationTest;
+import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
+import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
 import org.eclipse.edc.registration.spi.model.Participant;
-import org.eclipse.edc.registration.store.cosmos.model.ParticipantDocument;
 import org.eclipse.edc.registration.store.spi.ParticipantStore;
 import org.eclipse.edc.registration.store.spi.ParticipantStoreTestBase;
+import org.eclipse.edc.registration.store.sql.SqlParticipantStore;
+import org.eclipse.edc.registration.store.sql.schema.ParticipantStatements;
+import org.eclipse.edc.registration.store.sql.schema.PostgresSqlParticipantStatements;
+import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
+import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.UUID;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
+import static org.eclipse.edc.registration.spi.model.ParticipantStatus.AUTHORIZED;
+import static org.eclipse.edc.registration.store.spi.TestUtils.createParticipant;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@AzureCosmosDbIntegrationTest
+@ExtendWith(CosmosPostgresTestExtension.class)
+@ParallelPostgresCosmosTest
 class CosmosParticipantStoreIntegrationTest extends ParticipantStoreTestBase {
-    private static final String TEST_ID = UUID.randomUUID().toString();
-    private static final String DATABASE_NAME = "connector-itest-" + TEST_ID;
-    private static final String CONTAINER_NAME = "CosmosParticipantIndexTest-" + TEST_ID;
-    private static final String TEST_PARTITION_KEY = "test-partitionkey";
-    private static CosmosContainer container;
-    private static CosmosDatabase database;
-    private CosmosParticipantStore store;
+
+    private static final ParticipantStatements STATEMENTS = new PostgresSqlParticipantStatements();
+    private SqlParticipantStore store;
 
     @BeforeAll
-    static void prepareCosmosClient() {
-        var client = CosmosTestClient.createClient();
-
-        CosmosDatabaseResponse response = client.createDatabaseIfNotExists(DATABASE_NAME);
-        database = client.getDatabase(response.getProperties().getId());
-        var containerIfNotExists = database.createContainerIfNotExists(CONTAINER_NAME, "/partitionKey");
-        container = database.getContainer(containerIfNotExists.getProperties().getId());
+    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
     }
 
     @AfterAll
-    static void deleteDatabase() {
-        if (database != null) {
-            CosmosDatabaseResponse delete = database.delete();
-            assertThat(delete.getStatusCode()).isGreaterThanOrEqualTo(200).isLessThan(300);
-        }
+    static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getParticipantTable());
     }
+
 
     @BeforeEach
-    void setUp() {
-        assertThat(database).describedAs("CosmosDB database is null - did something go wrong during initialization?").isNotNull();
+    void setUp(DataSourceRegistry reg, QueryExecutor queryExecutor, TransactionContext transactionContext, CosmosPostgresTestExtension.SqlHelper helper) {
+        var statements = new PostgresSqlParticipantStatements();
 
-        TypeManager typeManager = new TypeManager();
-        typeManager.registerTypes(Participant.class, ParticipantDocument.class);
-        var api = new CosmosDbApiImpl(container, true);
-        store = new CosmosParticipantStore(api, TEST_PARTITION_KEY, typeManager.getMapper(), RetryPolicy.ofDefaults());
+        var manager = new TypeManager();
+        manager.registerTypes(Participant.class);
+
+        store = new SqlParticipantStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, manager.getMapper(), statements, queryExecutor);
+        helper.truncateTable(STATEMENTS.getParticipantTable());
     }
 
-    @AfterEach
-    void tearDown() {
-        // Delete items one by one as deleteAllItemsByPartitionKey is disabled by default on new Cosmos DB accounts.
-        PartitionKey partitionKey = new PartitionKey(TEST_PARTITION_KEY);
-        container.readAllItems(partitionKey, CosmosDbEntity.class)
-                .stream().parallel()
-                .forEach(i -> container.deleteItem(i.id, partitionKey, null));
+    @Test
+    void saveAndListParticipants_removesDuplicates() {
+        var participant1 = createParticipant().did("some.test/url/2").status(AUTHORIZED).build();
+        var participant2 = createParticipant().did("some.test/url/2").status(AUTHORIZED).build();
+
+        getStore().save(participant1);
+
+        assertThatExceptionOfType(EdcPersistenceException.class).isThrownBy(() -> getStore().save(participant2))
+                .withMessageStartingWith(String.format("Failed to update Participant with did %s", participant2.getDid()));
     }
 
     @Override
     protected ParticipantStore getStore() {
         return store;
-    }
-
-
-    static class CosmosDbEntity {
-        String id;
-
-        public void setId(String id) {
-            this.id = id;
-        }
     }
 }

@@ -44,7 +44,7 @@ jobs:
 
       # Compiles production Java source (without tests)
       - name: Build
-        run: ./gradlew compileJava --no-daemon
+        run: ./gradlew --refresh-dependencies compileJava --no-daemon
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2

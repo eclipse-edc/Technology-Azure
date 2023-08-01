@@ -61,11 +61,6 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        return validateRequest(request).mapTo();
-    }
-
-    @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var dataAddress = request.getDestinationDataAddress();
         try {
@@ -75,7 +70,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
         }
-        return VALID.mapTo();
+        return Result.success();
     }
 
     @Override

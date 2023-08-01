@@ -27,7 +27,7 @@ jobs:
       - uses: ./.github/actions/setup-build
 
       - name: Run Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest checkstyleTestFixtures
+        run: ./gradlew --refresh-dependencies checkstyleMain checkstyleTest checkstyleTestFixtures
 
   Unit-Tests:
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
       - name: Run unit tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test jacocoTestReport
+          command: ./gradlew --refresh-dependencies test jacocoTestReport
 
   Azure-Storage-Integration-Tests:
     runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
         uses: ./.github/actions/run-tests
         with:
           command: |
-            ./gradlew test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
+            ./gradlew --refresh-dependencies test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:
@@ -114,7 +114,7 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew jacocoTestReport -DincludeTags="ComponentTest"
+          command: ./gradlew --refresh-dependencies jacocoTestReport -DincludeTags="ComponentTest"
 
   End-To-End-Tests:
     runs-on: ubuntu-latest
@@ -125,7 +125,7 @@ jobs:
       - name: End to End Integration Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test -DincludeTags="EndToEndTest"
+          command: ./gradlew --refresh-dependencies test -DincludeTags="EndToEndTest"
 
   API-Tests:
     env:
@@ -138,7 +138,7 @@ jobs:
       - name: Component Tests
         uses: ./.github/actions/run-tests
         with:
-          command: ./gradlew test jacocoTestReport -DincludeTags="ApiTest"
+          command: ./gradlew --refresh-dependencies test jacocoTestReport -DincludeTags="ApiTest"
 
   Upload-Test-Report:
     needs:

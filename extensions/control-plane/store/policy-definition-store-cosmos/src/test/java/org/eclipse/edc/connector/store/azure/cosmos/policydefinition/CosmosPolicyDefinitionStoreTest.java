@@ -106,18 +106,4 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
         return sqlPolicyStore;
     }
 
-    @Override
-    protected boolean supportCollectionQuery() {
-        return true;
-    }
-
-    @Override
-    protected boolean supportCollectionIndexQuery() {
-        return false;
-    }
-
-    @Override
-    protected Boolean supportSortOrder() {
-        return true;
-    }
 }

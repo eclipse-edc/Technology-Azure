@@ -103,12 +103,10 @@ class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBas
         return sqlContractDefinitionStore;
     }
 
-    @Override
     protected boolean supportsCollectionQuery() {
         return true;
     }
 
-    @Override
     protected boolean supportsCollectionIndexQuery() {
         return false;
     }

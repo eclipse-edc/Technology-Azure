@@ -212,7 +212,6 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
                 .until(() -> getTransferProcessStore().nextNotLeased(10, hasState(INITIAL.code())), hasSize(1));
     }
 
-    @Override
     @Test
     protected void findAll_verifySorting_invalidProperty() {
         range(0, 10).forEach(i -> getTransferProcessStore().save(createTransferProcess("test-neg-" + i)));
@@ -222,16 +221,6 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         assertThatThrownBy(() -> getTransferProcessStore().findAll(query))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageStartingWith("Translation failed for Model");
-    }
-
-    @Override
-    protected boolean supportsCollectionQuery() {
-        return true;
-    }
-
-    @Override
-    protected boolean supportsLikeOperator() {
-        return true;
     }
 
     @Override

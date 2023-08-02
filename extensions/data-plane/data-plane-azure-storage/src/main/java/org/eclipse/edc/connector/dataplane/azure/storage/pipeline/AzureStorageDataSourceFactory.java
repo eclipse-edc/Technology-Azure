@@ -56,11 +56,6 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        return validateRequest(request).mapTo();
-    }
-
-    @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var dataAddress = request.getSourceDataAddress();
         try {
@@ -71,7 +66,7 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
         }
-        return VALID.mapTo();
+        return Result.success();
     }
 
     @Override

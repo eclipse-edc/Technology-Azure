@@ -15,9 +15,13 @@
 package org.eclipse.edc.azure.blob.validator;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
@@ -27,36 +31,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class AzureStorageValidatorTest {
 
 
-    private static Stream<String> validBlobNames() {
-        return Stream.of(
-                "geq",
-                "Qja143",
-                "ABE",
-                "a name",
-                "end space ",
-                "je`~3j4k%$':\\",
-                "abcdefghijklmnop".repeat(64),
-                "a/b".repeat(253));
-    }
-
-    private static Stream<String> invalidBlobNames() {
-        return Stream.of(
-                null,
-                "",
-                "abcdefghijklmnop".repeat(64) + "a",
-                "a/b".repeat(254));
-    }
-
     @ParameterizedTest
-    @ValueSource(strings = { "abc", "abcdefghijabcdefghijbcde", "1er", "451", "ge45" })
+    @ValueSource(strings = {"abc", "abcdefghijabcdefghijbcde", "1er", "451", "ge45"})
     void validateAccountName_success(String input) {
         AzureStorageValidator.validateAccountName(input);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = { "  ", "$log", "r", "re", "a a", " b", "ag_c", "re-r", "bdjfkCJdfd", "efer:a",
-            "abcdefghijabcdefghijbcdef" })
+    @ValueSource(strings = {"  ", "$log", "r", "re", "a a", " b", "ag_c", "re-r", "bdjfkCJdfd", "efer:a",
+            "abcdefghijabcdefghijbcdef"})
     void validateAccountName_fail(String input) {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> AzureStorageValidator.validateAccountName(input));
@@ -66,15 +50,15 @@ class AzureStorageValidatorTest {
     @ValueSource(strings = {
             "$root", "$logs", "$web",
             "re-r", "z0r-a-q",
-            "abc", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz01234567890", "1er", "451", "ge45" })
+            "abc", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz01234567890", "1er", "451", "ge45"})
     void validateContainerName_success(String input) {
         AzureStorageValidator.validateContainerName(input);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = { "$log", "  ", "r", "re", "a a", "-ree", "era-", "z0rr--", " b", "ag_c",
-            "bdjfkCJdfd", "efer:a", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz012345678901" })
+    @ValueSource(strings = {"$log", "  ", "r", "re", "a a", "-ree", "era-", "z0rr--", " b", "ag_c",
+            "bdjfkCJdfd", "efer:a", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz012345678901"})
     void validateContainerName_fail(String input) {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> AzureStorageValidator.validateContainerName(input));
@@ -93,15 +77,41 @@ class AzureStorageValidatorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("validBlobNames")
+    @ArgumentsSource(ValidBlobNameProvider.class)
     void validateBlobName_success(String input) {
         AzureStorageValidator.validateBlobName(input);
     }
 
     @ParameterizedTest
-    @MethodSource("invalidBlobNames")
+    @ArgumentsSource(InvalidBlobNameProvider.class)
+    @NullSource
     void validateBlobName_fail(String input) {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> AzureStorageValidator.validateBlobName(input));
+    }
+
+    private static class InvalidBlobNameProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of(""),
+                    Arguments.of("abcdefghijklmnop".repeat(64) + "a"),
+                    Arguments.of("a/b".repeat(254)));
+        }
+    }
+
+    private static class ValidBlobNameProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of("geq"),
+                    Arguments.of("Qja143"),
+                    Arguments.of("ABE"),
+                    Arguments.of("a name"),
+                    Arguments.of("end space "),
+                    Arguments.of("je`~3j4k%$':\\"),
+                    Arguments.of("abcdefghijklmnop".repeat(64)),
+                    Arguments.of("a/b".repeat(253)));
+        }
     }
 }

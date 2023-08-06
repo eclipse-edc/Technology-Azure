@@ -36,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.stream.IntStream;
 import javax.sql.DataSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.connector.policy.spi.testfixtures.TestFunctions.createPolicy;
@@ -85,9 +86,7 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
 
         // query by prohibition assignee
         var querySpec = QuerySpec.Builder.newInstance().filter(criterion("notexist", "=", "foobar")).build();
-        assertThatThrownBy(() -> getPolicyDefinitionStore().findAll(querySpec))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
+        assertThat(getPolicyDefinitionStore().findAll(querySpec)).isEmpty();
     }
 
     @Test
@@ -96,8 +95,7 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
         IntStream.range(0, 10).mapToObj(i -> createPolicy("test-policy")).forEach((d) -> getPolicyDefinitionStore().create(d));
         var query = QuerySpec.Builder.newInstance().sortField("notexist").sortOrder(SortOrder.DESC).build();
         assertThatThrownBy(() -> getPolicyDefinitionStore().findAll(query))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
+                .isInstanceOf(IllegalArgumentException.class);
 
     }
 

@@ -52,7 +52,6 @@ import javax.sql.DataSource;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContract;
 import static org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions.createContractBuilder;
@@ -168,9 +167,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
 
         var expression = criterion("contractAgreement.notexist", "=", contractId.toString());
         var query = QuerySpec.Builder.newInstance().filter(expression).build();
-        assertThatThrownBy(() -> store.queryNegotiations(query))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
+        assertThat(store.queryNegotiations(query)).isEmpty();
     }
 
     @Test
@@ -212,7 +209,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
         });
 
         var query = QuerySpec.Builder.newInstance().filter(criterion("notexistprop", "=", "asset-2")).build();
-        assertThatThrownBy(() -> store.queryAgreements(query));
+        assertThat(store.queryAgreements(query)).isEmpty();
     }
 
     @Test

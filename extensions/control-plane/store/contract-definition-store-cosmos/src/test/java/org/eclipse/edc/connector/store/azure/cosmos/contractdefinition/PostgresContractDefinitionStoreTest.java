@@ -41,6 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
 
 import static java.util.stream.IntStream.range;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
@@ -83,10 +84,7 @@ class PostgresContractDefinitionStoreTest extends ContractDefinitionStoreTestBas
                 .filter(List.of(new Criterion("notexist", "=", "somevalue")))
                 .build();
 
-        assertThatThrownBy(() -> getContractDefinitionStore().findAll(spec))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
-
+        assertThat(getContractDefinitionStore().findAll(spec)).isEmpty();
     }
 
     // Override in PG since it does not have the field mapping

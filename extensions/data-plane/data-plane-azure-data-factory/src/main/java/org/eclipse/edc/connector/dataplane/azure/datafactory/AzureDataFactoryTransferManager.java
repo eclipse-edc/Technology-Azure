@@ -86,8 +86,8 @@ public class AzureDataFactoryTransferManager {
         var dataAddress = request.getDestinationDataAddress();
         var secret = keyVaultClient.getSecret(dataAddress.getKeyName());
         var token = typeManager.readValue(secret.getValue(), AzureSasToken.class);
-        var accountName = dataAddress.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
-        var containerName = dataAddress.getProperty(AzureBlobStoreSchema.CONTAINER_NAME);
+        var accountName = dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
+        var containerName = dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME);
 
         var runId = client.runPipeline(pipeline).runId();
 

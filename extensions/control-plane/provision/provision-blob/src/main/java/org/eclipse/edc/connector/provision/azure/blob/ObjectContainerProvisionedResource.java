@@ -30,11 +30,11 @@ import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
 public class ObjectContainerProvisionedResource extends ProvisionedDataDestinationResource {
 
     public String getAccountName() {
-        return getDataAddress().getProperty(ACCOUNT_NAME);
+        return getDataAddress().getStringProperty(ACCOUNT_NAME);
     }
 
     public String getContainerName() {
-        return getDataAddress().getProperty(CONTAINER_NAME);
+        return getDataAddress().getStringProperty(CONTAINER_NAME);
     }
 
     private ObjectContainerProvisionedResource() {

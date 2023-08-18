@@ -48,8 +48,8 @@ public class ObjectContainerStatusChecker implements StatusChecker {
                 }
             }
         } else {
-            var accountName = transferProcess.getDataRequest().getDataDestination().getProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
-            var containerName = transferProcess.getDataRequest().getDataDestination().getProperty(AzureBlobStoreSchema.CONTAINER_NAME);
+            var accountName = transferProcess.getDataRequest().getDataDestination().getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
+            var containerName = transferProcess.getDataRequest().getDataDestination().getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME);
             return checkContainerExists(accountName, containerName);
         }
         throw new EdcException(format("No object container resource was associated with the transfer process: %s - cannot determine completion.", transferProcess));

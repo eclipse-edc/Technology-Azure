@@ -94,7 +94,7 @@ class DataFactoryPipelineFactory {
     }
 
     private LinkedServiceResource createSourceLinkedService(String name, DataAddress dataAddress) {
-        var accountName = dataAddress.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
+        var accountName = dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
 
         return client.defineLinkedService(name)
                 .withProperties(new AzureStorageLinkedService()
@@ -110,7 +110,7 @@ class DataFactoryPipelineFactory {
     }
 
     private LinkedServiceResource createDestinationLinkedService(String name, DataAddress dataAddress) {
-        var accountName = dataAddress.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
+        var accountName = dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
         var secret = keyVaultClient.getSecret(dataAddress.getKeyName());
         var token = typeManager.readValue(secret.getValue(), AzureSasToken.class);
         var sasTokenSecret = keyVaultClient.setSecret(name, token.getSas());
@@ -135,8 +135,8 @@ class DataFactoryPipelineFactory {
                         new BinaryDataset()
                                 .withLinkedServiceName(new LinkedServiceReference().withReferenceName(linkedService.name()))
                                 .withLocation(new AzureBlobStorageLocation()
-                                        .withFileName(dataAddress.getProperty(AzureBlobStoreSchema.BLOB_NAME))
-                                        .withContainer(dataAddress.getProperty(AzureBlobStoreSchema.CONTAINER_NAME))
+                                        .withFileName(dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME))
+                                        .withContainer(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
                                 )
                 )
                 .create();

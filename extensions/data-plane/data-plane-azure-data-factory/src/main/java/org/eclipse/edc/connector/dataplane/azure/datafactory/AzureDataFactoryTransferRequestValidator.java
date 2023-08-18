@@ -52,7 +52,7 @@ class AzureDataFactoryTransferRequestValidator {
     }
 
     private void validateSource(DataAddress source) {
-        validateBlobName(source.getProperty(AzureBlobStoreSchema.BLOB_NAME));
+        validateBlobName(source.getStringProperty(AzureBlobStoreSchema.BLOB_NAME));
         validateCommon(source);
     }
 
@@ -61,8 +61,8 @@ class AzureDataFactoryTransferRequestValidator {
     }
 
     private void validateCommon(DataAddress dataAddress) {
-        validateAccountName(dataAddress.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME));
-        validateContainerName(dataAddress.getProperty(AzureBlobStoreSchema.CONTAINER_NAME));
+        validateAccountName(dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME));
+        validateContainerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME));
         validateKeyName(dataAddress.getKeyName());
     }
 }

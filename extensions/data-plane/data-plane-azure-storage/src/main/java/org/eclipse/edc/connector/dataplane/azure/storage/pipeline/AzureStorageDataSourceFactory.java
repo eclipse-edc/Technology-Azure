@@ -59,9 +59,9 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var dataAddress = request.getSourceDataAddress();
         try {
-            validateAccountName(dataAddress.getProperty(ACCOUNT_NAME));
-            validateContainerName(dataAddress.getProperty(CONTAINER_NAME));
-            validateBlobName(dataAddress.getProperty(BLOB_NAME));
+            validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
+            validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
+            validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
             validateKeyName(dataAddress.getKeyName());
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
@@ -76,11 +76,11 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
         var dataAddress = request.getSourceDataAddress();
 
         return AzureStorageDataSource.Builder.newInstance()
-                .accountName(dataAddress.getProperty(ACCOUNT_NAME))
-                .containerName(dataAddress.getProperty(CONTAINER_NAME))
+                .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
+                .containerName(dataAddress.getStringProperty(CONTAINER_NAME))
                 .sharedKey(vault.resolveSecret(dataAddress.getKeyName()))
                 .blobStoreApi(blobStoreApi)
-                .blobName(dataAddress.getProperty(BLOB_NAME))
+                .blobName(dataAddress.getStringProperty(BLOB_NAME))
                 .requestId(request.getId())
                 .retryPolicy(retryPolicy)
                 .monitor(monitor)

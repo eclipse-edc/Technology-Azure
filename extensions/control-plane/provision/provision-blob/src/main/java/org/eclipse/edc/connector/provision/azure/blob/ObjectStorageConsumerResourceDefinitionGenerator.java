@@ -31,8 +31,8 @@ public class ObjectStorageConsumerResourceDefinitionGenerator implements Consume
     public @Nullable ResourceDefinition generate(DataRequest dataRequest, Policy policy) {
         var destination = dataRequest.getDataDestination();
         var id = randomUUID().toString();
-        var account = destination.getProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
-        var container = destination.getProperty(AzureBlobStoreSchema.CONTAINER_NAME);
+        var account = destination.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
+        var container = destination.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME);
 
         if (container == null) {
             container = randomUUID().toString();

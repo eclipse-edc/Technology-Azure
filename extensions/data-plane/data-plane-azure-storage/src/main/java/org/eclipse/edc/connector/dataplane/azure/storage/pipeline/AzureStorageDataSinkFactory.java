@@ -61,21 +61,16 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
-        return validateRequest(request).mapTo();
-    }
-
-    @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var dataAddress = request.getDestinationDataAddress();
         try {
-            validateAccountName(dataAddress.getProperty(ACCOUNT_NAME));
-            validateContainerName(dataAddress.getProperty(CONTAINER_NAME));
+            validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
+            validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
             validateKeyName(dataAddress.getKeyName());
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
         }
-        return VALID.mapTo();
+        return Result.success();
     }
 
     @Override
@@ -92,8 +87,8 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         var token = typeManager.readValue(secret, AzureSasToken.class);
 
         return AzureStorageDataSink.Builder.newInstance()
-                .accountName(dataAddress.getProperty(ACCOUNT_NAME))
-                .containerName(dataAddress.getProperty(AzureBlobStoreSchema.CONTAINER_NAME))
+                .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
+                .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
                 .sharedAccessSignature(token.getSas())
                 .requestId(requestId)
                 .partitionSize(partitionSize)

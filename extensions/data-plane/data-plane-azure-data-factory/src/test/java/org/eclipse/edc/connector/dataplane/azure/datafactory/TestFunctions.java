@@ -28,7 +28,7 @@ import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.c
 
 public class TestFunctions {
 
-    public static Map<String, String> sourceProperties() {
+    public static Map<String, Object> sourceProperties() {
         var srcStorageAccount = createAccountName();
         return DataAddress.Builder.newInstance()
                 .type(AzureBlobStoreSchema.TYPE)
@@ -40,7 +40,7 @@ public class TestFunctions {
                 .getProperties();
     }
 
-    public static Map<String, String> destinationProperties() {
+    public static Map<String, Object> destinationProperties() {
         var destStorageAccount = createAccountName();
 
         return DataAddress.Builder.newInstance()

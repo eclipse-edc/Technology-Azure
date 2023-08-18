@@ -40,8 +40,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class AzureDataFactoryTransferRequestValidatorTest {
     private static final DataFlowRequest.Builder REQUEST = createRequest(AzureBlobStoreSchema.TYPE);
 
-    private final Map<String, String> sourceProperties = TestFunctions.sourceProperties();
-    private final Map<String, String> destinationProperties = TestFunctions.destinationProperties();
+    private final Map<String, Object> sourceProperties = TestFunctions.sourceProperties();
+    private final Map<String, Object> destinationProperties = TestFunctions.destinationProperties();
     private final DataAddress.Builder source = createDataAddress(AzureBlobStoreSchema.TYPE);
     private final DataAddress.Builder destination = createDataAddress(AzureBlobStoreSchema.TYPE);
     AzureDataFactoryTransferRequestValidator validator = new AzureDataFactoryTransferRequestValidator();

@@ -50,8 +50,8 @@ class ObjectContainerProvisionedResourceTest {
 
         assertThat(dest.getType()).isEqualTo(AzureBlobStoreSchema.TYPE);
         assertThat(dest.getKeyName()).isEqualTo("test-container");
-        assertThat(dest.getProperty(CONTAINER_NAME)).isEqualTo("test-container");
-        assertThat(dest.getProperty(ACCOUNT_NAME)).isEqualTo("test-account");
+        assertThat(dest.getStringProperty(CONTAINER_NAME)).isEqualTo("test-container");
+        assertThat(dest.getStringProperty(ACCOUNT_NAME)).isEqualTo("test-account");
     }
 
     @Test

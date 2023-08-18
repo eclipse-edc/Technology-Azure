@@ -16,7 +16,7 @@ package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 import org.awaitility.Awaitility;
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
-import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
+import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions;
@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TransferProcess
 import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResourceSet;
 import org.eclipse.edc.connector.transfer.spi.types.ResourceManifest;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
+import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.query.SortOrder;
@@ -46,7 +47,6 @@ import javax.sql.DataSource;
 
 import static java.util.stream.IntStream.range;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
 import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createDataRequest;
@@ -57,7 +57,7 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
 import static org.hamcrest.Matchers.hasSize;
 
-@ParallelPostgresCosmosTest
+@PostgresCosmosTest
 @ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
@@ -114,8 +114,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
                 .filter(List.of(new Criterion("dataRequest.notexist", "=", "somevalue")))
                 .build();
 
-        assertThatThrownBy(() -> store.findAll(query)).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed");
+        assertThat(store.findAll(query)).isEmpty();
     }
 
 
@@ -134,8 +133,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
                 .filter(List.of(new Criterion("resourceManifest.foobar", "=", "someval")))
                 .build();
 
-        assertThatThrownBy(() -> store.findAll(query)).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
+        assertThat(store.findAll(query)).isEmpty();
 
         // returns empty when the invalid value is embedded in JSON
         var query2 = QuerySpec.Builder.newInstance()
@@ -166,8 +164,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var query = QuerySpec.Builder.newInstance()
                 .filter(List.of(new Criterion("provisionedResourceSet.foobar.transferProcessId", "=", "testprocess1")))
                 .build();
-        assertThatThrownBy(() -> store.findAll(query)).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
+        assertThat(store.findAll(query)).isEmpty();
 
         // returns empty when the invalid value is embedded in JSON
         var query2 = QuerySpec.Builder.newInstance()
@@ -186,8 +183,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
                 .filter(List.of(new Criterion("lease.leasedBy", "=", "foobar")))
                 .build();
 
-        assertThatThrownBy(() -> store.findAll(query)).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
+        assertThat(store.findAll(query)).isEmpty();
 
     }
 
@@ -196,7 +192,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var t1 = TestFunctions.createTransferProcessBuilder("id1")
                 .dataRequest(null)
                 .build();
-        assertThatIllegalArgumentException().isThrownBy(() -> getTransferProcessStore().save(t1));
+        assertThatThrownBy(() -> getTransferProcessStore().save(t1)).isInstanceOf(EdcPersistenceException.class);
     }
 
 
@@ -212,7 +208,6 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
                 .until(() -> getTransferProcessStore().nextNotLeased(10, hasState(INITIAL.code())), hasSize(1));
     }
 
-    @Override
     @Test
     protected void findAll_verifySorting_invalidProperty() {
         range(0, 10).forEach(i -> getTransferProcessStore().save(createTransferProcess("test-neg-" + i)));
@@ -220,18 +215,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         var query = QuerySpec.Builder.newInstance().sortField("notexist").sortOrder(SortOrder.DESC).build();
 
         assertThatThrownBy(() -> getTransferProcessStore().findAll(query))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("Translation failed for Model");
-    }
-
-    @Override
-    protected boolean supportsCollectionQuery() {
-        return true;
-    }
-
-    @Override
-    protected boolean supportsLikeOperator() {
-        return true;
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Override

@@ -4,7 +4,7 @@ format.version = "1.1"
 [versions]
 awaitility = "4.2.0"
 azure-rm = "2.29.0"
-bouncyCastle-jdk18on = "1.75"
+bouncyCastle-jdk18on = "1.76"
 edc = "0.2.2-SNAPSHOT"
 failsafe = "3.3.2"
 httpMockServer = "5.15.0"

@@ -1,45 +1,45 @@
 maven/mavencentral/com.apicatalog/titanium-json-ld/1.3.2, Apache-2.0, approved, #8912
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.29.0, MIT, approved, #10039
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.29.0, MIT, approved, #10031
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.29.0, MIT, approved, #10026
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.29.0, MIT, approved, #10038
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.29.0, MIT, approved, #10025
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.29.0, MIT, approved, #10037
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.29.0, MIT, approved, #10041
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.29.0, MIT, approved, #10020
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.29.0, MIT, approved, #10028
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.30.0, , restricted, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-datafactory/1.0.0-beta.22, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.29.0, MIT, approved, #10040
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.29.0, MIT, approved, #10022
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.29.0, MIT, approved, #10030
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.29.0, MIT, approved, #10047
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.29.0, MIT, approved, #10036
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.29.0, MIT, approved, #10043
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.29.0, MIT, approved, #10032
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.29.0, MIT, approved, #10023
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.29.0, MIT, approved, #10045
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.29.0, MIT, approved, #10027
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.29.0, MIT, approved, #10042
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.29.0, MIT, approved, #10046
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.29.0, MIT, approved, #10019
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.29.0, MIT, approved, #10021
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.29.0, MIT, approved, #10034
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.30.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.30.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.5, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.6, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-management/1.10.2, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core-management/1.11.3, MIT, approved, #10033
+maven/mavencentral/com.azure/azure-core-management/1.11.4, MIT, approved, #10033
 maven/mavencentral/com.azure/azure-core/1.37.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.41.0, MIT AND Apache-2.0, approved, #9648
 maven/mavencentral/com.azure/azure-core/1.42.0, MIT AND Apache-2.0, approved, #10089
 maven/mavencentral/com.azure/azure-identity/1.10.0, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-json/1.0.1, MIT AND Apache-2.0, approved, #7933
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.17.2, MIT, approved, #10024
-maven/mavencentral/com.azure/azure-security-keyvault-keys/4.6.4, MIT, approved, #10035
-maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.4, MIT, approved, #7940
+maven/mavencentral/com.azure/azure-security-keyvault-keys/4.6.5, MIT, approved, #10035
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.5, MIT, approved, #7940
 maven/mavencentral/com.azure/azure-storage-blob/12.23.0, MIT, approved, #9632
 maven/mavencentral/com.azure/azure-storage-common/12.22.0, MIT, approved, #9645
-maven/mavencentral/com.azure/azure-storage-file-share/12.19.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-storage-common/12.22.1, MIT, approved, #9645
+maven/mavencentral/com.azure/azure-storage-file-share/12.19.1, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-storage-internal-avro/12.8.0, MIT, approved, #9630
 maven/mavencentral/com.ethlo.time/itu/1.7.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
@@ -89,9 +89,9 @@ maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.15.2, Apache-2.0, approve
 maven/mavencentral/com.fasterxml.uuid/java-uuid-generator/4.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.woodstox/woodstox-core/6.5.1, Apache-2.0, approved, #7950
 maven/mavencentral/com.github.cliftonlabs/json-simple/3.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.github.docker-java/docker-java-api/3.3.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.0, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
-maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.0, Apache-2.0, approved, #7942
+maven/mavencentral/com.github.docker-java/docker-java-api/3.3.3, , restricted, clearlydefined
+maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.3, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
+maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.3, Apache-2.0, approved, #7942
 maven/mavencentral/com.github.java-json-tools/btf/1.3, Apache-2.0 OR LGPL-3.0-or-later, approved, #2721
 maven/mavencentral/com.github.java-json-tools/jackson-coreutils-equivalence/1.0, LGPL-3.0 OR Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.github.java-json-tools/jackson-coreutils/2.0, Apache-2.0 OR LGPL-3.0-or-later, approved, #2719
@@ -537,8 +537,8 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
 maven/mavencentral/org.slf4j/slf4j-api/2.0.5, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.6, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.7, MIT, approved, #5915
-maven/mavencentral/org.testcontainers/junit-jupiter/1.18.3, MIT, approved, #7941
-maven/mavencentral/org.testcontainers/testcontainers/1.18.3, MIT, approved, #7938
+maven/mavencentral/org.testcontainers/junit-jupiter/1.19.0, , restricted, clearlydefined
+maven/mavencentral/org.testcontainers/testcontainers/1.19.0, , restricted, clearlydefined
 maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
 maven/mavencentral/org.xmlunit/xmlunit-placeholders/2.9.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/1.33, Apache-2.0, approved, clearlydefined

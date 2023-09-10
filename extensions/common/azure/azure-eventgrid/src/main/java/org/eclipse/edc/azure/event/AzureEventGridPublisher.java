@@ -67,12 +67,6 @@ class AzureEventGridPublisher implements TransferProcessListener {
 
     }
 
-    @Override
-    public void failed(TransferProcess process) {
-        sendEvent("error", eventTypeTransferprocess, createTransferProcessDto(process)).subscribe(new LoggingSubscriber<>("Transfer process errored!"));
-
-    }
-
     private Mono<Void> sendEvent(String what, String where, Object payload) {
         BinaryData data = BinaryData.fromObject(payload);
         var evt = new EventGridEvent(what, where, data, "0.1");

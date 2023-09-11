@@ -19,9 +19,8 @@ import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureDataFactoryIntegrationTest;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.eclipse.edc.spi.monitor.ConsoleMonitor;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.test.system.utils.TransferTestRunner;
-import org.eclipse.edc.vault.azure.AzureVault;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,7 +41,6 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
-import static java.lang.System.getenv;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.eclipse.edc.test.system.local.BlobTransferConfiguration.BLOB_CONTENT;
 import static org.eclipse.edc.test.system.local.BlobTransferUtils.createAsset;
@@ -70,14 +68,8 @@ class AzureDataFactoryTransferIntegrationTest {
     private static final List<Runnable> CONTAINER_CLEANUP = new ArrayList<>();
     private static final String EDC_FS_CONFIG = "edc.fs.config";
     private static final String EDC_VAULT_NAME = "edc.vault.name";
-    private static final String EDC_VAULT_CLIENT_ID = "edc.vault.clientid";
-    private static final String EDC_VAULT_TENANT_ID = "edc.vault.tenantid";
-    private static final String EDC_VAULT_CLIENT_SECRET = "edc.vault.clientsecret";
     private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
     private static final String KEY_VAULT_NAME = runtimeSettingsProperties().getProperty("test.key.vault.name");
-    private static final String AZURE_TENANT_ID = getenv("AZURE_TENANT_ID");
-    private static final String AZURE_CLIENT_ID = getenv("AZURE_CLIENT_ID");
-    private static final String AZURE_CLIENT_SECRET = getenv("AZURE_CLIENT_SECRET");
     private static final String PROVIDER_STORAGE_ACCOUNT_NAME = runtimeSettingsProperties().getProperty("test.provider.storage.name");
     private static final String CONSUMER_STORAGE_ACCOUNT_NAME = runtimeSettingsProperties().getProperty("test.consumer.storage.name");
     private static final String BLOB_STORE_ENDPOINT_TEMPLATE = "https://%s.blob.core.windows.net";
@@ -95,10 +87,7 @@ class AzureDataFactoryTransferIntegrationTest {
                     Map.entry("web.http.protocol.path", PROTOCOL_PATH),
                     Map.entry("edc.dsp.callback.address", CONSUMER_PROTOCOL_URL),
                     Map.entry(EDC_FS_CONFIG, runtimeSettingsPath()),
-                    Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
-                    Map.entry(EDC_VAULT_CLIENT_ID, AZURE_CLIENT_ID),
-                    Map.entry(EDC_VAULT_TENANT_ID, AZURE_TENANT_ID),
-                    Map.entry(EDC_VAULT_CLIENT_SECRET, AZURE_CLIENT_SECRET)
+                    Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME)
             )
     );
 
@@ -115,12 +104,35 @@ class AzureDataFactoryTransferIntegrationTest {
                     Map.entry("web.http.protocol.path", PROTOCOL_PATH),
                     Map.entry("edc.dsp.callback.address", PROVIDER_PROTOCOL_URL),
                     Map.entry(EDC_FS_CONFIG, runtimeSettingsPath()),
-                    Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
-                    Map.entry(EDC_VAULT_CLIENT_ID, AZURE_CLIENT_ID),
-                    Map.entry(EDC_VAULT_TENANT_ID, AZURE_TENANT_ID),
-                    Map.entry(EDC_VAULT_CLIENT_SECRET, AZURE_CLIENT_SECRET)
+                    Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME)
             )
     );
+
+    @Test
+    void transferBlob_success() {
+        // Arrange
+        var vault = PROVIDER.getContext().getService(Vault.class);
+        var account2Key = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME)));
+        var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_ENDPOINT_TEMPLATE);
+
+        // Upload a blob with test data on provider blob container
+        blobStoreApi.createContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);
+        blobStoreApi.putBlob(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, PROVIDER_ASSET_FILE, BLOB_CONTENT.getBytes(UTF_8));
+        // Add for cleanup
+        CONTAINER_CLEANUP.add(() -> blobStoreApi.deleteContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME));
+
+        // Seed data to provider
+        createAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);
+        var policyId = createPolicy();
+        createContractDefinition(policyId);
+
+
+        var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, account2Key, TestFunctions.getBlobServiceTestEndpoint(format("https://%s.blob.core.windows.net", CONSUMER_STORAGE_ACCOUNT_NAME)));
+
+        var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient));
+
+        runner.executeTransfer();
+    }
 
     @BeforeAll
     static void beforeAll() throws FileNotFoundException {
@@ -150,31 +162,5 @@ class AzureDataFactoryTransferIntegrationTest {
         } catch (IOException e) {
             throw new RuntimeException("Error in loading runtime settings properties", e);
         }
-    }
-
-    @Test
-    void transferBlob_success() {
-        // Arrange
-        var vault = AzureVault.authenticateWithSecret(new ConsoleMonitor(), AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET, KEY_VAULT_NAME);
-        var account2Key = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME)));
-        var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_ENDPOINT_TEMPLATE);
-
-        // Upload a blob with test data on provider blob container
-        blobStoreApi.createContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);
-        blobStoreApi.putBlob(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, PROVIDER_ASSET_FILE, BLOB_CONTENT.getBytes(UTF_8));
-        // Add for cleanup
-        CONTAINER_CLEANUP.add(() -> blobStoreApi.deleteContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME));
-
-        // Seed data to provider
-        createAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);
-        var policyId = createPolicy();
-        createContractDefinition(policyId);
-
-
-        var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, account2Key, TestFunctions.getBlobServiceTestEndpoint(format("https://%s.blob.core.windows.net", CONSUMER_STORAGE_ACCOUNT_NAME)));
-
-        var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient));
-
-        runner.executeTransfer();
     }
 }

@@ -14,13 +14,9 @@
 
 package org.eclipse.edc.vault.azure;
 
-import com.azure.core.credential.TokenCredential;
 import com.azure.core.exception.ResourceNotFoundException;
 import com.azure.core.util.polling.SyncPoller;
-import com.azure.identity.ClientCertificateCredentialBuilder;
-import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.security.keyvault.secrets.SecretClient;
-import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import com.azure.security.keyvault.secrets.models.DeletedSecret;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -48,34 +44,6 @@ public class AzureVault implements Vault {
     public AzureVault(Monitor monitor, SecretClient secretClient) {
         this.monitor = monitor;
         this.secretClient = secretClient;
-    }
-
-    public static AzureVault authenticateWithSecret(Monitor monitor, String clientId, String tenantId, String clientSecret, String keyVaultName) {
-        var credential = new ClientSecretCredentialBuilder()
-                .clientId(clientId)
-                .tenantId(tenantId)
-                .clientSecret(clientSecret)
-                .build();
-
-        return new AzureVault(monitor, createSecretClient(credential, keyVaultName));
-    }
-
-    public static AzureVault authenticateWithCertificate(Monitor monitor, String clientId, String tenantId, String certificatePath, String keyVaultName) {
-        var credential = new ClientCertificateCredentialBuilder()
-                .clientId(clientId)
-                .tenantId(tenantId)
-                .pfxCertificate(certificatePath, "")
-                .build();
-
-        return new AzureVault(monitor, createSecretClient(credential, keyVaultName));
-    }
-
-    @NotNull
-    private static SecretClient createSecretClient(TokenCredential credential, String keyVaultName) {
-        return new SecretClientBuilder()
-                .vaultUrl("https://" + keyVaultName + ".vault.azure.net")
-                .credential(credential)
-                .buildClient();
     }
 
     @Override

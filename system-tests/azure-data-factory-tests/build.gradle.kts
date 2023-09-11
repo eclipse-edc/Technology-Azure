@@ -18,7 +18,7 @@ plugins {
 }
 
 dependencies {
-    
+
     testImplementation(project(":extensions:common:azure:azure-blob-core"))
     testImplementation(project(":extensions:common:vault:vault-azure"))
     testImplementation(libs.edc.junit)
@@ -30,6 +30,7 @@ dependencies {
     testImplementation(libs.azure.identity)
     testImplementation(libs.azure.keyvault)
 
+    testRuntimeOnly(project(":extensions:common:vault:vault-azure"))
     testRuntimeOnly(project(":system-tests:runtimes:azure-data-factory-transfer-provider"))
     testRuntimeOnly(project(":system-tests:runtimes:azure-data-factory-transfer-consumer"))
 }

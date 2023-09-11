@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 Microsoft Corporation
+ *  Copyright (c) 2023 Amadeus
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -8,93 +8,59 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Microsoft Corporation - Initial implementation
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - improvements
+ *       Amadeus - initial API and implementation
  *
  */
 
 package org.eclipse.edc.vault.azure;
 
-import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.security.CertificateResolver;
+import org.eclipse.edc.spi.security.PrivateKeyResolver;
+import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.security.VaultCertificateResolver;
+import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.injection.ObjectFactory;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.UUID;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+@ExtendWith(DependencyInjectionExtension.class)
+public class AzureVaultExtensionTest {
 
-class AzureVaultExtensionTest {
+    private static final String VAULT_NAME = "aVault";
+    private static final String VAULT_NAME_SETTING = "edc.vault.name";
 
-    private static final String CLIENT_ID = UUID.randomUUID().toString();
-    private static final String TENANT_ID = UUID.randomUUID().toString();
-    private static final String KEYVAULT_NAME = UUID.randomUUID().toString();
-    private static final String CLIENT_SECRET = UUID.randomUUID().toString();
-    private static final String CERTIFICATE_PATH = UUID.randomUUID().toString();
-
-    private final Monitor monitor = mock(Monitor.class);
-    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
-
-    private final AzureVaultExtension extension = new AzureVaultExtension();
+    private ServiceExtensionContext context;
+    private AzureVaultExtension extension;
 
     @BeforeEach
-    public void setUp() {
-        when(context.getSetting("edc.vault.clientid", null)).thenReturn(CLIENT_ID);
-        when(context.getSetting("edc.vault.name", null)).thenReturn(KEYVAULT_NAME);
-        when(context.getSetting("edc.vault.tenantid", null)).thenReturn(TENANT_ID);
-        when(context.getMonitor()).thenReturn(monitor);
+    void setUp(ServiceExtensionContext context, ObjectFactory factory) {
+        this.context = context;
+        extension = factory.constructInstance(AzureVaultExtension.class);
     }
 
     @Test
-    void neitherSecretOrCertificateProvided_shouldThrowException() {
-        assertThrows(AzureVaultException.class, () -> extension.initialize(context));
+    void verifyInitialize() {
+        extension.initialize(context);
+
+        assertThat(context.getService(Vault.class)).isInstanceOf(AzureVault.class);
+        assertThat(context.getService(PrivateKeyResolver.class)).isInstanceOf(VaultPrivateKeyResolver.class);
+        assertThat(context.getService(CertificateResolver.class)).isInstanceOf(VaultCertificateResolver.class);
     }
 
-    @Test
-    void onlyCertificateProvided_authenticateWithCertificate() {
-        try (MockedStatic<AzureVault> staticMock = mockStatic(AzureVault.class)) {
-            when(context.getSetting("edc.vault.certificate", null)).thenReturn(CERTIFICATE_PATH);
-
-            extension.initialize(context);
-
-            staticMock.verify(
-                    () -> AzureVault.authenticateWithCertificate(monitor, CLIENT_ID, TENANT_ID, CERTIFICATE_PATH, KEYVAULT_NAME),
-                    times(1));
-            staticMock.verifyNoMoreInteractions();
-        }
+    @BeforeAll
+    static void setProps() {
+        System.setProperty(VAULT_NAME_SETTING, VAULT_NAME);
     }
 
-    @Test
-    void onlySecretProvided_authenticateWithSecret() {
-        try (var staticMock = mockStatic(AzureVault.class)) {
-            when(context.getSetting("edc.vault.clientsecret", null)).thenReturn(CLIENT_SECRET);
-
-            extension.initialize(context);
-
-            staticMock.verify(
-                    () -> AzureVault.authenticateWithSecret(monitor, CLIENT_ID, TENANT_ID, CLIENT_SECRET, KEYVAULT_NAME),
-                    times(1));
-            staticMock.verifyNoMoreInteractions();
-        }
-    }
-
-    @Test
-    void bothSecretAndCertificateProvided_authenticateWithCertificate() {
-        try (MockedStatic<AzureVault> staticMock = mockStatic(AzureVault.class)) {
-            when(context.getSetting("edc.vault.certificate", null)).thenReturn(CERTIFICATE_PATH);
-            when(context.getSetting("edc.vault.clientsecret", null)).thenReturn(CLIENT_SECRET);
-
-            extension.initialize(context);
-
-            staticMock.verify(
-                    () -> AzureVault.authenticateWithCertificate(monitor, CLIENT_ID, TENANT_ID, CERTIFICATE_PATH, KEYVAULT_NAME),
-                    times(1));
-            staticMock.verifyNoMoreInteractions();
-        }
+    @AfterAll
+    static void unsetProps() {
+        System.clearProperty(VAULT_NAME_SETTING);
     }
 }

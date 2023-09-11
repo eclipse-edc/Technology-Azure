@@ -26,14 +26,13 @@ import org.eclipse.edc.connector.dataplane.spi.registry.TransferServiceRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.SettingResolver;
 import org.eclipse.edc.spi.types.TypeManager;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.util.Objects;
 
 /**
  * Registers a {@link TransferService} for performing data transfers with Azure Data Factory.
@@ -52,13 +51,10 @@ public class DataPlaneAzureDataFactoryExtension implements ServiceExtension {
     private static final String DATA_FACTORY_POLL_DELAY = "edc.data.factory.poll.delay.ms";
     @Inject
     private TransferServiceRegistry registry;
-
     @Inject
     private AzureProfile profile;
-
     @Inject
     private AzureResourceManager resourceManager;
-
     @Inject
     private TokenCredential credential;
     @Inject
@@ -66,7 +62,8 @@ public class DataPlaneAzureDataFactoryExtension implements ServiceExtension {
 
     @Inject
     private Clock clock;
-
+    @Inject
+    private Monitor monitor;
     @Inject
     private TypeManager typeManager;
 
@@ -77,10 +74,8 @@ public class DataPlaneAzureDataFactoryExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var monitor = context.getMonitor();
-
-        var dataFactoryId = requiredSetting(context, RESOURCE_ID);
-        var keyVaultId = requiredSetting(context, KEY_VAULT_RESOURCE_ID);
+        var dataFactoryId = context.getConfig().getString(RESOURCE_ID);
+        var keyVaultId = context.getConfig().getString(KEY_VAULT_RESOURCE_ID);
         var keyVaultLinkedService = context.getSetting(KEY_VAULT_LINKED_SERVICE_NAME, "AzureKeyVault");
 
         var dataFactoryManager = DataFactoryManager.authenticate(credential, profile);
@@ -116,9 +111,5 @@ public class DataPlaneAzureDataFactoryExtension implements ServiceExtension {
                 validator,
                 transferManager);
         registry.registerTransferService(transferService);
-    }
-
-    private String requiredSetting(SettingResolver context, String s) {
-        return Objects.requireNonNull(context.getSetting(s, null), s);
     }
 }

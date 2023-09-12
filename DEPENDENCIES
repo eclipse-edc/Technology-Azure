@@ -26,13 +26,16 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanage
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.30.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.5, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.6, MIT AND Apache-2.0, approved, #7948
+maven/mavencentral/com.azure/azure-core-http-netty/1.13.7, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-management/1.10.2, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-management/1.11.4, MIT, approved, #10033
 maven/mavencentral/com.azure/azure-core/1.37.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.41.0, MIT AND Apache-2.0, approved, #9648
 maven/mavencentral/com.azure/azure-core/1.42.0, MIT AND Apache-2.0, approved, #10089
-maven/mavencentral/com.azure/azure-identity/1.10.0, MIT AND Apache-2.0, approved, #10086
+maven/mavencentral/com.azure/azure-core/1.43.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-identity/1.10.1, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-json/1.0.1, MIT AND Apache-2.0, approved, #7933
+maven/mavencentral/com.azure/azure-json/1.1.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.17.2, MIT, approved, #10024
 maven/mavencentral/com.azure/azure-security-keyvault-keys/4.6.5, MIT, approved, #10035
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.5, MIT, approved, #7940
@@ -89,7 +92,7 @@ maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.15.2, Apache-2.0, approve
 maven/mavencentral/com.fasterxml.uuid/java-uuid-generator/4.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.woodstox/woodstox-core/6.5.1, Apache-2.0, approved, #7950
 maven/mavencentral/com.github.cliftonlabs/json-simple/3.0.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.github.docker-java/docker-java-api/3.3.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.github.docker-java/docker-java-api/3.3.0, Apache-2.0, approved, #10346
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.0, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.0, Apache-2.0, approved, #7942
 maven/mavencentral/com.github.java-json-tools/btf/1.3, Apache-2.0 OR LGPL-3.0-or-later, approved, #2721
@@ -171,6 +174,7 @@ maven/mavencentral/io.netty/netty-buffer/4.1.86.Final, Apache-2.0, approved, CQ2
 maven/mavencentral/io.netty/netty-buffer/4.1.93.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.94.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-codec-dns/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-codec-dns/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
@@ -192,8 +196,11 @@ maven/mavencentral/io.netty/netty-handler/4.1.86.Final, Apache-2.0 AND BSD-3-Cla
 maven/mavencentral/io.netty/netty-handler/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-handler/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver-dns-classes-macos/4.1.93.Final, Apache-2.0, approved, #6367
+maven/mavencentral/io.netty/netty-resolver-dns-classes-macos/4.1.94.Final, Apache-2.0, approved, #6367
 maven/mavencentral/io.netty/netty-resolver-dns-native-macos/4.1.93.Final, Apache-2.0, approved, #7004
+maven/mavencentral/io.netty/netty-resolver-dns-native-macos/4.1.94.Final, Apache-2.0, approved, #7004
 maven/mavencentral/io.netty/netty-resolver-dns/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
+maven/mavencentral/io.netty/netty-resolver-dns/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.86.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.93.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
@@ -219,8 +226,11 @@ maven/mavencentral/io.opentelemetry/opentelemetry-api/1.29.0, Apache-2.0, approv
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.18.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.29.0, Apache-2.0, approved, #10090
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.33, Apache-2.0, approved, #9687
+maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.34, Apache-2.0, approved, #9687
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.33, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.34, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor/reactor-core/3.4.30, Apache-2.0, approved, #7517
+maven/mavencentral/io.projectreactor/reactor-core/3.4.31, Apache-2.0, approved, #7517
 maven/mavencentral/io.prometheus/simpleclient/0.16.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.prometheus/simpleclient_common/0.16.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.prometheus/simpleclient_httpserver/0.16.0, Apache-2.0, approved, clearlydefined
@@ -246,7 +256,7 @@ maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.1.13, Apache-2.0,
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.2, Apache-2.0, approved, #5919
-maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.8, Apache-2.0, approved, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-models/2.2.8, LicenseRef-scancode-proprietary-license AND Apache-2.0, restricted, #10354
 maven/mavencentral/io.swagger.parser.v3/swagger-parser-core/2.1.10, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.parser.v3/swagger-parser-v2-converter/2.1.10, Apache-2.0, approved, #9330
 maven/mavencentral/io.swagger.parser.v3/swagger-parser-v3/2.1.10, Apache-2.0, approved, #9323

@@ -24,6 +24,7 @@ import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureDataFactoryIntegrationTest;
+import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.junit.extensions.EdcExtension;
@@ -143,7 +144,7 @@ class AzureDataFactoryCopyIntegrationTest {
         setSecret(consumerStorage, vault, destSecretKeyName);
 
         // Act
-        dataPlaneManager.initiateTransfer(request);
+        dataPlaneManager.initiate(request);
 
         // Assert
         var destinationBlob = consumerStorage.client
@@ -151,8 +152,8 @@ class AzureDataFactoryCopyIntegrationTest {
                 .getBlobClient(blobName);
         await()
                 .atMost(Duration.ofMinutes(5))
-                .untilAsserted(() -> assertThat(store.getState(request.getProcessId()))
-                        .isEqualTo(DataPlaneStore.State.COMPLETED));
+                .untilAsserted(() -> assertThat(store.findById(request.getProcessId()).getState())
+                        .isEqualTo(DataFlowStates.COMPLETED.code()));
         assertThat(destinationBlob.exists())
                 .withFailMessage("should have copied blob between containers")
                 .isTrue();

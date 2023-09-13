@@ -17,7 +17,7 @@ package org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
-import org.eclipse.edc.connector.contract.spi.ContractId;
+import org.eclipse.edc.connector.contract.spi.ContractOfferId;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
 import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.TestFunctions;
 import org.eclipse.edc.connector.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
@@ -111,8 +111,8 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
 
     @Test
     void query_byAgreementId() {
-        var contractId1 = ContractId.create("def1", "asset");
-        var contractId2 = ContractId.create("def2", "asset");
+        var contractId1 = ContractOfferId.create("def1", "asset");
+        var contractId2 = ContractOfferId.create("def2", "asset");
         var negotiation1 = createNegotiation("neg1", createContract(contractId1));
         var negotiation2 = createNegotiation("neg2", createContract(contractId2));
         store.save(negotiation1);
@@ -160,7 +160,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
 
     @Test
     void query_invalidKey_shouldThrowException() {
-        var contractId = ContractId.create("definition", "asset");
+        var contractId = ContractOfferId.create("definition", "asset");
         var agreement1 = createContract(contractId);
         var negotiation1 = createNegotiation("neg1", agreement1);
         store.save(negotiation1);
@@ -172,7 +172,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
 
     @Test
     void query_invalidKeyInJson() {
-        var contractId = ContractId.create("definition", "asset");
+        var contractId = ContractOfferId.create("definition", "asset");
         var agreement1 = createContract(contractId);
         var negotiation1 = createNegotiation("neg1", agreement1);
         store.save(negotiation1);
@@ -185,7 +185,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     @Test
     void queryAgreements_withQuerySpec() {
         IntStream.range(0, 10).forEach(i -> {
-            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+            var contractAgreement = createContractBuilder(ContractOfferId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
                     .assetId("asset-" + i)
                     .build();
             var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
@@ -201,7 +201,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     @Test
     void queryAgreements_withQuerySpec_invalidOperand() {
         IntStream.range(0, 10).forEach(i -> {
-            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+            var contractAgreement = createContractBuilder(ContractOfferId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
                     .assetId("asset-" + i)
                     .build();
             var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
@@ -215,7 +215,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     @Test
     void queryAgreements_withQuerySpec_noFilter() {
         IntStream.range(0, 10).forEach(i -> {
-            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+            var contractAgreement = createContractBuilder(ContractOfferId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
                     .assetId("asset-" + i)
                     .build();
             var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
@@ -229,7 +229,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     @Test
     void queryAgreements_withQuerySpec_invalidValue() {
         IntStream.range(0, 10).forEach(i -> {
-            var contractAgreement = createContractBuilder(ContractId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
+            var contractAgreement = createContractBuilder(ContractOfferId.create(UUID.randomUUID().toString(), TEST_ASSET_ID).toString())
                     .assetId("asset-" + i)
                     .build();
             var negotiation = createNegotiation(UUID.randomUUID().toString(), contractAgreement);
@@ -247,7 +247,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
         store.save(negotiation);
 
         // now add the agreement
-        var agreement = createContract(ContractId.create("definition", "asset"));
+        var agreement = createContract(ContractOfferId.create("definition", "asset"));
         var updatedNegotiation = createNegotiation(negotiationId, agreement);
 
         store.save(updatedNegotiation);

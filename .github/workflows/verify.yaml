@@ -61,7 +61,7 @@ jobs:
         uses: ./.github/actions/run-tests
         with:
           command: |
-            ./gradlew --refresh-dependencies test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
+            ./gradlew --refresh-dependencies test -DincludeTags="AzureStorageIntegrationTest"
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:

@@ -14,6 +14,8 @@ dependencies {
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(libs.edc.spi.dataplane))
     testImplementation(testFixtures(libs.edc.dpf.selector.spi))
+    testImplementation(testFixtures(libs.edc.sql.lease))
+    testImplementation(libs.awaitility)
 
 }
 

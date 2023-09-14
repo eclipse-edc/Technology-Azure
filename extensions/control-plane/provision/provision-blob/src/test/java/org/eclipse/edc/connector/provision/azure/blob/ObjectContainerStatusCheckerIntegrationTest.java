@@ -18,7 +18,6 @@ import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
-import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
@@ -27,6 +26,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.util.UUID;
@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Testcontainers
 @AzureStorageIntegrationTest
 class ObjectContainerStatusCheckerIntegrationTest extends AbstractAzureBlobTest {
 
@@ -49,8 +50,8 @@ class ObjectContainerStatusCheckerIntegrationTest extends AbstractAzureBlobTest 
         helloTxt = TestUtils.getFileFromResourceName("hello.txt");
         Vault vault = mock(Vault.class);
 
-        when(vault.resolveSecret(account1Name + "-key1")).thenReturn(account1Key);
-        var blobStoreApi = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(account1Name));
+        when(vault.resolveSecret(ACCOUNT_1_NAME + "-key1")).thenReturn(ACCOUNT_1_KEY);
+        var blobStoreApi = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_1_NAME));
         checker = new ObjectContainerStatusChecker(blobStoreApi, policy);
     }
 
@@ -113,7 +114,7 @@ class ObjectContainerStatusCheckerIntegrationTest extends AbstractAzureBlobTest 
                         .dataDestination(DataAddress.Builder.newInstance()
                                 .type(AzureBlobStoreSchema.TYPE)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                                .property(AzureBlobStoreSchema.ACCOUNT_NAME, account1Name)
+                                .property(AzureBlobStoreSchema.ACCOUNT_NAME, ACCOUNT_1_NAME)
                                 //.property(AzureBlobStoreSchema.BLOB_NAME, ???) omitted on purpose
                                 .build())
                         .build())
@@ -123,7 +124,7 @@ class ObjectContainerStatusCheckerIntegrationTest extends AbstractAzureBlobTest 
     private ObjectContainerProvisionedResource createProvisionedResource(TransferProcess tp) {
         return ObjectContainerProvisionedResource.Builder.newInstance()
                 .containerName(account1ContainerName)
-                .accountName(account1Name)
+                .accountName(ACCOUNT_1_NAME)
                 .resourceDefinitionId(UUID.randomUUID().toString())
                 .transferProcessId(tp.getId())
                 .id(UUID.randomUUID().toString())

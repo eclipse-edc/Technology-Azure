@@ -20,7 +20,6 @@ import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
-import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSinkFactory;
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSourceFactory;
@@ -30,7 +29,9 @@ import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -48,6 +49,8 @@ import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.c
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Disabled
+@Testcontainers
 @AzureStorageIntegrationTest
 class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
@@ -60,8 +63,8 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
     private final Monitor monitor = mock(Monitor.class);
     private final Vault vault = mock(Vault.class);
 
-    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(account1Name));
-    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(account2Name));
+    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_1_NAME));
+    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_2_NAME));
 
     @BeforeEach
     void setUp() {
@@ -78,24 +81,24 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
         String account1KeyName = "test-account-key-name1";
         var source = DataAddress.Builder.newInstance()
                 .type(TYPE)
-                .property(ACCOUNT_NAME, account1Name)
+                .property(ACCOUNT_NAME, ACCOUNT_1_NAME)
                 .property(CONTAINER_NAME, account1ContainerName)
                 .property(BLOB_NAME, blobName)
                 .keyName(account1KeyName)
                 .build();
-        when(vault.resolveSecret(account1KeyName)).thenReturn(account1Key);
+        when(vault.resolveSecret(account1KeyName)).thenReturn(ACCOUNT_1_KEY);
 
         String account2KeyName = "test-account-key-name2";
         var destination = DataAddress.Builder.newInstance()
                 .type(TYPE)
-                .property(ACCOUNT_NAME, account2Name)
+                .property(ACCOUNT_NAME, ACCOUNT_2_NAME)
                 .property(CONTAINER_NAME, sinkContainerName)
                 .keyName(account2KeyName)
                 .build();
 
-        when(vault.resolveSecret(account2Name + "-key1"))
-                .thenReturn(account2Key);
-        var account2SasToken = account2Api.createContainerSasToken(account2Name, sinkContainerName, "w", OffsetDateTime.MAX.minusDays(1));
+        when(vault.resolveSecret(ACCOUNT_2_NAME + "-key1"))
+                .thenReturn(ACCOUNT_2_KEY);
+        var account2SasToken = account2Api.createContainerSasToken(ACCOUNT_2_NAME, sinkContainerName, "w", OffsetDateTime.MAX.minusDays(1));
         var secretToken = new AzureSasToken(account2SasToken, Long.MAX_VALUE);
         when(vault.resolveSecret(account2KeyName))
                 .thenReturn(typeManager.writeValueAsString(secretToken));

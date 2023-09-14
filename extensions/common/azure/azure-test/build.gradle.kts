@@ -21,6 +21,7 @@ plugins {
 dependencies {
     api(libs.edc.controlplane.spi)
     testFixturesApi(libs.postgres)
+    testFixturesApi(libs.testcontainers.junit)
 
     testFixturesApi(libs.edc.util)
     testFixturesApi(libs.edc.junit)

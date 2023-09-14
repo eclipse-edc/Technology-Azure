@@ -17,6 +17,8 @@ opentelemetry-proto = "1.0.0-alpha"
 postgres = "42.6.0"
 restAssured = "5.3.2"
 rsApi = "3.1.0"
+testcontainers = "1.19.0"
+
 
 
 [libraries]
@@ -104,6 +106,8 @@ nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+
 
 # Azure dependencies
 azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.17.2" }

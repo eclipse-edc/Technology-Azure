@@ -45,14 +45,6 @@ jobs:
   Azure-Storage-Integration-Tests:
     runs-on: ubuntu-latest
 
-    services:
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite
-        ports:
-          - 10000:10000
-        env:
-          AZURITE_ACCOUNTS: account1:key1;account2:key2
-
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build

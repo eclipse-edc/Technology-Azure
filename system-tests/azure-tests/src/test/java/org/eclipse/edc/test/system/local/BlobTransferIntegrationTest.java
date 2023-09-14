@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PRO
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_PROTOCOL_URL;
 import static org.mockito.Mockito.mock;
 
+@Testcontainers
 @AzureStorageIntegrationTest
 public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
     public static final String PROVIDER_ASSET_FILE = "text-document.txt";
@@ -69,7 +71,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
     private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
     private static final Map<String, String> PROVIDER_CONFIG = new HashMap<>() {
         {
-            put("edc.blobstore.endpoint.template", "http://127.0.0.1:10000/%s");
+            put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s");
             put("edc.test.asset.container.name", PROVIDER_CONTAINER_NAME);
             put("web.http.port", String.valueOf(PROVIDER_CONNECTOR_PORT));
             put("web.http.path", PROVIDER_CONNECTOR_PATH);
@@ -87,7 +89,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
             "provider", PROVIDER_CONFIG);
     private static final Map<String, String> CONSUMER_CONFIG = new HashMap<>() {
         {
-            put("edc.blobstore.endpoint.template", "http://127.0.0.1:10000/%s");
+            put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s");
             put("web.http.port", String.valueOf(CONSUMER_CONNECTOR_PORT));
             put("web.http.path", CONSUMER_CONNECTOR_PATH);
             put("web.http.management.port", String.valueOf(CONSUMER_MANAGEMENT_PORT));
@@ -137,16 +139,16 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
                 .upload(BinaryData.fromString(blobContent));
 
         // Seed data to provider
-        createAsset(account1Name, PROVIDER_CONTAINER_NAME);
+        createAsset(ACCOUNT_1_NAME, PROVIDER_CONTAINER_NAME);
         var policyId = createPolicy();
         createContractDefinition(policyId);
 
         // Write Key to vault
-        CONSUMER_VAULT.storeSecret(format("%s-key1", account2Name), account2Key);
-        PROVIDER_VAULT.storeSecret(format("%s-key1", account1Name), account1Key);
+        CONSUMER_VAULT.storeSecret(format("%s-key1", ACCOUNT_2_NAME), ACCOUNT_2_KEY);
+        PROVIDER_VAULT.storeSecret(format("%s-key1", ACCOUNT_1_NAME), ACCOUNT_1_KEY);
 
 
-        var blobServiceClient = TestFunctions.getBlobServiceClient(account2Name, account2Key, TestFunctions.getBlobServiceTestEndpoint(account2Name));
+        var blobServiceClient = TestFunctions.getBlobServiceClient(ACCOUNT_2_NAME, ACCOUNT_2_KEY, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_2_NAME));
 
         var runner = new TransferTestRunner(new BlobTransferConfiguration(CONSUMER_CONNECTOR_MANAGEMENT_URL, PROVIDER_PROTOCOL_URL, blobServiceClient));
 

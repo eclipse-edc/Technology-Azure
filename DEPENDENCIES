@@ -24,13 +24,11 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.30.0, ,
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.30.0, , restricted, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.30.0, , restricted, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.30.0, , restricted, clearlydefined
-maven/mavencentral/com.azure/azure-core-http-netty/1.13.5, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.6, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.7, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-management/1.10.2, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-management/1.11.4, MIT, approved, #10033
 maven/mavencentral/com.azure/azure-core/1.37.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core/1.41.0, MIT AND Apache-2.0, approved, #9648
 maven/mavencentral/com.azure/azure-core/1.42.0, MIT AND Apache-2.0, approved, #10089
 maven/mavencentral/com.azure/azure-core/1.43.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.10.1, MIT AND Apache-2.0, approved, #10086
@@ -39,11 +37,11 @@ maven/mavencentral/com.azure/azure-json/1.1.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.17.2, MIT, approved, #10024
 maven/mavencentral/com.azure/azure-security-keyvault-keys/4.6.5, MIT, approved, #10035
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.6.5, MIT, approved, #7940
-maven/mavencentral/com.azure/azure-storage-blob/12.23.0, MIT, approved, #9632
-maven/mavencentral/com.azure/azure-storage-common/12.22.0, MIT, approved, #9645
+maven/mavencentral/com.azure/azure-storage-blob/12.24.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-storage-common/12.22.1, MIT, approved, #9645
+maven/mavencentral/com.azure/azure-storage-common/12.23.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-storage-file-share/12.19.1, , restricted, clearlydefined
-maven/mavencentral/com.azure/azure-storage-internal-avro/12.8.0, MIT, approved, #9630
+maven/mavencentral/com.azure/azure-storage-internal-avro/12.9.0, , restricted, clearlydefined
 maven/mavencentral/com.ethlo.time/itu/1.7.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.12.1, Apache-2.0, approved, CQ22965

@@ -18,22 +18,32 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractAzureBlobTest {
 
-    protected final String account1Name = "account1";
-    protected final String account1Key = "key1";
-    protected final String account2Name = "account2";
-    protected final String account2Key = "key2";
+
+    protected static final String ACCOUNT_1_NAME = "account1";
+    protected static final String ACCOUNT_1_KEY = "key1";
+    protected static final String ACCOUNT_2_NAME = "account2";
+    protected static final String ACCOUNT_2_KEY = "key2";
+    protected static final int AZURITE_PORT = getFreePort();
+    @Container
+    protected static final GenericContainer<?> AZURITE_CONTAINER = new FixedHostPortGenericContainer<>("mcr.microsoft.com/azure-storage/azurite")
+            .withFixedExposedPort(AZURITE_PORT, 10000)
+            .withEnv("AZURITE_ACCOUNTS", "%s:%s;%s:%s".formatted(ACCOUNT_1_NAME, ACCOUNT_1_KEY, ACCOUNT_2_NAME, ACCOUNT_2_KEY));
     protected BlobServiceClient blobServiceClient1;
     protected BlobServiceClient blobServiceClient2;
     protected String account1ContainerName;
@@ -44,8 +54,8 @@ public abstract class AbstractAzureBlobTest {
     public void setupClient() {
         account1ContainerName = "storage-container-" + testRunId;
 
-        blobServiceClient1 = TestFunctions.getBlobServiceClient(account1Name, account1Key);
-        blobServiceClient2 = TestFunctions.getBlobServiceClient(account2Name, account2Key);
+        blobServiceClient1 = TestFunctions.getBlobServiceClient(ACCOUNT_1_NAME, ACCOUNT_1_KEY, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_1_NAME));
+        blobServiceClient2 = TestFunctions.getBlobServiceClient(ACCOUNT_2_NAME, ACCOUNT_2_KEY, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_2_NAME));
 
         createContainer(blobServiceClient1, account1ContainerName);
     }

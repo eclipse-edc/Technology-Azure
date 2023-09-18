@@ -35,6 +35,8 @@ dependencies {
     implementation(project(":extensions:control-plane:provision:provision-blob"))
 
     implementation(libs.edc.util)
+    implementation(libs.edc.core.controlplane.apiclient)
+
 
     api(libs.jakarta.rsApi)
 }

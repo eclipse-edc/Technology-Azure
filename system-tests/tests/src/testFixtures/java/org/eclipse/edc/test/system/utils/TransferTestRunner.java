@@ -18,7 +18,7 @@ import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.STARTED;
+import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_POLICY_ATTRIBUTE;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_ASSET_ID;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_PARTICIPANT_ID;
@@ -55,7 +55,7 @@ public class TransferTestRunner {
                 .untilAsserted(() -> {
                     var state = client.getTransferProcessState(transferProcessId);
                     // should be STARTED or some state after that to make it more robust.
-                    assertThat(TransferProcessStates.valueOf(state).code()).isGreaterThanOrEqualTo(STARTED.code());
+                    assertThat(TransferProcessStates.valueOf(state).code()).isGreaterThanOrEqualTo(COMPLETED.code());
                 });
 
         var transferProcess = client.getTransferProcess(transferProcessId);

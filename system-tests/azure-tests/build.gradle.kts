@@ -20,11 +20,12 @@ plugins {
 }
 
 dependencies {
-    
+
     testImplementation(project(":extensions:common:azure:azure-blob-core"))
     testFixturesImplementation(project(":extensions:common:azure:azure-blob-core"))
     testFixturesImplementation(libs.edc.jsonld)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.testcontainers.junit)
     testImplementation(testFixtures(project(":system-tests:tests")))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testFixturesImplementation(testFixtures(project(":system-tests:tests")))

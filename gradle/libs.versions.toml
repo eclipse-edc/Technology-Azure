@@ -3,20 +3,22 @@ format.version = "1.1"
 
 [versions]
 awaitility = "4.2.0"
-azure-rm = "2.29.0"
-bouncyCastle-jdk18on = "1.75"
-edc = "0.2.1-SNAPSHOT"
+azure-rm = "2.30.0"
+bouncyCastle-jdk18on = "1.76"
+edc = "0.2.2-SNAPSHOT"
 failsafe = "3.3.2"
 httpMockServer = "5.15.0"
 jakarta-json = "2.0.1"
 junit = "5.10.0"
 mockito = "5.2.0"
-nimbus = "9.31"
+nimbus = "9.32"
 openTelemetry = "1.18.0"
 opentelemetry-proto = "1.0.0-alpha"
 postgres = "42.6.0"
-restAssured = "5.3.1"
+restAssured = "5.3.2"
 rsApi = "3.1.0"
+testcontainers = "1.19.0"
+
 
 
 [libraries]
@@ -32,6 +34,7 @@ edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", v
 edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.ref = "edc" }
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
+edc-core-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-client", version.ref = "edc" }
 edc-core-dataplane = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-core-dataPlane-selector = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-core-dataPlane-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
@@ -103,18 +106,20 @@ nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+
 
 # Azure dependencies
-azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.17.1" }
-azure-identity = { group = "com.azure", name = "azure-identity", version = "1.9.2" }
-azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.6.4" }
+azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.18.0" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.10.1" }
+azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.6.5" }
 azure-mgmt-resources = { module = "com.microsoft.azure:azure-mgmt-resources", version = "1.41.4" }
 azure-resourcemanager = { group = "com.azure.resourcemanager", name = "azure-resourcemanager", version.ref = "azure-rm" }
 azure-resourcemanager-authorization = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-authorization", version.ref = "azure-rm" }
 azure-resourcemanager-datafactory = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-datafactory", version = "1.0.0-beta.22" }
 azure-resourcemanager-keyvault = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-keyvault", version.ref = "azure-rm" }
 azure-resourcemanager-storage = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-storage", version.ref = "azure-rm" }
-azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.23.0" }
+azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.24.0" }
 
 [bundles]
 

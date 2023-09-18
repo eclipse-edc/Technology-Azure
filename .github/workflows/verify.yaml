@@ -23,7 +23,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Run Checkstyle
@@ -34,7 +34,7 @@ jobs:
     env:
       JACOCO: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Run unit tests
@@ -45,23 +45,15 @@ jobs:
   Azure-Storage-Integration-Tests:
     runs-on: ubuntu-latest
 
-    services:
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite
-        ports:
-          - 10000:10000
-        env:
-          AZURITE_ACCOUNTS: account1:key1;account2:key2
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Azure Storage Tests
         uses: ./.github/actions/run-tests
         with:
           command: |
-            ./gradlew --refresh-dependencies test -DincludeTags="AzureStorageIntegrationTest" --refresh-dependencies
+            ./gradlew --refresh-dependencies test -DincludeTags="AzureStorageIntegrationTest"
 
   #  TODO: this test has been commented out because it was flaky. Further investigation needed. ref: https://github.com/eclipse-edc/Connector/issues/2403
   #  Azure-Cloud-Integration-Test:
@@ -77,7 +69,7 @@ jobs:
   #      contents: read
   #
   #    steps:
-  #      - uses: actions/checkout@v3
+  #      - uses: actions/checkout@v4
   #      - uses: ./.github/actions/setup-build
   #
   #      - name: 'Az CLI login'
@@ -108,7 +100,7 @@ jobs:
       JACOCO: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Component Tests
@@ -119,7 +111,7 @@ jobs:
   End-To-End-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: End to End Integration Tests
@@ -132,7 +124,7 @@ jobs:
       JACOCO: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
 
       - name: Component Tests
@@ -173,7 +165,7 @@ jobs:
     if: always()
     steps:
       # Sources are needed for Codecov report
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:

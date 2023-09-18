@@ -27,8 +27,10 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresFunctions.createDataSource;
@@ -113,6 +115,16 @@ public class CosmosPostgresTestExtension implements BeforeAllCallback, BeforeEac
          */
         public void truncateTable(String tableName) {
             executeStatement("TRUNCATE TABLE " + tableName + " CASCADE");
+        }
+
+        public Supplier<Connection> connectionSupplier() {
+            return () -> {
+                try {
+                    return dataSource.getConnection();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            };
         }
     }
 }

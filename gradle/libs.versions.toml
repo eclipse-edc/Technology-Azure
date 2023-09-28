@@ -35,6 +35,7 @@ edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.re
 edc-core-connector = { module = "org.eclipse.edc:connector-core", version.ref = "edc" }
 edc-core-controlplane = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-core-controlplane-apiclient = { module = "org.eclipse.edc:control-plane-api-client", version.ref = "edc" }
+edc-core-controlplane-api = { module = "org.eclipse.edc:control-plane-api", version.ref = "edc" }
 edc-core-dataplane = { module = "org.eclipse.edc:data-plane-core", version.ref = "edc" }
 edc-core-dataPlane-selector = { module = "org.eclipse.edc:data-plane-selector-core", version.ref = "edc" }
 edc-core-dataPlane-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }

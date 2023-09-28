@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.test.system.local;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
@@ -41,13 +42,10 @@ public class TransferRuntimeConfiguration {
     public static final String PROVIDER_MANAGEMENT_PATH = "/api/v1/management";
     public static final int PROVIDER_PROTOCOL_PORT = getFreePort();
     public static final String PROVIDER_PROTOCOL_URL = "http://localhost:" + PROVIDER_PROTOCOL_PORT + PROTOCOL_PATH;
-
     public static final String PROVIDER_ASSET_ID = "test-document";
     public static final long CONTRACT_VALIDITY = TimeUnit.HOURS.toSeconds(1);
-
     public static final String PROVIDER_ASSET_FILE = "text-document.txt";
-
     public static final String PROVIDER_CONNECTOR_MANAGEMENT_URL = "http://localhost:" + PROVIDER_MANAGEMENT_PORT + PROVIDER_MANAGEMENT_PATH;
-
+    public static final URI PROVIDER_CONTROL_URL = URI.create("http://localhost:" + getFreePort() + "/control");
 
 }

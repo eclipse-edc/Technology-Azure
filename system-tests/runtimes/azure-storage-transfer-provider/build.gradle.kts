@@ -42,6 +42,7 @@ dependencies {
 
     implementation(libs.edc.dsp)
     implementation(libs.edc.core.controlplane.apiclient)
+    implementation(libs.edc.core.controlplane.api)
 
     implementation(libs.jakarta.rsApi)
 }

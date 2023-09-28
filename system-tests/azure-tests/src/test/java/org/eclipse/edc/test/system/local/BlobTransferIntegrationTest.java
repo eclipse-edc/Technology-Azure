@@ -54,6 +54,7 @@ import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.CON
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROTOCOL_PATH;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_CONNECTOR_PATH;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_CONNECTOR_PORT;
+import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_CONTROL_URL;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_MANAGEMENT_PATH;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_MANAGEMENT_PORT;
 import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PROVIDER_PARTICIPANT_ID;
@@ -79,6 +80,8 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
             put("web.http.management.path", PROVIDER_MANAGEMENT_PATH);
             put("web.http.protocol.port", String.valueOf(PROVIDER_PROTOCOL_PORT));
             put("web.http.protocol.path", PROTOCOL_PATH);
+            put("web.http.control.port", String.valueOf(PROVIDER_CONTROL_URL.getPort()));
+            put("web.http.control.path", PROVIDER_CONTROL_URL.getPath());
             put(PARTICIPANT_ID, PROVIDER_PARTICIPANT_ID);
             put("edc.dsp.callback.address", PROVIDER_PROTOCOL_URL);
         }

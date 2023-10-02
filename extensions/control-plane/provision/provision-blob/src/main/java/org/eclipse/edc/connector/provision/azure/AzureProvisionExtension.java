@@ -15,18 +15,15 @@
 package org.eclipse.edc.connector.provision.azure;
 
 import dev.failsafe.RetryPolicy;
-import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectContainerProvisionedResource;
-import org.eclipse.edc.connector.provision.azure.blob.ObjectContainerStatusChecker;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageConsumerResourceDefinitionGenerator;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageProvisioner;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageResourceDefinition;
 import org.eclipse.edc.connector.transfer.spi.provision.ProvisionManager;
 import org.eclipse.edc.connector.transfer.spi.provision.Provisioner;
 import org.eclipse.edc.connector.transfer.spi.provision.ResourceManifestGenerator;
-import org.eclipse.edc.connector.transfer.spi.status.StatusCheckerRegistry;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -47,9 +44,6 @@ public class AzureProvisionExtension implements ServiceExtension {
     private ResourceManifestGenerator manifestGenerator;
 
     @Inject
-    private StatusCheckerRegistry statusCheckerRegistry;
-
-    @Inject
     private TypeManager typeManager;
 
     @Override
@@ -67,8 +61,6 @@ public class AzureProvisionExtension implements ServiceExtension {
 
         // register the generator
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator());
-
-        statusCheckerRegistry.register(AzureBlobStoreSchema.TYPE, new ObjectContainerStatusChecker(blobStoreApi, retryPolicy));
 
         registerTypes(typeManager);
     }

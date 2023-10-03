@@ -37,7 +37,7 @@ import static org.eclipse.edc.test.system.local.TransferRuntimeConfiguration.PRO
 
 public class BlobTransferUtils {
 
-    private static final String ASSETS_PATH = "/v2/assets";
+    private static final String ASSETS_PATH = "/v3/assets";
     private static final String POLICIES_PATH = "/v2/policydefinitions";
     private static final String CONTRACT_DEFINITIONS_PATH = "/v2/contractdefinitions";
 
@@ -55,13 +55,11 @@ public class BlobTransferUtils {
 
         var requestBody = createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add(EDC_PREFIX, EDC_NAMESPACE))
-                .add("asset", createObjectBuilder()
-                        .add(ID, PROVIDER_ASSET_ID)
-                        .add("properties", createObjectBuilder()
-                                .add("name", PROVIDER_ASSET_ID)
-                                .add("contenttype", "text/plain")
-                                .add("version", "1.0"))
-                )
+                .add(ID, PROVIDER_ASSET_ID)
+                .add("properties", createObjectBuilder()
+                        .add("name", PROVIDER_ASSET_ID)
+                        .add("contenttype", "text/plain")
+                        .add("version", "1.0"))
                 .add("dataAddress", createObjectBuilder(dataAddressProperties))
                 .build();
 

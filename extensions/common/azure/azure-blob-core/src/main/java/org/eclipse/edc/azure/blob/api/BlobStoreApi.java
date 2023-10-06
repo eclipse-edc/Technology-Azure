@@ -44,4 +44,6 @@ public interface BlobStoreApi {
     BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, String sharedKey);
 
     BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, AzureSasCredential credential);
+
+    BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName);
 }

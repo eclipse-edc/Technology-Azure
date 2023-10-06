@@ -15,18 +15,22 @@
 package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 
 import dev.failsafe.RetryPolicy;
+import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
 import static org.eclipse.edc.connector.dataplane.azure.storage.pipeline.TestFunctions.sharedAccessSignatureMatcher;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -44,6 +49,9 @@ import static org.mockito.Mockito.when;
 class AzureDataSourceToDataSinkTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Monitor monitor = mock(Monitor.class);
+    private final DataFlowRequest request = createRequest(AzureBlobStoreSchema.TYPE).build();
+    private final String requestId = request.getId();
+    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
     private final FakeBlobAdapter fakeSource = new FakeBlobAdapter();
     private final FakeBlobAdapter fakeSink = new FakeBlobAdapter();
     private final FakeBlobAdapter fakeCompletionMarker = new FakeBlobAdapter();
@@ -53,7 +61,6 @@ class AzureDataSourceToDataSinkTest {
     private final String sinkAccountName = AzureStorageTestFixtures.createAccountName();
     private final String sinkContainerName = AzureStorageTestFixtures.createContainerName();
     private final String sinkSharedAccessSignature = AzureStorageTestFixtures.createSharedAccessSignature();
-    private final String requestId = UUID.randomUUID().toString();
 
     /**
      * Verifies a sink is able to pull data from the source without exceptions if both endpoints are functioning.
@@ -93,6 +100,11 @@ class AzureDataSourceToDataSinkTest {
                 sharedAccessSignatureMatcher(sinkSharedAccessSignature)
         )).thenReturn(fakeCompletionMarker);
 
+        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getParticipantId()).thenReturn("participantId");
+
+        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
                 .containerName(sinkContainerName)
@@ -101,6 +113,8 @@ class AzureDataSourceToDataSinkTest {
                 .blobStoreApi(fakeSinkFactory)
                 .executorService(executor)
                 .monitor(monitor)
+                .request(request)
+                .metadataProvider(metadataProvider)
                 .build();
 
         assertThat(dataSink.transfer(dataSource)).succeedsWithin(500, TimeUnit.MILLISECONDS)
@@ -147,6 +161,11 @@ class AzureDataSourceToDataSinkTest {
                 sharedAccessSignatureMatcher(sinkSharedAccessSignature)
         )).thenReturn(fakeSink);
 
+        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getParticipantId()).thenReturn("participantId");
+
+        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
                 .containerName(sinkContainerName)
@@ -154,6 +173,8 @@ class AzureDataSourceToDataSinkTest {
                 .requestId(requestId)
                 .blobStoreApi(fakeSinkFactory)
                 .executorService(executor)
+                .metadataProvider(metadataProvider)
+                .request(request)
                 .monitor(monitor)
                 .build();
 
@@ -191,17 +212,24 @@ class AzureDataSourceToDataSinkTest {
         // sink endpoint raises an exception
         var blobAdapter = mock(BlobAdapter.class);
         when(blobAdapter.getOutputStream()).thenThrow(new RuntimeException());
-        var fakeSinkFactory = mock(BlobStoreApi.class);
-        when(fakeSinkFactory.getBlobAdapter(anyString(), anyString(), anyString(), anyString()))
+        var blobApi = mock(BlobStoreApi.class);
+        when(blobApi.getBlobAdapter(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(blobAdapter);
+
+        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getParticipantId()).thenReturn("participantId");
+
+        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
                 .containerName(sinkContainerName)
                 .sharedAccessSignature(sinkSharedAccessSignature)
                 .requestId(requestId)
-                .blobStoreApi(fakeSinkFactory)
+                .blobStoreApi(blobApi)
                 .executorService(executor)
+                .metadataProvider(metadataProvider)
+                .request(request)
                 .monitor(monitor)
                 .build();
 
@@ -233,5 +261,8 @@ class AzureDataSourceToDataSinkTest {
         public long getBlobSize() {
             return length;
         }
+
+        @Override
+        public void setMetadata(Map<String, String> metadata) {}
     }
 }

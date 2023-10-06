@@ -14,6 +14,7 @@
 
 plugins {
     `java-library`
+    id("org.sonarqube") version "4.2.1.3168"
 }
 
 val techAzScmUrl: String by project
@@ -59,5 +60,5 @@ allprojects {
             println(sourceSets["main"].runtimeClasspath.asPath)
         }
     }
-    
+
 }

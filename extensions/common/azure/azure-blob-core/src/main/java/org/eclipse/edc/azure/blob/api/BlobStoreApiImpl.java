@@ -16,6 +16,7 @@ package org.eclipse.edc.azure.blob.api;
 
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.util.BinaryData;
+import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
@@ -72,7 +73,7 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     @Override
     public List<BlobItem> listContainer(String accountName, String containerName) {
-        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs().stream().collect(Collectors.toList());
+        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs().stream().toList();
     }
 
     @Override
@@ -104,14 +105,16 @@ public class BlobStoreApiImpl implements BlobStoreApi {
             return cache.get(accountName);
         }
 
-        var accountKey = vault.resolveSecret(accountName + "-key1");
+        final var accountKey = vault.resolveSecret(accountName + "-key1");
 
         if (accountKey == null) {
             throw new IllegalArgumentException("No Object Storage credential found in vault!");
         }
 
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
-                .endpoint(createEndpoint(accountName))
+        final var endpoint = createEndpoint(accountName);
+        final var blobServiceClient = new BlobServiceClientBuilder()
+                .credential(createCredential(accountKey, accountName))
+                .endpoint(endpoint)
                 .buildClient();
 
         cache.put(accountName, blobServiceClient);
@@ -131,6 +134,14 @@ public class BlobStoreApiImpl implements BlobStoreApi {
     @Override
     public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, AzureSasCredential credential) {
         BlobServiceClientBuilder builder = new BlobServiceClientBuilder().credential(credential);
+        return getBlobAdapter(accountName, containerName, blobName, builder);
+    }
+
+    @Override
+    public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName) {
+        final var credentialBuilder = new DefaultAzureCredentialBuilder();
+        BlobServiceClientBuilder builder = new BlobServiceClientBuilder()
+                .credential(credentialBuilder.build());
         return getBlobAdapter(accountName, containerName, blobName, builder);
     }
 

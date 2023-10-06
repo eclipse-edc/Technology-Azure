@@ -90,6 +90,20 @@ class AzureStorageValidatorTest {
                 .isThrownBy(() -> AzureStorageValidator.validateBlobName(input));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {  "abcdefghijklmnop", "-", "a/%!_- $K1~"})
+    void validateMetadata_success(String input) {
+        AzureStorageValidator.validateMetadata(input);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(InvalidMetadataProvider.class)
+    @NullAndEmptySource
+    void validateMetadata_fail(String input) {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> AzureStorageValidator.validateMetadata(input));
+    }
+
     private static class InvalidBlobNameProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
@@ -112,6 +126,15 @@ class AzureStorageValidatorTest {
                     Arguments.of("je`~3j4k%$':\\"),
                     Arguments.of("abcdefghijklmnop".repeat(64)),
                     Arguments.of("a/b".repeat(253)));
+        }
+    }
+
+    private static class InvalidMetadataProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of("abcdefghijklmnop".repeat(256) + " a"),
+                    Arguments.of("a/%!_- $KÄ".repeat(64)));
         }
     }
 }

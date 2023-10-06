@@ -16,6 +16,9 @@ package org.eclipse.edc.connector.dataplane.azure.storage;
 
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMetadataDecorator;
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSinkFactory;
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSourceFactory;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataTransferExecutorServiceContainer;
@@ -61,10 +64,14 @@ public class DataPlaneAzureStorageExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var monitor = context.getMonitor();
 
+        var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        context.registerService(BlobMetadataProvider.class, metadataProvider);
+        metadataProvider.registerSinkDecorator(new CommonBlobMetadataDecorator(typeManager, context));
+
         var sourceFactory = new AzureStorageDataSourceFactory(blobStoreApi, retryPolicy, monitor, vault);
         pipelineService.registerFactory(sourceFactory);
 
-        var sinkFactory = new AzureStorageDataSinkFactory(blobStoreApi, executorContainer.getExecutorService(), 5, monitor, vault, typeManager);
+        var sinkFactory = new AzureStorageDataSinkFactory(blobStoreApi, executorContainer.getExecutorService(), 5, monitor, vault, typeManager, metadataProvider);
         pipelineService.registerFactory(sinkFactory);
     }
 }

@@ -18,6 +18,7 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Adapter over {@link BlockBlobClient} in order to support mocking.
@@ -30,4 +31,6 @@ public interface BlobAdapter {
     String getBlobName();
 
     long getBlobSize();
+
+    void setMetadata(Map<String, String> metadata);
 }

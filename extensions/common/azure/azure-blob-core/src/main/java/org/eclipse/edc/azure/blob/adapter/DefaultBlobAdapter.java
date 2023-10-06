@@ -18,6 +18,7 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Implementation of {@link BlobAdapter} using a {@link BlockBlobClient}.
@@ -47,5 +48,10 @@ public class DefaultBlobAdapter implements BlobAdapter {
     @Override
     public long getBlobSize() {
         return client.getProperties().getBlobSize();
+    }
+
+    @Override
+    public void setMetadata(Map<String, String> metadata) {
+        client.setMetadata(metadata);
     }
 }

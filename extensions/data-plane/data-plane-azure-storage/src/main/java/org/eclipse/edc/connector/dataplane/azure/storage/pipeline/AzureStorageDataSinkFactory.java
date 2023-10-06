@@ -17,6 +17,7 @@ package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
 import org.eclipse.edc.spi.EdcException;
@@ -45,14 +46,16 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     private final Monitor monitor;
     private final Vault vault;
     private final TypeManager typeManager;
+    private final BlobMetadataProvider metadataProvider;
 
-    public AzureStorageDataSinkFactory(BlobStoreApi blobStoreApi, ExecutorService executorService, int partitionSize, Monitor monitor, Vault vault, TypeManager typeManager) {
+    public AzureStorageDataSinkFactory(BlobStoreApi blobStoreApi, ExecutorService executorService, int partitionSize, Monitor monitor, Vault vault, TypeManager typeManager, BlobMetadataProvider metadataProvider) {
         this.blobStoreApi = blobStoreApi;
         this.executorService = executorService;
         this.partitionSize = partitionSize;
         this.monitor = monitor;
         this.vault = vault;
         this.typeManager = typeManager;
+        this.metadataProvider = metadataProvider;
     }
 
     @Override
@@ -89,12 +92,16 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         return AzureStorageDataSink.Builder.newInstance()
                 .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
                 .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
+                .folderName(dataAddress.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME))
+                .blobName(dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME))
                 .sharedAccessSignature(token.getSas())
                 .requestId(requestId)
                 .partitionSize(partitionSize)
                 .blobStoreApi(blobStoreApi)
                 .executorService(executorService)
                 .monitor(monitor)
+                .request(request)
+                .metadataProvider(metadataProvider)
                 .build();
     }
 }

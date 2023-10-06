@@ -23,6 +23,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provides(BlobStoreApi.class)
 @Extension(value = BlobStoreCoreExtension.NAME)

@@ -33,13 +33,17 @@ public class AzureStorageValidator {
     private static final int CONTAINER_MAX_LENGTH = 63;
     private static final int BLOB_MIN_LENGTH = 1;
     private static final int BLOB_MAX_LENGTH = 1024;
+    private static final int METADATA_MIN_LENGTH = 1;
+    private static final int METADATA_MAX_LENGTH = 4096;
     private static final Pattern ACCOUNT_REGEX = Pattern.compile("^[a-z0-9]+$");
     private static final Pattern CONTAINER_REGEX = Pattern.compile("^[a-z0-9]+(-[a-z0-9]+)*$");
+    private static final Pattern METADATA_REGEX = Pattern.compile("^[ -~]*$"); // US-ASCII
 
     private static final String ACCOUNT = "account";
     private static final String BLOB = "blob";
     private static final String CONTAINER = "container";
     private static final String KEY_NAME = "keyName";
+    private static final String METADATA = "metadata";
     private static final String INVALID_RESOURCE_NAME = "Invalid %s name";
     private static final String INVALID_RESOURCE_NAME_LENGTH = "Invalid %s name length, the name must be between %s and %s characters long";
     private static final String RESOURCE_NAME_EMPTY = "Invalid %s name, the name may not be null, empty or blank";
@@ -88,6 +92,23 @@ public class AzureStorageValidator {
 
         if (slashCount >= 254) {
             throw new IllegalArgumentException(TOO_MANY_PATH_SEGMENTS);
+        }
+    }
+
+    /**
+     * Checks if a metadata value is valid.
+     * The restriction is based on allowed characters for HTTP header values. As there is no length restriction per
+     * header field, a reasonable restriction of 4096 character is assumed to leave some space, considering an
+     * overall length restriction for HTTP headers of approximately 8KB.
+     *
+     * @param metadata A String representing the metadata value to validate.
+     * @throws IllegalArgumentException if the string does not represent a valid metadata value.
+     */
+    public static void validateMetadata(String metadata) {
+        checkLength(metadata, METADATA, METADATA_MIN_LENGTH, METADATA_MAX_LENGTH);
+
+        if (!METADATA_REGEX.matcher(metadata).matches()) {
+            throw new IllegalArgumentException(String.format(INVALID_RESOURCE_NAME, METADATA));
         }
     }
 

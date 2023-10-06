@@ -43,9 +43,16 @@ public class AzureStorageDataSource implements DataSource {
     private BlobStoreApi blobStoreApi;
     private Monitor monitor;
 
+    private AzureStorageDataSource() {
+    }
+
     @Override
     public StreamResult<Stream<Part>> openPartStream() {
         return success(Stream.of(getPart()));
+    }
+
+    @Override
+    public void close() {
     }
 
     private AzureStoragePart getPart() {
@@ -56,9 +63,6 @@ public class AzureStorageDataSource implements DataSource {
             monitor.severe(format("Error accessing blob %s on account %s", blobName, accountName), e);
             throw new EdcException(e);
         }
-    }
-
-    private AzureStorageDataSource() {
     }
 
     public static class Builder {

@@ -171,7 +171,7 @@ class AzureDataFactoryTransferManagerTest {
         verify(client).cancelPipelineRun(runId);
     }
 
-    ObjectAssert<StreamResult<Void>> assertThatTransferResult() {
+    ObjectAssert<StreamResult<Object>> assertThatTransferResult() {
         return assertThat(transferManager.transfer(request))
                 .succeedsWithin(Duration.ofMinutes(1));
     }

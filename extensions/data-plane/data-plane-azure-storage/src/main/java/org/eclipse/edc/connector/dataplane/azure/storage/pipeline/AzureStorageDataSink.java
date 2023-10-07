@@ -38,11 +38,14 @@ public class AzureStorageDataSink extends ParallelSink {
     private String sharedAccessSignature;
     private BlobStoreApi blobStoreApi;
 
+    private AzureStorageDataSink() {
+    }
+
     /**
      * Writes data into an Azure storage container.
      */
     @Override
-    protected StreamResult<Void> transferParts(List<DataSource.Part> parts) {
+    protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
             String blobName = part.name();
             try (var input = part.openStream()) {
@@ -64,7 +67,7 @@ public class AzureStorageDataSink extends ParallelSink {
     }
 
     @Override
-    protected StreamResult<Void> complete() {
+    protected StreamResult<Object> complete() {
         try {
             // Write an empty blob to indicate completion
             blobStoreApi.getBlobAdapter(accountName, containerName, COMPLETE_BLOB_NAME, new AzureSasCredential(sharedAccessSignature))
@@ -76,16 +79,17 @@ public class AzureStorageDataSink extends ParallelSink {
     }
 
     @NotNull
-    private StreamResult<Void> getTransferResult(Exception e, String logMessage, Object... args) {
+    private StreamResult<Object> getTransferResult(Exception e, String logMessage, Object... args) {
         String message = format(logMessage, args);
         monitor.severe(message, e);
         return StreamResult.error(message);
     }
 
-    private AzureStorageDataSink() {
-    }
-
     public static class Builder extends ParallelSink.Builder<Builder, AzureStorageDataSink> {
+
+        private Builder() {
+            super(new AzureStorageDataSink());
+        }
 
         public static Builder newInstance() {
             return new Builder();
@@ -117,10 +121,6 @@ public class AzureStorageDataSink extends ParallelSink {
             Objects.requireNonNull(sink.containerName, "containerName");
             Objects.requireNonNull(sink.sharedAccessSignature, "sharedAccessSignature");
             Objects.requireNonNull(sink.blobStoreApi, "blobStoreApi");
-        }
-
-        private Builder() {
-            super(new AzureStorageDataSink());
         }
     }
 }

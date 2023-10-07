@@ -46,7 +46,7 @@ public class AzureDataFactoryTransferService implements TransferService {
     }
 
     @Override
-    public CompletableFuture<StreamResult<Void>> transfer(DataFlowRequest request) {
+    public CompletableFuture<StreamResult<Object>> transfer(DataFlowRequest request) {
         return transferManager.transfer(request);
     }
 

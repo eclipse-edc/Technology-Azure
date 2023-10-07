@@ -41,10 +41,10 @@ class AzureDataFactoryTransferServiceTest {
     private final Result<Boolean> failure = Result.failure("Test Failure");
     private final Result<Boolean> success = Result.success(true);
     @SuppressWarnings("unchecked")
-    private final CompletableFuture<StreamResult<Void>> result = mock(CompletableFuture.class);
+    private final CompletableFuture<StreamResult<Object>> result = mock(CompletableFuture.class);
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
+    @ValueSource(booleans = {true, false})
     void canHandle_onResult(boolean expected) {
         // Arrange
         when(validator.canHandle(request.build())).thenReturn(expected);

@@ -20,6 +20,7 @@ plugins {
 dependencies {
     api(libs.edc.controlplane.spi)
     implementation(libs.azure.storageblob)
+    implementation(libs.azure.identity)
     implementation(libs.edc.util)
 
     testFixturesApi(libs.edc.core.dataPlane.util)

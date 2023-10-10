@@ -15,12 +15,16 @@
 package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 
 import com.azure.core.credential.AzureSasCredential;
+import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,8 +39,13 @@ public class AzureStorageDataSink extends ParallelSink {
 
     private String accountName;
     private String containerName;
+    private String folderName;
+    private String blobName;
     private String sharedAccessSignature;
     private BlobStoreApi blobStoreApi;
+    private DataFlowRequest request;
+    private BlobMetadataProvider metadataProvider;
+    private final List<String> completedFiles = new ArrayList<>();
 
     private AzureStorageDataSink() {
     }
@@ -47,35 +56,50 @@ public class AzureStorageDataSink extends ParallelSink {
     @Override
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
-            String blobName = part.name();
+            final var name = getDestinationBlobName(part.name());
             try (var input = part.openStream()) {
-                try (var output = blobStoreApi.getBlobAdapter(accountName, containerName, blobName, new AzureSasCredential(sharedAccessSignature))
-                        .getOutputStream()) {
+                try (var output = getAdapter(name).getOutputStream()) {
                     try {
                         input.transferTo(output);
                     } catch (Exception e) {
-                        return getTransferResult(e, "Error transferring blob for %s on account %s", blobName, accountName);
+                        return getTransferResult(e, "Error transferring blob for %s on account %s", name, accountName);
                     }
                 } catch (Exception e) {
-                    return getTransferResult(e, "Error creating blob for %s on account %s", blobName, accountName);
+                    return getTransferResult(e, "Error creating blob %s on account %s", name, accountName);
                 }
             } catch (Exception e) {
-                return getTransferResult(e, "Error reading blob %s", blobName);
+                return getTransferResult(e, "Error reading blob %s", name);
             }
+            try {
+                getAdapter(name).setMetadata(metadataProvider.provideSinkMetadata(request, part).getMetadata());
+            } catch (Exception e) {
+                return getTransferResult(e, "Error updating metadata for blob : %s", name);
+            }
+            registerCompletedFile(name);
         }
         return StreamResult.success();
     }
 
+    void registerCompletedFile(String name) {
+        completedFiles.add(name + COMPLETE_BLOB_NAME);
+    }
+
     @Override
     protected StreamResult<Object> complete() {
-        try {
-            // Write an empty blob to indicate completion
-            blobStoreApi.getBlobAdapter(accountName, containerName, COMPLETE_BLOB_NAME, new AzureSasCredential(sharedAccessSignature))
-                    .getOutputStream().close();
-        } catch (Exception e) {
-            return getTransferResult(e, "Error creating blob %s on account %s", COMPLETE_BLOB_NAME, accountName);
+        for (final var completedFile : completedFiles) {
+            try {
+                // Write an empty blob to indicate completion
+                getAdapter(completedFile).getOutputStream().close();
+            } catch (Exception e) {
+                return getTransferResult(e, "Error creating blob %s on account %s", completedFile, accountName);
+            }
+            monitor.info(String.format("Created empty blob '%s' to indicate transfer success", completedFile));
         }
         return super.complete();
+    }
+
+    protected BlobAdapter getAdapter(String blobName) {
+        return blobStoreApi.getBlobAdapter(accountName, containerName, blobName, new AzureSasCredential(sharedAccessSignature));
     }
 
     @NotNull
@@ -83,6 +107,15 @@ public class AzureStorageDataSink extends ParallelSink {
         String message = format(logMessage, args);
         monitor.severe(message, e);
         return StreamResult.error(message);
+    }
+
+    String getDestinationBlobName(final String partName) {
+        final var name = blobName != null && !blobName.isEmpty() ? blobName : partName;
+        if (folderName != null && !folderName.isEmpty()) {
+            return folderName.endsWith("/") ? folderName + name : folderName + "/" + name;
+        } else {
+            return name;
+        }
     }
 
     public static class Builder extends ParallelSink.Builder<Builder, AzureStorageDataSink> {
@@ -105,6 +138,16 @@ public class AzureStorageDataSink extends ParallelSink {
             return this;
         }
 
+        public Builder folderName(String folderName) {
+            sink.folderName = folderName;
+            return this;
+        }
+
+        public Builder blobName(String blobName) {
+            sink.blobName = blobName;
+            return this;
+        }
+
         public Builder sharedAccessSignature(String sharedAccessSignature) {
             sink.sharedAccessSignature = sharedAccessSignature;
             return this;
@@ -115,12 +158,25 @@ public class AzureStorageDataSink extends ParallelSink {
             return this;
         }
 
+        public Builder request(DataFlowRequest request) {
+            sink.request = request;
+            return this;
+        }
+
+        public Builder metadataProvider(BlobMetadataProvider metadataProvider) {
+            sink.metadataProvider = metadataProvider;
+            return this;
+        }
+
         @Override
         protected void validate() {
             Objects.requireNonNull(sink.accountName, "accountName");
             Objects.requireNonNull(sink.containerName, "containerName");
             Objects.requireNonNull(sink.sharedAccessSignature, "sharedAccessSignature");
             Objects.requireNonNull(sink.blobStoreApi, "blobStoreApi");
+            Objects.requireNonNull(sink.metadataProvider, "metadataProvider");
+            Objects.requireNonNull(sink.request, "request");
+            Objects.requireNonNull(sink.monitor, "monitor");
         }
     }
 }

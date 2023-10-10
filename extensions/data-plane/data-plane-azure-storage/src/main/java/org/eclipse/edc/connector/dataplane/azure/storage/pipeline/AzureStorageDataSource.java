@@ -57,8 +57,9 @@ public class AzureStorageDataSource implements DataSource {
 
     private AzureStoragePart getPart() {
         try {
-            var adapter = blobStoreApi.getBlobAdapter(accountName, containerName, blobName, sharedKey);
-            return new AzureStoragePart(adapter);
+            return sharedKey != null ?
+                new AzureStoragePart(blobStoreApi.getBlobAdapter(accountName, containerName, blobName, sharedKey))
+                        : new AzureStoragePart(blobStoreApi.getBlobAdapter(accountName, containerName, blobName));
         } catch (Exception e) {
             monitor.severe(format("Error accessing blob %s on account %s", blobName, accountName), e);
             throw new EdcException(e);
@@ -66,7 +67,7 @@ public class AzureStorageDataSource implements DataSource {
     }
 
     public static class Builder {
-        private AzureStorageDataSource dataSource;
+        private final AzureStorageDataSource dataSource;
 
         private Builder() {
             dataSource = new AzureStorageDataSource();
@@ -119,7 +120,6 @@ public class AzureStorageDataSource implements DataSource {
         public AzureStorageDataSource build() {
             Objects.requireNonNull(dataSource.accountName, "accountName");
             Objects.requireNonNull(dataSource.containerName, "containerName");
-            Objects.requireNonNull(dataSource.sharedKey, "sharedKey");
             Objects.requireNonNull(dataSource.requestId, "requestId");
             Objects.requireNonNull(dataSource.blobStoreApi, "blobStoreApi");
             Objects.requireNonNull(dataSource.monitor, "monitor");

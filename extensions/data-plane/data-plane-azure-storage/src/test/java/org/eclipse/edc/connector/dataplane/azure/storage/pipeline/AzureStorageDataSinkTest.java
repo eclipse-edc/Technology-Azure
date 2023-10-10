@@ -17,12 +17,17 @@ package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource.Part;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.InputStreamDataSource;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +47,7 @@ import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.c
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createSharedAccessSignature;
 import static org.eclipse.edc.connector.dataplane.azure.storage.pipeline.TestFunctions.sharedAccessSignatureMatcher;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -54,12 +60,14 @@ class AzureStorageDataSinkTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
     private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
+    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
     private final String accountName = createAccountName();
     private final String containerName = createContainerName();
     private final String sharedAccessSignature = createSharedAccessSignature();
     private final String blobName = createBlobName();
     private final String content = "Test Content";
     private final Exception exception = new TestCustomException("Test custom exception message");
+    private final BlobMetadataProvider metadataProvider = new BlobMetadataProviderImpl(monitor);
     private final AzureStorageDataSink dataSink = AzureStorageDataSink.Builder.newInstance()
             .accountName(accountName)
             .containerName(containerName)
@@ -68,7 +76,24 @@ class AzureStorageDataSinkTest {
             .blobStoreApi(blobStoreApi)
             .executorService(executor)
             .monitor(monitor)
+            .request(request.build())
+            .metadataProvider(metadataProvider)
             .build();
+
+    private final DataFlowRequest preBuiltRequest = request.build();
+
+    private final AzureStorageDataSink dataSinkWithCorrelationId = AzureStorageDataSink.Builder.newInstance()
+            .accountName(accountName)
+            .containerName(containerName)
+            .sharedAccessSignature(sharedAccessSignature)
+            .requestId(request.build().getId())
+            .blobStoreApi(blobStoreApi)
+            .executorService(executor)
+            .monitor(monitor)
+            .request(preBuiltRequest)
+            .metadataProvider(metadataProvider)
+            .build();
+
     private final BlobAdapter destination = mock(BlobAdapter.class);
     private final BlobAdapter completionMarker = mock(BlobAdapter.class);
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -92,6 +117,9 @@ class AzureStorageDataSinkTest {
                 argThat(s -> s.endsWith(".complete")),
                 sharedAccessSignatureMatcher(sharedAccessSignature)))
                 .thenReturn(completionMarker);
+
+        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getParticipantId()).thenReturn("participantId");
     }
 
     @Test
@@ -109,7 +137,7 @@ class AzureStorageDataSinkTest {
                 eq(blobName),
                 sharedAccessSignatureMatcher(sharedAccessSignature)))
                 .thenThrow(exception);
-        assertThatTransferPartsFails(part, "Error creating blob for %s on account %s", blobName, accountName);
+        assertThatTransferPartsFails(part, "Error creating blob %s on account %s", blobName, accountName);
     }
 
     @Test
@@ -138,6 +166,7 @@ class AzureStorageDataSinkTest {
 
     @Test
     void complete() throws IOException {
+        dataSink.registerCompletedFile("test-case");
         dataSink.complete();
         verify(blobStoreApi).getBlobAdapter(
                 eq(accountName),
@@ -153,5 +182,36 @@ class AzureStorageDataSinkTest {
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages()).containsExactly(message);
         verify(monitor).severe(message, exception);
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"blob, lob,  foo,  foo/lob",
+                        "blob, null, foo,  foo/blob",
+                        "blob, ''  , foo,  foo/blob",
+                        "blob, lob,  foo/, foo/lob",
+                        "blob, null, foo/, foo/blob",
+                        "blob, ''  , foo/, foo/blob",
+                        "blob, lob,  null, lob",
+                        "blob, lob,  '',   lob",
+                        "blob, '',   '',   blob"},
+            nullValues = {"null"})
+    void blobName(String blobName, String altName, String folderName, String expected) {
+
+        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+
+        final var sink = AzureStorageDataSink.Builder.newInstance()
+                .accountName(accountName)
+                .containerName(containerName)
+                .sharedAccessSignature(sharedAccessSignature)
+                .requestId(request.build().getId())
+                .blobStoreApi(blobStoreApi)
+                .executorService(executor)
+                .monitor(monitor)
+                .metadataProvider(metadataProvider)
+                .folderName(folderName)
+                .blobName(altName)
+                .request(request.build())
+                .build();
+        assertEquals(expected, sink.getDestinationBlobName(blobName));
     }
 }

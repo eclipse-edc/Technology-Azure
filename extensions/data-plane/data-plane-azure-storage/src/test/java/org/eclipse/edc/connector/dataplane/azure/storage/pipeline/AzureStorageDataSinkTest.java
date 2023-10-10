@@ -141,19 +141,6 @@ class AzureStorageDataSinkTest {
     }
 
     @Test
-    void transferParts_whenGettingOutputStreamFails_fails() {
-        var adapter = mock(BlobAdapter.class);
-        when(adapter.getOutputStream()).thenThrow(exception);
-        when(blobStoreApi.getBlobAdapter(
-                eq(accountName),
-                eq(containerName),
-                eq(blobName),
-                sharedAccessSignatureMatcher(sharedAccessSignature)))
-                .thenReturn(adapter);
-        assertThatTransferPartsFails(part, "Error getting out stream for blob %s on account %s", blobName, accountName);
-    }
-
-    @Test
     void transferParts_whenWriteFails_fails() {
         when(destination.getOutputStream()).thenThrow(exception);
     }

@@ -112,7 +112,7 @@ testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.re
 
 # Azure dependencies
 azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.18.0" }
-azure-identity = { group = "com.azure", name = "azure-identity", version = "1.10.1" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.10.3" }
 azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.7.0" }
 azure-mgmt-resources = { module = "com.microsoft.azure:azure-mgmt-resources", version = "1.41.4" }
 azure-resourcemanager = { group = "com.azure.resourcemanager", name = "azure-resourcemanager", version.ref = "azure-rm" }

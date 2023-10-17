@@ -67,10 +67,10 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
     private final RetryPolicy<Object> policy = RetryPolicy.builder().withMaxRetries(1).build();
     private final String sinkContainerName = createContainerName();
     private final String blobName = createBlobName();
-    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
+    private final ServiceExtensionContext context = mock();
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
-    private final Monitor monitor = mock(Monitor.class);
-    private final Vault vault = mock(Vault.class);
+    private final Monitor monitor = mock();
+    private final Vault vault = mock();
 
     private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_1_NAME));
     private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_2_NAME));
@@ -82,12 +82,12 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
     @Test
     void transfer_success() {
-        String content = "test-content";
+        var content = "test-content";
         blobServiceClient1.getBlobContainerClient(account1ContainerName)
                 .getBlobClient(blobName)
                 .upload(BinaryData.fromString(content));
 
-        String account1KeyName = "test-account-key-name1";
+        var account1KeyName = "test-account-key-name1";
         var source = DataAddress.Builder.newInstance()
                 .type(TYPE)
                 .property(ACCOUNT_NAME, ACCOUNT_1_NAME)
@@ -97,7 +97,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
                 .build();
         when(vault.resolveSecret(account1KeyName)).thenReturn(ACCOUNT_1_KEY);
 
-        String account2KeyName = "test-account-key-name2";
+        var account2KeyName = "test-account-key-name2";
         var destination = DataAddress.Builder.newInstance()
                 .type(TYPE)
                 .property(ACCOUNT_NAME, ACCOUNT_2_NAME)
@@ -125,7 +125,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
         var dataSource = new AzureStorageDataSourceFactory(account1Api, policy, monitor, vault)
                 .createSource(request);
 
-        int partitionSize = 5;
+        var partitionSize = 5;
 
         var account2ApiPatched = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(ACCOUNT_2_NAME)) {
             @Override
@@ -135,8 +135,8 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
             }
         };
 
-        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
-        metadataProvider.registerSinkDecorator(new CommonBlobMetadataDecorator(typeManager, context));
+        var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        metadataProvider.registerDecorator(new CommonBlobMetadataDecorator(typeManager, context));
 
         when(context.getConnectorId()).thenReturn("connector-id");
         when(context.getParticipantId()).thenReturn("participant-id");
@@ -158,7 +158,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
                 .asString()
                 .isEqualTo(content);
 
-        final var metadata = destinationBlob.getBlockBlobClient().getProperties().getMetadata();
+        var metadata = destinationBlob.getBlockBlobClient().getProperties().getMetadata();
         assertThat(metadata.get("originalName")).isEqualTo(blobName);
 
         assertThat(metadata.get("requestId")).isEqualTo(request.getId());

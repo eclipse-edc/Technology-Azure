@@ -78,7 +78,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
 
     @Override
     public DataSink createSink(DataFlowRequest request) {
-        Result<Void> validate = validateRequest(request);
+        var validate = validateRequest(request);
         if (validate.failed()) {
             throw new EdcException(validate.getFailure().getMessages().toString());
         }

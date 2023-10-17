@@ -23,7 +23,7 @@ import java.util.List;
 
 public class BlobMetadataProviderImpl implements BlobMetadataProvider {
 
-    private final List<BlobMetadataDecorator> sinkDecorators = new ArrayList<>();
+    private final List<BlobMetadataDecorator> blobMetadataDecorators = new ArrayList<>();
 
     private final Monitor monitor;
 
@@ -32,14 +32,14 @@ public class BlobMetadataProviderImpl implements BlobMetadataProvider {
     }
 
     @Override
-    public void registerSinkDecorator(BlobMetadataDecorator decorator) {
-        sinkDecorators.add(decorator);
+    public void registerDecorator(BlobMetadataDecorator decorator) {
+        blobMetadataDecorators.add(decorator);
     }
 
     @Override
     public BlobMetadata provideSinkMetadata(DataFlowRequest request, DataSource.Part part) {
-        final var metadata = new BlobMetadata.Builder(monitor);
-        sinkDecorators.forEach(decorator -> decorator.decorate(request, part, metadata));
+        var metadata = new BlobMetadata.Builder(monitor);
+        blobMetadataDecorators.forEach(decorator -> decorator.decorate(request, part, metadata));
         return metadata.build();
     }
 }

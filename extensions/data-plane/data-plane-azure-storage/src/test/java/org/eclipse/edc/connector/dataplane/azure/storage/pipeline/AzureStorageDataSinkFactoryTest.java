@@ -22,7 +22,6 @@ import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataPr
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
@@ -40,11 +39,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AzureStorageDataSinkFactoryTest {
-    private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
-    private final Vault vault = mock(Vault.class);
-    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
+    private final BlobStoreApi blobStoreApi = mock();
+    private final Vault vault = mock();
     private final TypeManager typeManager = new TypeManager();
-    private final Monitor monitor = mock(Monitor.class);
+    private final Monitor monitor = mock();
     private final BlobMetadataProvider metadataProvider = new BlobMetadataProviderImpl(monitor);
     private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, monitor, vault, typeManager, metadataProvider);
     private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);

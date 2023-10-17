@@ -19,6 +19,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.util.string.StringUtils;
 
 public class CommonBlobMetadataDecorator implements BlobMetadataDecorator {
 
@@ -34,19 +35,16 @@ public class CommonBlobMetadataDecorator implements BlobMetadataDecorator {
     @Override
     public BlobMetadata.Builder decorate(DataFlowRequest request, DataSource.Part part, BlobMetadata.Builder builder) {
 
-        builder
-                .put("originalName", part.name())
-
+        builder.put("originalName", part.name())
                 .put("requestId", request.getId())
                 .put("processId", request.getProcessId())
-
                 .put("connectorId", context.getConnectorId())
                 .put("participantId", context.getParticipantId());
 
-        final var dataAddress = request.getDestinationDataAddress();
-        final var correlationId = dataAddress.getStringProperty(AzureBlobStoreSchema.CORRELATION_ID);
+        var dataAddress = request.getDestinationDataAddress();
+        var correlationId = dataAddress.getStringProperty(AzureBlobStoreSchema.CORRELATION_ID);
 
-        if (correlationId != null && !correlationId.isEmpty()) {
+        if (!StringUtils.isNullOrEmpty(correlationId)) {
             builder.put("correlationId", correlationId);
         }
 

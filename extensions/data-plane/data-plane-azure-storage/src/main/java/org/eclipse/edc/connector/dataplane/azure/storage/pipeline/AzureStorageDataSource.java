@@ -131,7 +131,7 @@ public class AzureStorageDataSource implements DataSource {
     private static class AzureStoragePart implements Part {
         private final BlobAdapter adapter;
 
-        AzureStoragePart(BlobAdapter adapter) {
+        private AzureStoragePart(BlobAdapter adapter) {
             this.adapter = adapter;
         }
 

@@ -245,7 +245,7 @@ public class Participant {
                 .get("/v2/contractnegotiations/{id}/state", id)
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getString("'edc:state'");
+                .extract().body().jsonPath().getString("'state'");
     }
 
     public String getTransferProcessState(String id) {
@@ -256,7 +256,7 @@ public class Participant {
                 .get("/v2/transferprocesses/{id}/state", id)
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getString("'edc:state'");
+                .extract().body().jsonPath().getString("'state'");
     }
 
     public EndpointDataReference getDataReference(String id) {
@@ -481,7 +481,7 @@ public class Participant {
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath()
-                .getString(format("'edc:%s'", fieldName));
+                .getString(format("'%s'", fieldName));
     }
 
     @NotNull

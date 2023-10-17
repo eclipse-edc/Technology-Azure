@@ -164,7 +164,7 @@ public class TransferTestClient {
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath()
-                .getString(format("'edc:%s'", fieldName));
+                .getString(format("'%s'", fieldName));
     }
 
     public String initiateTransfer(String contractId, String assetId, String providerUrl, JsonObject destination) {
@@ -204,7 +204,7 @@ public class TransferTestClient {
                 .get("/v2/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
-                .extract().jsonPath().get("'edc:dataDestination'");
+                .extract().jsonPath().get("'dataDestination'");
     }
 
     public String getTransferProcessState(String transferProcessId) {
@@ -215,7 +215,7 @@ public class TransferTestClient {
                 .get("/v2/transferprocesses/{id}/state", transferProcessId)
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getString("'edc:state'");
+                .extract().body().jsonPath().getString("'state'");
     }
 
     public String getContractNegotiationState(String id) {
@@ -226,6 +226,6 @@ public class TransferTestClient {
                 .get("/v2/contractnegotiations/{id}/state", id)
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getString("'edc:state'");
+                .extract().body().jsonPath().getString("'state'");
     }
 }

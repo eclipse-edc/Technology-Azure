@@ -66,7 +66,7 @@ public class DataPlaneAzureStorageExtension implements ServiceExtension {
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
         context.registerService(BlobMetadataProvider.class, metadataProvider);
-        metadataProvider.registerSinkDecorator(new CommonBlobMetadataDecorator(typeManager, context));
+        metadataProvider.registerDecorator(new CommonBlobMetadataDecorator(typeManager, context));
 
         var sourceFactory = new AzureStorageDataSourceFactory(blobStoreApi, retryPolicy, monitor, vault);
         pipelineService.registerFactory(sourceFactory);

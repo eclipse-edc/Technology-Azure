@@ -56,11 +56,11 @@ import static org.mockito.Mockito.when;
 
 class AzureStorageDataSinkTest {
 
-    private final Monitor monitor = mock(Monitor.class);
+    private final Monitor monitor = mock();
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
-    private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
+    private final BlobStoreApi blobStoreApi = mock();
     private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
-    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
+    private final ServiceExtensionContext context = mock();
     private final String accountName = createAccountName();
     private final String containerName = createContainerName();
     private final String sharedAccessSignature = createSharedAccessSignature();
@@ -148,7 +148,7 @@ class AzureStorageDataSinkTest {
     @Test
     void transferParts_whenReadFails_fails() {
         when(destination.getOutputStream()).thenThrow(exception);
-        Part part = mock(Part.class);
+        var part = mock(Part.class);
         when(part.openStream()).thenThrow(exception);
         when(part.name()).thenReturn(blobName);
         assertThatTransferPartsFails(part, "Error reading blob %s", blobName);
@@ -156,9 +156,9 @@ class AzureStorageDataSinkTest {
 
     @Test
     void transferParts_whenTransferFails_fails() throws Exception {
-        InputStream input = mock(InputStream.class);
+        var input = mock(InputStream.class);
         when(input.transferTo(output)).thenThrow(exception);
-        Part part = mock(Part.class);
+        var part = mock(Part.class);
         when(part.openStream()).thenReturn(input);
         when(part.name()).thenReturn(blobName);
         assertThatTransferPartsFails(part, "Error transferring blob for %s on account %s", blobName, accountName);
@@ -177,7 +177,7 @@ class AzureStorageDataSinkTest {
     }
 
     private void assertThatTransferPartsFails(Part part, String logMessage, Object... args) {
-        String message = format(logMessage, args);
+        var message = format(logMessage, args);
         var result = dataSink.transferParts(List.of(part));
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureMessages()).containsExactly(message);
@@ -197,9 +197,9 @@ class AzureStorageDataSinkTest {
             nullValues = {"null"})
     void blobName(String blobName, String altName, String folderName, String expected) {
 
-        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
-        final var sink = AzureStorageDataSink.Builder.newInstance()
+        var sink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(accountName)
                 .containerName(containerName)
                 .sharedAccessSignature(sharedAccessSignature)

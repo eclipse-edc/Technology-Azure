@@ -22,6 +22,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class AzureStorageDataSink extends ParallelSink {
     @Override
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
-            final var name = getDestinationBlobName(part.name());
+            var name = getDestinationBlobName(part.name());
             try (var input = part.openStream()) {
                 try (var output = getAdapter(name).getOutputStream()) {
                     try {
@@ -86,7 +87,7 @@ public class AzureStorageDataSink extends ParallelSink {
 
     @Override
     protected StreamResult<Object> complete() {
-        for (final var completedFile : completedFiles) {
+        for (var completedFile : completedFiles) {
             try {
                 // Write an empty blob to indicate completion
                 getAdapter(completedFile).getOutputStream().close();
@@ -104,14 +105,14 @@ public class AzureStorageDataSink extends ParallelSink {
 
     @NotNull
     private StreamResult<Object> getTransferResult(Exception e, String logMessage, Object... args) {
-        String message = format(logMessage, args);
+        var message = format(logMessage, args);
         monitor.severe(message, e);
         return StreamResult.error(message);
     }
 
-    String getDestinationBlobName(final String partName) {
-        final var name = blobName != null && !blobName.isEmpty() ? blobName : partName;
-        if (folderName != null && !folderName.isEmpty()) {
+    String getDestinationBlobName(String partName) {
+        var name = !StringUtils.isNullOrEmpty(blobName) ? blobName : partName;
+        if (!StringUtils.isNullOrEmpty(folderName)) {
             return folderName.endsWith("/") ? folderName + name : folderName + "/" + name;
         } else {
             return name;

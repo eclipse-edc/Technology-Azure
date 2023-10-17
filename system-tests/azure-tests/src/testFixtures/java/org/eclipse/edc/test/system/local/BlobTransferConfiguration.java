@@ -62,7 +62,7 @@ public class BlobTransferConfiguration implements TransferConfiguration {
     @Override
     public boolean isTransferResultValid(Map<String, String> dataDestinationProperties) {
         // Assert
-        var container = dataDestinationProperties.get("edc:container");
+        var container = dataDestinationProperties.get("container");
         var destinationBlob = blobServiceClient.getBlobContainerClient(container)
                 .getBlobClient(PROVIDER_ASSET_FILE);
         assertThat(destinationBlob.exists())

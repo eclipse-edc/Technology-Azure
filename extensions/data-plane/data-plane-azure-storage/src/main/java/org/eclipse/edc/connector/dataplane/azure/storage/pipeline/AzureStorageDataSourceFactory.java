@@ -73,7 +73,7 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
 
         var dataAddress = request.getSourceDataAddress();
 
-        final var builder = AzureStorageDataSource.Builder.newInstance()
+        var builder = AzureStorageDataSource.Builder.newInstance()
                 .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
                 .containerName(dataAddress.getStringProperty(CONTAINER_NAME))
                 .blobStoreApi(blobStoreApi)

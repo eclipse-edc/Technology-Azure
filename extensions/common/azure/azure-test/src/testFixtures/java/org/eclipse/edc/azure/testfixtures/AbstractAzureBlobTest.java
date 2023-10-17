@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.azure.testfixtures;
 
-import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +62,7 @@ public abstract class AbstractAzureBlobTest {
     protected void createContainer(BlobServiceClient client, String containerName) {
         assertFalse(client.getBlobContainerClient(containerName).exists());
 
-        BlobContainerClient blobContainerClient = client.createBlobContainer(containerName);
+        var blobContainerClient = client.createBlobContainer(containerName);
         assertTrue(blobContainerClient.exists());
         containerCleanup.add(() -> client.deleteBlobContainer(containerName));
     }

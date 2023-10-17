@@ -34,23 +34,23 @@ import static org.mockito.Mockito.when;
 
 public class CommonBlobMetadataDecoratorTest {
 
-    private final TypeManager typeManager = mock(TypeManager.class);
+    private final TypeManager typeManager = mock();
     private final DataFlowRequest.Builder requestBuilder = createRequest(AzureBlobStoreSchema.TYPE);
 
     @ParameterizedTest
     @CsvSource(value = {"correlation-id", "''", "null"}, nullValues = {"null"})
     void decorate_succeeds(String correlationId) {
 
-        final var context = mock(ServiceExtensionContext.class);
-        final var part = mock(DataSource.Part.class);
+        var context = mock(ServiceExtensionContext.class);
+        var part = mock(DataSource.Part.class);
 
         when(part.name()).thenReturn("original-name");
 
         when(context.getConnectorId()).thenReturn("connector-id");
         when(context.getParticipantId()).thenReturn("participant-id");
 
-        final var decorator = new CommonBlobMetadataDecorator(typeManager, context);
-        final var builder = mock(BlobMetadata.Builder.class);
+        var decorator = new CommonBlobMetadataDecorator(typeManager, context);
+        var builder = mock(BlobMetadata.Builder.class);
         when(builder.put(anyString(), anyString())).thenReturn(builder);
 
         DataFlowRequest request;
@@ -64,7 +64,7 @@ public class CommonBlobMetadataDecoratorTest {
             request = requestBuilder.build();
         }
 
-        final var result = decorator.decorate(request, part, builder);
+        var result = decorator.decorate(request, part, builder);
 
         verify(builder).put("originalName", "original-name");
 
@@ -84,15 +84,15 @@ public class CommonBlobMetadataDecoratorTest {
     @Test
     void decorate_fails() {
 
-        final var context = mock(ServiceExtensionContext.class);
-        final var part = mock(DataSource.Part.class); // Close is no-op
+        var context = mock(ServiceExtensionContext.class);
+        var part = mock(DataSource.Part.class); // Close is no-op
 
         when(part.name()).thenReturn("ä§");
 
-        final var decorator = new CommonBlobMetadataDecorator(typeManager, context);
-        final var builder = mock(BlobMetadata.Builder.class);
+        var decorator = new CommonBlobMetadataDecorator(typeManager, context);
+        var builder = mock(BlobMetadata.Builder.class);
         when(builder.put(anyString(), anyString())).thenReturn(builder);
-        final var request = requestBuilder.build();
+        var request = requestBuilder.build();
         assertThrows(
                 NullPointerException.class,
                 () -> decorator.decorate(request, part, builder),

@@ -28,25 +28,25 @@ public class BlobMetadataProviderImplTest {
     @Test
     public void multiple_succeeds() {
 
-        final var monitor = mock(Monitor.class);
-        final var provider = new BlobMetadataProviderImpl(monitor);
-        final var requestMock = mock(DataFlowRequest.class);
-        final var partMock = mock(DataSource.Part.class);
-        provider.registerSinkDecorator((request, part, builder) -> {
+        var monitor = mock(Monitor.class);
+        var provider = new BlobMetadataProviderImpl(monitor);
+        var requestMock = mock(DataFlowRequest.class);
+        var partMock = mock(DataSource.Part.class);
+        provider.registerDecorator((request, part, builder) -> {
             assertNotNull(request);
             assertNotNull(part);
             assertNotNull(builder);
             builder.put("key1", "value1");
             return builder;
         });
-        provider.registerSinkDecorator((request, part, builder) -> {
+        provider.registerDecorator((request, part, builder) -> {
             assertNotNull(request);
             assertNotNull(part);
             assertNotNull(builder);
             builder.put("key2", "value2");
             return builder;
         });
-        final var map = provider.provideSinkMetadata(requestMock, partMock).getMetadata();
+        var map = provider.provideSinkMetadata(requestMock, partMock).getMetadata();
         assertThat(map.get("key1")).isEqualTo("value1");
         assertThat(map.get("key2")).isEqualTo("value2");
         assertThat(map.size()).isEqualTo(2);

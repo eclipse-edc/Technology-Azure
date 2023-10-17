@@ -19,7 +19,7 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
 
 public interface BlobMetadataProvider {
 
-    void registerSinkDecorator(BlobMetadataDecorator decorator);
+    void registerDecorator(BlobMetadataDecorator decorator);
 
     BlobMetadata provideSinkMetadata(DataFlowRequest request, DataSource.Part part);
 }

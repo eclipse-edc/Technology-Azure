@@ -48,10 +48,10 @@ import static org.mockito.Mockito.when;
 
 class AzureDataSourceToDataSinkTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
-    private final Monitor monitor = mock(Monitor.class);
+    private final Monitor monitor = mock();
     private final DataFlowRequest request = createRequest(AzureBlobStoreSchema.TYPE).build();
     private final String requestId = request.getId();
-    private final ServiceExtensionContext context = mock(ServiceExtensionContext.class);
+    private final ServiceExtensionContext context = mock();
     private final FakeBlobAdapter fakeSource = new FakeBlobAdapter();
     private final FakeBlobAdapter fakeSink = new FakeBlobAdapter();
     private final FakeBlobAdapter fakeCompletionMarker = new FakeBlobAdapter();
@@ -103,7 +103,7 @@ class AzureDataSourceToDataSinkTest {
         when(context.getConnectorId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
 
-        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -132,7 +132,7 @@ class AzureDataSourceToDataSinkTest {
         // simulate source error
         var blobAdapter = mock(BlobAdapter.class);
         when(blobAdapter.getBlobName()).thenReturn(fakeSource.name);
-        String errorMessage = "Test error message";
+        var errorMessage = "Test error message";
         when(blobAdapter.openInputStream()).thenThrow(new RuntimeException(errorMessage));
         var fakeSourceFactory = mock(BlobStoreApi.class);
         when(fakeSourceFactory.getBlobAdapter(
@@ -164,7 +164,7 @@ class AzureDataSourceToDataSinkTest {
         when(context.getConnectorId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
 
-        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -219,7 +219,7 @@ class AzureDataSourceToDataSinkTest {
         when(context.getConnectorId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
 
-        final var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)

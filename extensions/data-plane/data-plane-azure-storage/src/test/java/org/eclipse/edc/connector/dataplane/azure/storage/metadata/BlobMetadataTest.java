@@ -27,12 +27,12 @@ import static org.mockito.Mockito.verify;
 public class BlobMetadataTest {
 
     public void build_succeeds() {
-        final var monitor = mock(Monitor.class);
-        final var builder = new BlobMetadata.Builder(monitor);
+        var monitor = mock(Monitor.class);
+        var builder = new BlobMetadata.Builder(monitor);
         builder.put("key1", "value1");
         builder.put("key2", "value2");
-        final var blobMetadata = builder.build();
-        final var metadata = blobMetadata.getMetadata();
+        var blobMetadata = builder.build();
+        var metadata = blobMetadata.getMetadata();
         assertThat(metadata.get("key1")).isEqualTo("value1");
         assertThat(metadata.get("key2")).isEqualTo("value2");
         assertThat(metadata.size()).isEqualTo(2);
@@ -41,8 +41,8 @@ public class BlobMetadataTest {
     @ParameterizedTest
     @CsvSource({"test,#§Ö", "#§Ö,test"})
     public void build_fails(String key, String value) {
-        final var monitor = mock(Monitor.class);
-        final var builder = new BlobMetadata.Builder(monitor);
+        var monitor = mock(Monitor.class);
+        var builder = new BlobMetadata.Builder(monitor);
         assertThrows(
                 IllegalArgumentException.class,
                 () -> builder.put(key, value),
@@ -51,12 +51,12 @@ public class BlobMetadataTest {
 
     @Test
     public void build_indicates_warning() {
-        final var monitor = mock(Monitor.class);
-        final var builder = new BlobMetadata.Builder(monitor);
+        var monitor = mock(Monitor.class);
+        var builder = new BlobMetadata.Builder(monitor);
         builder.put("key1", "value1");
         builder.put("key1", "value2");
-        final var blobMetadata = builder.build();
-        final var metadata = blobMetadata.getMetadata();
+        var blobMetadata = builder.build();
+        var metadata = blobMetadata.getMetadata();
         assertThat(metadata.get("key1")).isEqualTo("value2");
         assertThat(metadata.size()).isEqualTo(1);
         verify(monitor).warning("Overwriting existing metadata key : key1");

@@ -138,9 +138,7 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     @Override
     public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName) {
-        var credentialBuilder = new DefaultAzureCredentialBuilder();
-        var builder = new BlobServiceClientBuilder()
-                .credential(credentialBuilder.build());
+        var builder = new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build());
         return getBlobAdapter(accountName, containerName, blobName, builder);
     }
 

@@ -60,45 +60,45 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
     private final String sinkContainerName = createContainerName();
     private final String blobName = createBlobName();
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
-    private final Monitor monitor = mock(Monitor.class);
-    private final Vault vault = mock(Vault.class);
+    private final Monitor monitor = mock();
+    private final Vault vault = mock();
 
-    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_1_NAME));
-    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_2_NAME));
+    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, PROVIDER_STORAGE_ACCOUNT_NAME));
+    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME));
 
     @BeforeEach
     void setUp() {
-        createContainer(blobServiceClient2, sinkContainerName);
+        createContainer(consumerBlobServiceClient, sinkContainerName);
     }
 
     @Test
     void transfer_success() {
-        String content = "test-content";
-        blobServiceClient1.getBlobContainerClient(account1ContainerName)
+        var content = "test-content";
+        providerBlobServiceClient.getBlobContainerClient(providerContainerName)
                 .getBlobClient(blobName)
                 .upload(BinaryData.fromString(content));
 
-        String account1KeyName = "test-account-key-name1";
+        var account1KeyName = "test-account-key-name1";
         var source = DataAddress.Builder.newInstance()
                 .type(TYPE)
-                .property(ACCOUNT_NAME, ACCOUNT_1_NAME)
-                .property(CONTAINER_NAME, account1ContainerName)
+                .property(ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_NAME)
+                .property(CONTAINER_NAME, providerContainerName)
                 .property(BLOB_NAME, blobName)
                 .keyName(account1KeyName)
                 .build();
-        when(vault.resolveSecret(account1KeyName)).thenReturn(ACCOUNT_1_KEY);
+        when(vault.resolveSecret(account1KeyName)).thenReturn(PROVIDER_STORAGE_ACCOUNT_KEY);
 
-        String account2KeyName = "test-account-key-name2";
+        var account2KeyName = "test-account-key-name2";
         var destination = DataAddress.Builder.newInstance()
                 .type(TYPE)
-                .property(ACCOUNT_NAME, ACCOUNT_2_NAME)
+                .property(ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_NAME)
                 .property(CONTAINER_NAME, sinkContainerName)
                 .keyName(account2KeyName)
                 .build();
 
-        when(vault.resolveSecret(ACCOUNT_2_NAME + "-key1"))
-                .thenReturn(ACCOUNT_2_KEY);
-        var account2SasToken = account2Api.createContainerSasToken(ACCOUNT_2_NAME, sinkContainerName, "w", OffsetDateTime.MAX.minusDays(1));
+        when(vault.resolveSecret(CONSUMER_STORAGE_ACCOUNT_NAME + "-key1"))
+                .thenReturn(CONSUMER_STORAGE_ACCOUNT_KEY);
+        var account2SasToken = account2Api.createContainerSasToken(CONSUMER_STORAGE_ACCOUNT_NAME, sinkContainerName, "w", OffsetDateTime.MAX.minusDays(1));
         var secretToken = new AzureSasToken(account2SasToken, Long.MAX_VALUE);
         when(vault.resolveSecret(account2KeyName))
                 .thenReturn(typeManager.writeValueAsString(secretToken));
@@ -121,7 +121,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
                 .succeedsWithin(500, TimeUnit.MILLISECONDS)
                 .satisfies(transferResult -> assertThat(transferResult.succeeded()).isTrue());
 
-        var destinationBlob = blobServiceClient2
+        var destinationBlob = consumerBlobServiceClient
                 .getBlobContainerClient(sinkContainerName)
                 .getBlobClient(blobName);
         assertThat(destinationBlob.exists())

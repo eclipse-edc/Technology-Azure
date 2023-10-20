@@ -24,8 +24,12 @@ import org.eclipse.edc.util.string.StringUtils;
 public class CommonBlobMetadataDecorator implements BlobMetadataDecorator {
 
     private final TypeManager typeManager;
-
     private final ServiceExtensionContext context;
+    public static final String ORIGINAL_NAME = "originalName";
+    public static final String REQUEST_ID = "requestId";
+    public static final String PROCESS_ID = "processId";
+    public static final String CONNECTOR_ID = "connectorId";
+    public static final String PARTICIPANT_ID = "participantId";
 
     public CommonBlobMetadataDecorator(TypeManager typeManager, ServiceExtensionContext context) {
         this.typeManager = typeManager;
@@ -35,17 +39,17 @@ public class CommonBlobMetadataDecorator implements BlobMetadataDecorator {
     @Override
     public BlobMetadata.Builder decorate(DataFlowRequest request, DataSource.Part part, BlobMetadata.Builder builder) {
 
-        builder.put("originalName", part.name())
-                .put("requestId", request.getId())
-                .put("processId", request.getProcessId())
-                .put("connectorId", context.getConnectorId())
-                .put("participantId", context.getParticipantId());
+        builder.put(ORIGINAL_NAME, part.name())
+                .put(REQUEST_ID, request.getId())
+                .put(PROCESS_ID, request.getProcessId())
+                .put(CONNECTOR_ID, context.getConnectorId())
+                .put(PARTICIPANT_ID, context.getParticipantId());
 
         var dataAddress = request.getDestinationDataAddress();
         var correlationId = dataAddress.getStringProperty(AzureBlobStoreSchema.CORRELATION_ID);
 
         if (!StringUtils.isNullOrEmpty(correlationId)) {
-            builder.put("correlationId", correlationId);
+            builder.put(AzureBlobStoreSchema.CORRELATION_ID, correlationId);
         }
 
         return builder;

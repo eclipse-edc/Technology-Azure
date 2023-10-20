@@ -26,9 +26,6 @@ dependencies {
     implementation(libs.azure.storageblob)
     implementation(libs.failsafe.core)
 
-    runtimeClasspath(libs.azure.storageblob)
-    runtimeClasspath(libs.failsafe.core)
-
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-blob-core")))
 }

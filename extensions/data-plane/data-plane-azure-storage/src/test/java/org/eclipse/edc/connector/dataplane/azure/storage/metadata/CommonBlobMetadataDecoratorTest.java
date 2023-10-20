@@ -20,13 +20,22 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.util.string.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.io.InputStream;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CORRELATION_ID;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMetadataDecorator.CONNECTOR_ID;
+import static org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMetadataDecorator.ORIGINAL_NAME;
+import static org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMetadataDecorator.PARTICIPANT_ID;
+import static org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMetadataDecorator.PROCESS_ID;
+import static org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMetadataDecorator.REQUEST_ID;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -36,67 +45,82 @@ public class CommonBlobMetadataDecoratorTest {
 
     private final TypeManager typeManager = mock();
     private final DataFlowRequest.Builder requestBuilder = createRequest(AzureBlobStoreSchema.TYPE);
+    private static final String TEST_ORIGINAL_NAME = "original-name";
+    private static final String TEST_CONNECTOR_ID = "some-connector-id";
+    private static final String TEST_PARTICIPANT_ID = "some-participant-id";
 
     @ParameterizedTest
     @CsvSource(value = {"correlation-id", "''", "null"}, nullValues = {"null"})
     void decorate_succeeds(String correlationId) {
 
         var context = mock(ServiceExtensionContext.class);
-        var part = mock(DataSource.Part.class);
+        var samplePart = new DataSource.Part() { // close is no-op
+            @Override
+            public String name() {
+                return TEST_ORIGINAL_NAME;
+            }
 
-        when(part.name()).thenReturn("original-name");
+            @Override
+            public InputStream openStream() {
+                return null;
+            }
+        };
 
-        when(context.getConnectorId()).thenReturn("connector-id");
-        when(context.getParticipantId()).thenReturn("participant-id");
+        when(context.getConnectorId()).thenReturn(TEST_CONNECTOR_ID);
+        when(context.getParticipantId()).thenReturn(TEST_PARTICIPANT_ID);
 
         var decorator = new CommonBlobMetadataDecorator(typeManager, context);
         var builder = mock(BlobMetadata.Builder.class);
         when(builder.put(anyString(), anyString())).thenReturn(builder);
 
-        DataFlowRequest request;
+        DataFlowRequest sampleRequest;
         if (correlationId != null) {
-            request = requestBuilder.destinationDataAddress(
+            sampleRequest = requestBuilder.destinationDataAddress(
                     DataAddress.Builder.newInstance()
                             .type(AzureBlobStoreSchema.TYPE)
-                            .property(AzureBlobStoreSchema.CORRELATION_ID, correlationId)
+                            .property(CORRELATION_ID, correlationId)
                             .build()).build();
         } else {
-            request = requestBuilder.build();
+            sampleRequest = requestBuilder.build();
         }
 
-        var result = decorator.decorate(request, part, builder);
+        var result = decorator.decorate(sampleRequest, samplePart, builder);
 
-        verify(builder).put("originalName", "original-name");
+        verify(builder).put(ORIGINAL_NAME, TEST_ORIGINAL_NAME);
 
-        verify(builder).put("requestId", request.getId());
-        verify(builder).put("processId", request.getProcessId());
+        verify(builder).put(REQUEST_ID, sampleRequest.getId());
+        verify(builder).put(PROCESS_ID, sampleRequest.getProcessId());
 
-        verify(builder).put("connectorId", "connector-id");
-        verify(builder).put("participantId", "participant-id");
+        verify(builder).put(CONNECTOR_ID, TEST_CONNECTOR_ID);
+        verify(builder).put(PARTICIPANT_ID, TEST_PARTICIPANT_ID);
 
-        if (correlationId != null && !correlationId.isEmpty()) {
-            verify(builder).put("correlationId", correlationId);
+        if (!StringUtils.isNullOrEmpty(correlationId)) {
+            verify(builder).put(CORRELATION_ID, correlationId);
         }
 
         assertThat(result).isInstanceOf(BlobMetadata.Builder.class);
     }
 
     @Test
-    void decorate_fails() {
+    void decorate_whenUsingIllegalCharacters_fails() {
 
         var context = mock(ServiceExtensionContext.class);
-        var part = mock(DataSource.Part.class); // Close is no-op
+        var samplePart = new DataSource.Part() { // close is no-op
+            @Override
+            public String name() {
+                return "ä§";
+            }
 
-        when(part.name()).thenReturn("ä§");
-
+            @Override
+            public InputStream openStream() {
+                return null;
+            }
+        };
         var decorator = new CommonBlobMetadataDecorator(typeManager, context);
         var builder = mock(BlobMetadata.Builder.class);
         when(builder.put(anyString(), anyString())).thenReturn(builder);
         var request = requestBuilder.build();
-        assertThrows(
-                NullPointerException.class,
-                () -> decorator.decorate(request, part, builder),
-                "Expected decorate to throw NullPointerException, but it didn't"
-        );
+        assertThatThrownBy(() -> decorator.decorate(request, samplePart, builder))
+                .isInstanceOf(NullPointerException.class);
     }
 }

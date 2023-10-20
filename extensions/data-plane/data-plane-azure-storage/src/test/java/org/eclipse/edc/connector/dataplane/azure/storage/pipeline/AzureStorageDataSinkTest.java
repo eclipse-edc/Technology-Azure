@@ -195,7 +195,7 @@ class AzureStorageDataSinkTest {
                         "blob, lob,  '',   lob",
                         "blob, '',   '',   blob"},
             nullValues = {"null"})
-    void blobName(String blobName, String altName, String folderName, String expected) {
+    void getDestinationBlobName_shouldBeProperlyConcatenated(String blobName, String altName, String folderName, String expected) {
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
 

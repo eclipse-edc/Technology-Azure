@@ -20,17 +20,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public class BlobMetadataTest {
 
+    @Test
     public void build_succeeds() {
-        var monitor = mock(Monitor.class);
-        var builder = new BlobMetadata.Builder(monitor);
-        builder.put("key1", "value1");
-        builder.put("key2", "value2");
+        var builder = new BlobMetadata.Builder(mock())
+                .put("key1", "value1")
+                .put("key2", "value2");
         var blobMetadata = builder.build();
         var metadata = blobMetadata.getMetadata();
         assertThat(metadata.get("key1")).isEqualTo("value1");
@@ -40,21 +40,18 @@ public class BlobMetadataTest {
 
     @ParameterizedTest
     @CsvSource({"test,#§Ö", "#§Ö,test"})
-    public void build_fails(String key, String value) {
-        var monitor = mock(Monitor.class);
-        var builder = new BlobMetadata.Builder(monitor);
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> builder.put(key, value),
-                "Expected decorate to throw IllegalArgumentException, but it didn't");
+    public void build_whenHasIllegalCharacters_fails(String key, String value) {
+        var builder = new BlobMetadata.Builder(mock());
+        assertThatThrownBy(() -> builder.put(key, value))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void build_indicates_warning() {
+    public void build_whenDuplicateKeys_shouldIndicateWarningInLog() {
         var monitor = mock(Monitor.class);
-        var builder = new BlobMetadata.Builder(monitor);
-        builder.put("key1", "value1");
-        builder.put("key1", "value2");
+        var builder = new BlobMetadata.Builder(monitor)
+                .put("key1", "value1")
+                .put("key1", "value2");
         var blobMetadata = builder.build();
         var metadata = blobMetadata.getMetadata();
         assertThat(metadata.get("key1")).isEqualTo("value2");

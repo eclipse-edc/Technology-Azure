@@ -72,44 +72,44 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
     private final Monitor monitor = mock();
     private final Vault vault = mock();
 
-    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_1_NAME));
-    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, ACCOUNT_2_NAME));
+    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, PROVIDER_STORAGE_ACCOUNT_NAME));
+    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME));
 
     @BeforeEach
     void setUp() {
-        createContainer(blobServiceClient2, sinkContainerName);
+        createContainer(consumerBlobServiceClient, sinkContainerName);
     }
 
     @Test
     void transfer_success() {
         var content = "test-content";
-        blobServiceClient1.getBlobContainerClient(account1ContainerName)
+        providerBlobServiceClient.getBlobContainerClient(providerContainerName)
                 .getBlobClient(blobName)
                 .upload(BinaryData.fromString(content));
 
         var account1KeyName = "test-account-key-name1";
         var source = DataAddress.Builder.newInstance()
                 .type(TYPE)
-                .property(ACCOUNT_NAME, ACCOUNT_1_NAME)
-                .property(CONTAINER_NAME, account1ContainerName)
+                .property(ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_NAME)
+                .property(CONTAINER_NAME, providerContainerName)
                 .property(BLOB_NAME, blobName)
                 .keyName(account1KeyName)
                 .build();
-        when(vault.resolveSecret(account1KeyName)).thenReturn(ACCOUNT_1_KEY);
+        when(vault.resolveSecret(account1KeyName)).thenReturn(PROVIDER_STORAGE_ACCOUNT_KEY);
 
         var account2KeyName = "test-account-key-name2";
         var destination = DataAddress.Builder.newInstance()
                 .type(TYPE)
-                .property(ACCOUNT_NAME, ACCOUNT_2_NAME)
+                .property(ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_NAME)
                 .property(CONTAINER_NAME, sinkContainerName)
                 .keyName(account2KeyName)
                 .build();
 
-        when(vault.resolveSecret(ACCOUNT_2_NAME + "-key1"))
-                .thenReturn(ACCOUNT_2_KEY);
+        when(vault.resolveSecret(CONSUMER_STORAGE_ACCOUNT_NAME + "-key1"))
+                .thenReturn(CONSUMER_STORAGE_ACCOUNT_KEY);
 
-        var expiry = OffsetDateTime.now().truncatedTo(ChronoUnit.DAYS).plusDays(1).truncatedTo(ChronoUnit.DAYS);
-        var account2SasToken = account2Api.createContainerSasToken(ACCOUNT_2_NAME, sinkContainerName, "w", expiry);
+        var account2SasToken = account2Api.createContainerSasToken(CONSUMER_STORAGE_ACCOUNT_NAME, sinkContainerName,
+                "w", OffsetDateTime.now().truncatedTo(ChronoUnit.DAYS).plusDays(1).truncatedTo(ChronoUnit.DAYS));
 
         var secretToken = new AzureSasToken(account2SasToken, Long.MAX_VALUE);
         when(vault.resolveSecret(account2KeyName))
@@ -127,10 +127,11 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
         var partitionSize = 5;
 
-        var account2ApiPatched = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(ACCOUNT_2_NAME)) {
+        var account2ApiPatched = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(CONSUMER_STORAGE_ACCOUNT_NAME)) {
             @Override
             public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, AzureSasCredential credential) {
-                var blobClient = TestFunctions.getBlobServiceClient(ACCOUNT_2_NAME, ACCOUNT_2_KEY).getBlobContainerClient(containerName).getBlobClient(blobName).getBlockBlobClient();
+                var blobClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY)
+                        .getBlobContainerClient(containerName).getBlobClient(blobName).getBlockBlobClient();
                 return new DefaultBlobAdapter(blobClient);
             }
         };
@@ -148,7 +149,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
                 .succeedsWithin(500, TimeUnit.MILLISECONDS)
                 .satisfies(transferResult -> assertThat(transferResult.succeeded()).isTrue());
 
-        var destinationBlob = blobServiceClient2
+        var destinationBlob = consumerBlobServiceClient
                 .getBlobContainerClient(sinkContainerName)
                 .getBlobClient(blobName);
         assertThat(destinationBlob.exists())

@@ -101,7 +101,7 @@ maven/mavencentral/com.nimbusds/content-type/2.2, Apache-2.0, approved, clearlyd
 maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.25, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.30.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37, , restricted, clearlydefined
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37, Apache-2.0, approved, #11086
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/10.7.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.puppycrawl.tools/checkstyle/10.0, LGPL-2.1-or-later, approved, #7936
 maven/mavencentral/com.squareup.okhttp3/logging-interceptor/3.12.12, Apache-2.0, approved, clearlydefined
@@ -148,9 +148,9 @@ maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.94.Final, Apache-2.
 maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport/4.1.94.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.31.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-api/1.31.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-context/1.31.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.31.0, Apache-2.0, approved, #11085
+maven/mavencentral/io.opentelemetry/opentelemetry-api/1.31.0, Apache-2.0, approved, #11087
+maven/mavencentral/io.opentelemetry/opentelemetry-context/1.31.0, Apache-2.0, approved, #11088
 maven/mavencentral/io.projectreactor.netty/reactor-netty-core/1.0.34, Apache-2.0, approved, #9687
 maven/mavencentral/io.projectreactor.netty/reactor-netty-http/1.0.34, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.projectreactor/reactor-core/3.4.31, Apache-2.0, approved, #7517
@@ -416,8 +416,5 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
 maven/mavencentral/org.slf4j/slf4j-api/2.0.5, MIT, approved, #5915
 maven/mavencentral/org.testcontainers/junit-jupiter/1.19.1, MIT, approved, #10344
 maven/mavencentral/org.testcontainers/testcontainers/1.19.1, Apache-2.0 AND MIT, approved, #10347
-maven/mavencentral/org.xmlunit/xmlunit-core/2.9.1, Apache-2.0, approved, #6272
-maven/mavencentral/org.xmlunit/xmlunit-placeholders/2.9.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.yaml/snakeyaml/1.33, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.0, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #7275
 maven/mavencentral/org.yaml/snakeyaml/2.1, Apache-2.0, approved, #9847

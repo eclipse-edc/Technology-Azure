@@ -16,6 +16,7 @@ package org.eclipse.edc.azure.blob.api;
 
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.util.BinaryData;
+import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
@@ -35,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class BlobStoreApiImpl implements BlobStoreApi {
 
@@ -65,30 +65,30 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     @Override
     public String createContainerSasToken(String accountName, String containerName, String permissionSpec, OffsetDateTime expiry) {
-        BlobContainerSasPermission permissions = BlobContainerSasPermission.parse(permissionSpec);
-        BlobServiceSasSignatureValues vals = new BlobServiceSasSignatureValues(expiry, permissions);
-        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).generateSas(vals);
+        var permissions = BlobContainerSasPermission.parse(permissionSpec);
+        var values = new BlobServiceSasSignatureValues(expiry, permissions);
+        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).generateSas(values);
     }
 
     @Override
     public List<BlobItem> listContainer(String accountName, String containerName) {
-        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs().stream().collect(Collectors.toList());
+        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs().stream().toList();
     }
 
     @Override
     public void putBlob(String accountName, String containerName, String blobName, byte[] data) {
-        BlobServiceClient blobServiceClient = getBlobServiceClient(accountName);
+        var blobServiceClient = getBlobServiceClient(accountName);
         blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName).upload(BinaryData.fromBytes(data), true);
     }
 
     @Override
     public String createAccountSas(String accountName, String containerName, String permissionSpec, OffsetDateTime expiry) {
-        AccountSasPermission permissions = AccountSasPermission.parse(permissionSpec);
+        var permissions = AccountSasPermission.parse(permissionSpec);
 
-        AccountSasService services = AccountSasService.parse("b");
-        AccountSasResourceType resourceTypes = AccountSasResourceType.parse("co");
-        AccountSasSignatureValues vals = new AccountSasSignatureValues(expiry, permissions, services, resourceTypes);
-        return getBlobServiceClient(accountName).generateAccountSas(vals);
+        var services = AccountSasService.parse("b");
+        var resourceTypes = AccountSasResourceType.parse("co");
+        var values = new AccountSasSignatureValues(expiry, permissions, services, resourceTypes);
+        return getBlobServiceClient(accountName).generateAccountSas(values);
     }
 
     @Override
@@ -110,8 +110,10 @@ public class BlobStoreApiImpl implements BlobStoreApi {
             throw new IllegalArgumentException("No Object Storage credential found in vault!");
         }
 
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
-                .endpoint(createEndpoint(accountName))
+        var endpoint = createEndpoint(accountName);
+        var blobServiceClient = new BlobServiceClientBuilder()
+                .credential(createCredential(accountKey, accountName))
+                .endpoint(endpoint)
                 .buildClient();
 
         cache.put(accountName, blobServiceClient);
@@ -124,13 +126,19 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     @Override
     public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, String sharedKey) {
-        BlobServiceClientBuilder builder = new BlobServiceClientBuilder().credential(new StorageSharedKeyCredential(accountName, sharedKey));
+        var builder = new BlobServiceClientBuilder().credential(new StorageSharedKeyCredential(accountName, sharedKey));
         return getBlobAdapter(accountName, containerName, blobName, builder);
     }
 
     @Override
     public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, AzureSasCredential credential) {
-        BlobServiceClientBuilder builder = new BlobServiceClientBuilder().credential(credential);
+        var builder = new BlobServiceClientBuilder().credential(credential);
+        return getBlobAdapter(accountName, containerName, blobName, builder);
+    }
+
+    @Override
+    public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName) {
+        var builder = new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build());
         return getBlobAdapter(accountName, containerName, blobName, builder);
     }
 

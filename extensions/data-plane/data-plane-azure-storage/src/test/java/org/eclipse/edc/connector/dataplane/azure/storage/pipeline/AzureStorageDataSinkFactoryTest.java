@@ -17,6 +17,8 @@ package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
@@ -37,10 +39,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AzureStorageDataSinkFactoryTest {
-    private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
-    private final Vault vault = mock(Vault.class);
+    private final BlobStoreApi blobStoreApi = mock();
+    private final Vault vault = mock();
     private final TypeManager typeManager = new TypeManager();
-    private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, mock(Monitor.class), vault, typeManager);
+    private final Monitor monitor = mock();
+    private final BlobMetadataProvider metadataProvider = new BlobMetadataProviderImpl(monitor);
+    private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, monitor, vault, typeManager, metadataProvider);
     private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
     private final DataFlowRequest.Builder invalidRequest = createRequest("test-type");
     private final DataAddress.Builder dataAddress = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);

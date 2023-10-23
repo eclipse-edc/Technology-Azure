@@ -33,8 +33,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AzureStorageDataSourceFactoryTest {
-    private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
-    private final Vault vault = mock(Vault.class);
+    private final BlobStoreApi blobStoreApi = mock();
+    private final Vault vault = mock();
     private final AzureStorageDataSourceFactory factory = new AzureStorageDataSourceFactory(blobStoreApi, RetryPolicy.ofDefaults(), mock(Monitor.class), vault);
     private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
     private final DataFlowRequest.Builder invalidRequest = createRequest("test-type");
@@ -99,7 +99,7 @@ class AzureStorageDataSourceFactoryTest {
 
     @Test
     void createSource_whenValidRequest_succeeds() {
-        String keyName = "test-key-name";
+        var keyName = "test-key-name";
         when(vault.resolveSecret(keyName)).thenReturn(sharedKey);
         var validRequest = request.sourceDataAddress(dataAddress
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)

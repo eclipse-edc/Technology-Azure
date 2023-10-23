@@ -42,8 +42,8 @@ import static org.mockito.Mockito.when;
 
 class AzureStorageDataSourceTest {
 
-    Monitor monitor = mock(Monitor.class);
-    BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
+    Monitor monitor = mock();
+    BlobStoreApi blobStoreApi = mock();
     DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
 
     String accountName = createAccountName();
@@ -64,7 +64,7 @@ class AzureStorageDataSourceTest {
             .blobStoreApi(blobStoreApi)
             .monitor(monitor)
             .build();
-    BlobAdapter destination = mock(BlobAdapter.class);
+    BlobAdapter destination = mock();
     ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes(UTF_8));
 
     @BeforeEach

@@ -41,7 +41,42 @@ public interface BlobStoreApi {
 
     byte[] getBlob(String account, String container, String blobName);
 
+    /**
+     * Get a blob adapter containing convenience methods for working on blob objects on a storage account.
+     * This method accepts storage account key credential, and it is used in a context, where unlimited access to
+     * a storage account is required.
+     *
+     * @param accountName The name of the storage account
+     * @param containerName The name of the container within the storage account
+     * @param blobName The name of the blob within the container of the storage account
+     * @param sharedKey The storage account key credential
+     * @return The blob adapter corresponding to the blob specified by the input parameters
+     */
     BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, String sharedKey);
 
+    /**
+     * Get a blob adapter containing convenience methods for working on blob objects on a storage account.
+     * This method accepts a SAS (Shared Access Signature) token as a credential, and it's typically used for accessing
+     * a storage account with limited sets of privileges. Pls. refer to the Azure SAS documentation for further details.
+     *
+     * @param accountName The name of the storage account
+     * @param containerName The name of the container within the storage account
+     * @param blobName The name of the blob within the container of the storage account
+     * @param credential A valid SAS token
+     * @return The blob adapter corresponding to the blob specified by the input parameters
+     */
     BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, AzureSasCredential credential);
+
+    /**
+     * Get a blob adapter containing convenience methods for working on blob objects on a storage account.
+     * This method doesn't require any credentials; it uses {@link com.azure.identity.DefaultAzureCredentialBuilder},
+     * which contains an authentication flow consisting of several authentication mechanisms to be tried in a specific
+     * order. Pls. refer to the official documentation for further details, i.e. the list of mechanisms tried.
+     *
+     * @param accountName The name of the storage account
+     * @param containerName The name of the container within the storage account
+     * @param blobName The name of the blob within the container of the storage account
+     * @return The blob adapter corresponding to the blob specified by the input parameters
+     */
+    BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName);
 }

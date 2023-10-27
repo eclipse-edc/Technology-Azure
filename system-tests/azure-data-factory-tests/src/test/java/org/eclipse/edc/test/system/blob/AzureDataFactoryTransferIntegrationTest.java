@@ -14,6 +14,8 @@
 
 package org.eclipse.edc.test.system.blob;
 
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AzureSettings;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
@@ -34,6 +36,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.azure.core.util.Configuration.PROPERTY_AZURE_CLIENT_ID;
+import static com.azure.core.util.Configuration.PROPERTY_AZURE_CLIENT_SECRET;
+import static com.azure.core.util.Configuration.PROPERTY_AZURE_TENANT_ID;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.lang.System.getenv;
@@ -52,15 +57,12 @@ class AzureDataFactoryTransferIntegrationTest {
     private static final List<Runnable> CONTAINER_CLEANUP = new ArrayList<>();
     private static final String EDC_FS_CONFIG = "edc.fs.config";
     private static final String EDC_VAULT_NAME = "edc.vault.name";
-    private static final String EDC_VAULT_CLIENT_ID = "edc.vault.clientid";
-    private static final String EDC_VAULT_TENANT_ID = "edc.vault.tenantid";
-    private static final String EDC_VAULT_CLIENT_SECRET = "edc.vault.clientsecret";
     private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
     private static final AzureSettings AZURE_SETTINGS = new AzureSettings();
     private static final String KEY_VAULT_NAME = AZURE_SETTINGS.getProperty("test.key.vault.name");
-    private static final String AZURE_TENANT_ID = getenv("AZURE_TENANT_ID");
-    private static final String AZURE_CLIENT_ID = getenv("AZURE_CLIENT_ID");
-    private static final String AZURE_CLIENT_SECRET = getenv("AZURE_CLIENT_SECRET");
+    private static final String AZURE_TENANT_ID = getenv(PROPERTY_AZURE_TENANT_ID);
+    private static final String AZURE_CLIENT_ID = getenv(PROPERTY_AZURE_CLIENT_ID);
+    private static final String AZURE_CLIENT_SECRET = getenv(PROPERTY_AZURE_CLIENT_SECRET);
 
     @RegisterExtension
     public static final EdcRuntimeExtension CONSUMER = new EdcRuntimeExtension(
@@ -76,9 +78,9 @@ class AzureDataFactoryTransferIntegrationTest {
                     Map.entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
                     Map.entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
                     Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
-                    Map.entry(EDC_VAULT_CLIENT_ID, AZURE_CLIENT_ID),
-                    Map.entry(EDC_VAULT_TENANT_ID, AZURE_TENANT_ID),
-                    Map.entry(EDC_VAULT_CLIENT_SECRET, AZURE_CLIENT_SECRET)
+                    Map.entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
+                    Map.entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
+                    Map.entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
             )
     );
     @RegisterExtension
@@ -95,9 +97,9 @@ class AzureDataFactoryTransferIntegrationTest {
                     Map.entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
                     Map.entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
                     Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
-                    Map.entry(EDC_VAULT_CLIENT_ID, AZURE_CLIENT_ID),
-                    Map.entry(EDC_VAULT_TENANT_ID, AZURE_TENANT_ID),
-                    Map.entry(EDC_VAULT_CLIENT_SECRET, AZURE_CLIENT_SECRET)
+                    Map.entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
+                    Map.entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
+                    Map.entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
             )
     );
     private static final String PROVIDER_STORAGE_ACCOUNT_NAME = AZURE_SETTINGS.getProperty("test.provider.storage.name");
@@ -120,7 +122,11 @@ class AzureDataFactoryTransferIntegrationTest {
     @Test
     void transferBlob_success() {
         // Arrange
-        var vault = AzureVault.authenticateWithSecret(new ConsoleMonitor(), AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET, KEY_VAULT_NAME);
+        var secretClient = new SecretClientBuilder()
+                .vaultUrl("https://" + KEY_VAULT_NAME + ".vault.azure.net")
+                .credential(new DefaultAzureCredentialBuilder().build())
+                .buildClient();
+        var vault = new AzureVault(new ConsoleMonitor(), secretClient);
         var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME)));
         var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_ENDPOINT_TEMPLATE);
 

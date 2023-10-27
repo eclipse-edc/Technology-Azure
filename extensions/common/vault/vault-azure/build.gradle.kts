@@ -20,16 +20,10 @@ plugins {
 dependencies {
     api(libs.edc.spi.core)
 
-    implementation(libs.edc.util)
     implementation(libs.azure.keyvault)
     implementation(libs.azure.identity)
-    implementation(libs.jakarta.rsApi)
 
-    testImplementation(libs.azure.mgmt.resources)
-    testImplementation(libs.azure.resourcemanager)
-    testImplementation(libs.azure.resourcemanager.keyvault)
-
-    testImplementation(libs.mockito.inline)
+    testImplementation(libs.edc.junit)
 }
 
 

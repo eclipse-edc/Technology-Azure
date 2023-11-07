@@ -6,6 +6,10 @@ awaitility = "4.2.0"
 azure-rm = "2.31.0"
 bouncyCastle-jdk18on = "1.76"
 edc = "0.3.2-SNAPSHOT"
+# we need to pin the version of IH, because this is the last version to contain the DWN implementation
+# current snapshot builds of IH don't have feature parity yet.
+# todo: remove this once IH supports credential presentation and issuance
+identityhub = "0.3.1"
 failsafe = "3.3.2"
 httpMockServer = "5.15.0"
 jakarta-json = "2.0.1"
@@ -59,7 +63,7 @@ edc-ext-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-spi-fcc = { module = "org.eclipse.edc:federated-catalog-spi", version.ref = "edc" }
 edc-controlplane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
-edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "edc" }
+edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "identityhub" }
 edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-provision-http = { module = "org.eclipse.edc:provision-http", version.ref = "edc" }
@@ -88,8 +92,8 @@ edc-sql-transferprocess = { module = "org.eclipse.edc:transfer-process-store-sql
 edc-sql-lease = { module = "org.eclipse.edc:sql-lease", version.ref = "edc" }
 edc-sql-dataplane-instancestore = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 edc-sql-dataplane-store = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
-edc-sql-identityhub-store = { module = "org.eclipse.edc:identity-hub-store-sql", version.ref = "edc" }
-edc-sql-participant-store = { module = "org.eclipse.edc:participant-store-sql", version.ref = "edc" }
+edc-sql-identityhub-store = { module = "org.eclipse.edc:identity-hub-store-sql", version.ref = "identityhub" }
+edc-sql-participant-store = { module = "org.eclipse.edc:participant-store-sql", version.ref = "identityhub" }
 
 # third-partyi deps
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }

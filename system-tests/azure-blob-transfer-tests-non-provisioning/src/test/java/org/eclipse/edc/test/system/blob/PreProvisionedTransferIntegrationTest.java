@@ -17,6 +17,8 @@
 package org.eclipse.edc.test.system.blob;
 
 import com.azure.core.util.BinaryData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
@@ -25,34 +27,36 @@ import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.test.system.utils.Participant;
 import org.eclipse.edc.test.system.utils.PolicyFixtures;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
-import java.util.Collections;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CORRELATION_ID;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
 import static org.eclipse.edc.test.system.blob.ConsumerConstants.CONSUMER_PROPERTIES;
+import static org.eclipse.edc.test.system.blob.ProviderConstants.ASSET_FILE;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.PROVIDER_PROPERTIES;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
 @AzureStorageIntegrationTest
-public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
+public class PreProvisionedTransferIntegrationTest extends AbstractAzureBlobTest {
     private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
+    private static final String CONSUMER_CONTAINER_NAME = UUID.randomUUID().toString();
+    private static final String CONSUMER_KEY_NAME = format("%s-sas", CONSUMER_STORAGE_ACCOUNT_NAME);
+    private static final String BLOB_CORRELATION_ID = UUID.randomUUID().toString();
+    private static final String BLOB_FOLDER_NAME = UUID.randomUUID().toString();
 
     @RegisterExtension
     protected static EdcRuntimeExtension provider = new EdcRuntimeExtension(
@@ -61,14 +65,13 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
             new HashMap<>() {
                 {
                     putAll(PROVIDER_PROPERTIES);
-                    put("edc.test.asset.container.name", PROVIDER_CONTAINER_NAME);
                     put("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s");
                 }
             });
 
     @RegisterExtension
     protected static EdcRuntimeExtension consumer = new EdcRuntimeExtension(
-            ":system-tests:runtimes:azure-storage-transfer-consumer",
+            ":system-tests:runtimes:azure-storage-transfer-consumer-non-provisioning",
             "consumer",
             new HashMap<>() {
                 {
@@ -91,30 +94,39 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
             .protocolEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.PROTOCOL_URL)))
             .build();
 
-    @ParameterizedTest
-    @ArgumentsSource(BlobNamesToTransferProvider.class)
-    void transferBlob_success(String assetName, String[] blobsToTransfer) {
+    @Test
+    void transferBlob_success() throws JsonProcessingException {
         // Arrange
         // Upload a blob with test data on provider blob container (in account1).
         createContainer(providerBlobServiceClient, PROVIDER_CONTAINER_NAME);
-
-        for (String blobToTransfer : blobsToTransfer) {
-            providerBlobServiceClient.getBlobContainerClient(PROVIDER_CONTAINER_NAME)
-                    .getBlobClient(blobToTransfer)
-                    .upload(BinaryData.fromString(BLOB_CONTENT));
-        }
+        providerBlobServiceClient.getBlobContainerClient(PROVIDER_CONTAINER_NAME)
+                .getBlobClient(ProviderConstants.ASSET_FILE)
+                .upload(BinaryData.fromString(BLOB_CONTENT));
 
         // Seed data to provider
-        var assetId = blobsToTransfer.length > 1 ? providerClient.createBlobInFolderAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName)
-                : providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName);
+        var assetId = providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, ProviderConstants.ASSET_FILE);
         var policyId = providerClient.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
         providerClient.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+
+        // Pre-provision container on consumer side
+        createContainer(consumerBlobServiceClient, CONSUMER_CONTAINER_NAME);
 
         // Write keys to vault
         consumer.getContext().getService(Vault.class).storeSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME), CONSUMER_STORAGE_ACCOUNT_KEY);
         provider.getContext().getService(Vault.class).storeSecret(format("%s-key1", PROVIDER_STORAGE_ACCOUNT_NAME), PROVIDER_STORAGE_ACCOUNT_KEY);
 
-        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId, TransferDestination.Builder.newInstance().accountName(CONSUMER_STORAGE_ACCOUNT_NAME));
+        // Write SAS write-only token for consumer account (account2) to provider vault
+        var token = new ObjectMapper().writeValueAsString(createWriteOnlyToken(consumerBlobServiceClient, OffsetDateTime.now().plusHours(1)));
+        provider.getContext().getService(Vault.class).storeSecret(CONSUMER_KEY_NAME, token);
+
+        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId,
+                TransferDestination.Builder.newInstance()
+                        .accountName(CONSUMER_STORAGE_ACCOUNT_NAME)
+                        .keyName(CONSUMER_KEY_NAME)
+                        .correlationId(BLOB_CORRELATION_ID)
+                        .folderName(BLOB_FOLDER_NAME)
+                        .containerName(CONSUMER_CONTAINER_NAME));
+
         await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {
             var state = consumerClient.getTransferProcessState(transferProcessId);
             // should be STARTED or some state after that to make it more robust.
@@ -124,21 +136,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME));
 
         var dataDestination = consumerClient.getDataDestination(transferProcessId);
-        for (String blobToTransfer : blobsToTransfer) {
-            assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, blobToTransfer, Collections.emptyMap()));
-        }
+        assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, BLOB_FOLDER_NAME + "/" + ASSET_FILE, Map.ofEntries(Map.entry(CORRELATION_ID, BLOB_CORRELATION_ID))));
     }
 
-    private static class BlobNamesToTransferProvider implements ArgumentsProvider {
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-            return Stream.of(
-                    Arguments.of(ProviderConstants.ASSET_PREFIX, (Object) new String[]{
-                            ProviderConstants.ASSET_PREFIX + 1 + ProviderConstants.ASSET_FILE,
-                            ProviderConstants.ASSET_PREFIX + 2 + ProviderConstants.ASSET_FILE,
-                            ProviderConstants.ASSET_PREFIX + 3 + ProviderConstants.ASSET_FILE}),
-                    Arguments.of(ProviderConstants.ASSET_FILE, (Object) new String[]{
-                            ProviderConstants.ASSET_FILE}));
-        }
-    }
 }

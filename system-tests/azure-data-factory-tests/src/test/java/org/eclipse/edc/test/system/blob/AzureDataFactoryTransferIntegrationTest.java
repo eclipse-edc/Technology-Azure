@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
+import static org.eclipse.edc.test.system.blob.ProviderConstants.ASSET_FILE;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.eclipse.edc.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
@@ -145,7 +147,7 @@ class AzureDataFactoryTransferIntegrationTest {
 
         var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, consumerAccountKey, TestFunctions.getBlobServiceTestEndpoint(format("https://%s.blob.core.windows.net", CONSUMER_STORAGE_ACCOUNT_NAME)));
 
-        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
+        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId, TransferDestination.Builder.newInstance().accountName(CONSUMER_STORAGE_ACCOUNT_NAME));
         await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {
             var state = consumerClient.getTransferProcessState(transferProcessId);
             // should be STARTED or some state after that to make it more robust.
@@ -153,7 +155,7 @@ class AzureDataFactoryTransferIntegrationTest {
         });
 
         var dataDestination = consumerClient.getDataDestination(transferProcessId);
-        assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, ProviderConstants.ASSET_FILE));
+        assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, ASSET_FILE, Collections.emptyMap()));
     }
 
     @AfterAll

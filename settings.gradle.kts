@@ -69,10 +69,12 @@ include(":extensions:registration-service:participant-store-cosmos")
 
 // system test modules
 include(":system-tests:azure-blob-transfer-tests")
+include(":system-tests:azure-blob-transfer-tests-non-provisioning")
 include(":system-tests:azure-data-factory-tests")
 include(":system-tests:runtimes:azure-data-factory-transfer-consumer")
 include(":system-tests:runtimes:azure-data-factory-transfer-provider")
 include(":system-tests:runtimes:azure-storage-transfer-consumer")
+include(":system-tests:runtimes:azure-storage-transfer-consumer-non-provisioning")
 include(":system-tests:runtimes:azure-storage-transfer-provider")
 include(":system-tests:azure-blob-transfer-fixtures")
 include(":version-catalog")

@@ -16,6 +16,8 @@ package org.eclipse.edc.test.system.blob;
 
 import com.azure.storage.blob.BlobServiceClient;
 import org.assertj.core.api.ThrowingConsumer;
+import org.eclipse.edc.util.collection.CollectionUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -26,11 +28,13 @@ public class BlobTransferValidator implements ThrowingConsumer<Map<String, Objec
     private final BlobServiceClient client;
     private final String expectedContent;
     private final String expectedName;
+    private final Map<String, String> expectedMetadata;
 
-    public BlobTransferValidator(BlobServiceClient client, String expectedContent, String expectedName) {
+    public BlobTransferValidator(BlobServiceClient client, String expectedContent, String expectedName, @Nullable Map<String, String> expectedMetadata) {
         this.client = client;
         this.expectedContent = expectedContent;
         this.expectedName = expectedName;
+        this.expectedMetadata = expectedMetadata;
     }
 
     @Override
@@ -44,5 +48,11 @@ public class BlobTransferValidator implements ThrowingConsumer<Map<String, Objec
         assertThat(actualBlobContent)
                 .withFailMessage("Transferred file contents are not same as the source file")
                 .isEqualTo(expectedContent);
+        if (CollectionUtil.isNotEmpty(expectedMetadata)) {
+            var actualMetadata = destinationBlob.getProperties().getMetadata();
+            assertThat(actualMetadata)
+                    .withFailMessage("Expected metadata not set on transferred file")
+                    .containsAllEntriesOf(expectedMetadata);
+        }
     }
 }

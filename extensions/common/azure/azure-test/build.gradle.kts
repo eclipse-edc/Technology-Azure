@@ -28,6 +28,8 @@ dependencies {
     testFixturesApi(libs.edc.sql.core)
     testFixturesApi(libs.azure.storageblob)
     testFixturesApi(libs.junit.jupiter.api)
+
+    testFixturesApi(project(mapOf("path" to ":extensions:common:azure:azure-blob-core")))
 }
 
 

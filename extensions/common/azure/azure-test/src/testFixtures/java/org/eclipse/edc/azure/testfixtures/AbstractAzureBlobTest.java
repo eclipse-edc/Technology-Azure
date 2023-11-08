@@ -15,12 +15,18 @@
 package org.eclipse.edc.azure.testfixtures;
 
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.common.sas.AccountSasPermission;
+import com.azure.storage.common.sas.AccountSasResourceType;
+import com.azure.storage.common.sas.AccountSasService;
+import com.azure.storage.common.sas.AccountSasSignatureValues;
+import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,6 +70,16 @@ public abstract class AbstractAzureBlobTest {
         var blobContainerClient = client.createBlobContainer(containerName);
         assertTrue(blobContainerClient.exists());
         containerCleanup.add(() -> client.deleteBlobContainer(containerName));
+    }
+
+    protected AzureSasToken createWriteOnlyToken(BlobServiceClient client, OffsetDateTime expiry) {
+
+        return new AzureSasToken(client.generateAccountSas(
+                new AccountSasSignatureValues(
+                        expiry,
+                        AccountSasPermission.parse("w"),
+                        AccountSasService.parse("b"),
+                        AccountSasResourceType.parse("co"))), expiry.toEpochSecond());
     }
 
     @AfterEach

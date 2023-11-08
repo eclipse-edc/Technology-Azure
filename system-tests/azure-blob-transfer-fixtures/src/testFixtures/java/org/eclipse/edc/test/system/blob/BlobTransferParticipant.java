@@ -79,14 +79,8 @@ public class BlobTransferParticipant extends Participant {
                 .extract().jsonPath().get("'dataDestination'");
     }
 
-    public String requestAssetAndTransferToBlob(Participant provider, String assetId, String accountName) {
-        var destination = createObjectBuilder()
-                .add("type", AzureBlobStoreSchema.TYPE)
-                .add("properties", createObjectBuilder()
-                        .add(AzureBlobStoreSchema.ACCOUNT_NAME, accountName))
-                .build();
-
-        return super.requestAsset(provider, assetId, createObjectBuilder().build(), destination);
+    public String requestAssetAndTransferToBlob(Participant provider, String assetId, TransferDestination.Builder destination) {
+        return super.requestAsset(provider, assetId, createObjectBuilder().build(), destination.build().toJsonObject());
     }
 
     public static final class Builder extends Participant.Builder<BlobTransferParticipant, Builder> {

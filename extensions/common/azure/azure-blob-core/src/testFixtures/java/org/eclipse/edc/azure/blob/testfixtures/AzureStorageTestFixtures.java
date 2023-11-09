@@ -50,6 +50,10 @@ public class AzureStorageTestFixtures {
         return "blob-" + UUID.randomUUID();
     }
 
+    public static String createBlobPrefix() {
+        return "blobFolder-" + UUID.randomUUID() + "/";
+    }
+
     public static String createSharedKey() {
         return "SK-" + UUID.randomUUID();
     }

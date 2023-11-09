@@ -35,6 +35,16 @@ public interface BlobStoreApi {
 
     List<BlobItem> listContainer(String accountName, String containerName);
 
+    /**
+     * List all blobs from given folder in the container on a storage account.
+     *
+     * @param accountName The name of the storage account
+     * @param containerName The name of the container within the storage account
+     * @param directory The name of the folder within the container of the storage account
+     * @return Lazy loaded list of blobs from folder specified by the input parameters
+     */
+    List<BlobItem> listContainerFolder(String accountName, String containerName, String directory);
+
     void putBlob(String accountName, String containerName, String blobName, byte[] data);
 
     String createAccountSas(String accountName, String containerName, String racwxdl, OffsetDateTime expiry);

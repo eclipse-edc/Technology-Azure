@@ -19,15 +19,20 @@ import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.util.string.StringUtils;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure.Reason.GENERAL_ERROR;
+import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.failure;
 import static org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult.success;
 
 /**
@@ -38,6 +43,7 @@ public class AzureStorageDataSource implements DataSource {
     private String containerName;
     private String sharedKey;
     private String blobName;
+    private String blobPrefix;
     private String requestId;
     private RetryPolicy<Object> retryPolicy;
     private BlobStoreApi blobStoreApi;
@@ -48,14 +54,24 @@ public class AzureStorageDataSource implements DataSource {
 
     @Override
     public StreamResult<Stream<Part>> openPartStream() {
-        return success(Stream.of(getPart()));
+
+        if (!StringUtils.isNullOrEmpty(blobPrefix)) {
+            var folderBlobs = blobStoreApi.listContainerFolder(accountName, containerName, blobPrefix);
+            if (folderBlobs.isEmpty()) {
+                monitor.severe(format("Error listing blobs in the container %s with prefix %s", containerName, blobPrefix));
+                return failure(new StreamFailure(List.of(format("Error listing blobs in the container %s with prefix %s", containerName, blobPrefix)), GENERAL_ERROR));
+            }
+            return success(folderBlobs.stream().map(e -> getPart(e.getName())));
+        }
+
+        return success(Stream.of(getPart(blobName)));
     }
 
     @Override
     public void close() {
     }
 
-    private AzureStoragePart getPart() {
+    private AzureStoragePart getPart(String blobName) {
         try {
             var adapter = sharedKey != null ? blobStoreApi.getBlobAdapter(accountName, containerName, blobName, sharedKey)
                     : blobStoreApi.getBlobAdapter(accountName, containerName, blobName);
@@ -94,6 +110,11 @@ public class AzureStorageDataSource implements DataSource {
 
         public Builder blobName(String blobName) {
             dataSource.blobName = blobName;
+            return this;
+        }
+
+        public Builder blobPrefix(String blobPrefix) {
+            dataSource.blobPrefix = blobPrefix;
             return this;
         }
 

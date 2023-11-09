@@ -28,9 +28,11 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_PREFIX;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateBlobName;
+import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateBlobPrefix;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
 
 /**
@@ -60,7 +62,11 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
         try {
             validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
-            validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
+            if (dataAddress.hasProperty(BLOB_PREFIX)) {
+                validateBlobPrefix(dataAddress.getStringProperty(BLOB_PREFIX));
+            } else {
+                validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
+            }
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
         }
@@ -78,6 +84,7 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
                 .containerName(dataAddress.getStringProperty(CONTAINER_NAME))
                 .blobStoreApi(blobStoreApi)
                 .blobName(dataAddress.getStringProperty(BLOB_NAME))
+                .blobPrefix(dataAddress.getStringProperty(BLOB_PREFIX))
                 .requestId(request.getId())
                 .retryPolicy(retryPolicy)
                 .monitor(monitor);

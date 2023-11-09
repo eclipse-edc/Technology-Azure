@@ -31,9 +31,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ExecutorService;
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_PREFIX;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
+import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateEmptyValue;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyName;
 
 /**
@@ -66,10 +69,15 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var dataAddress = request.getDestinationDataAddress();
+        var dataSourceAddress = request.getSourceDataAddress();
+
         try {
             validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
             validateKeyName(dataAddress.getKeyName());
+            if (dataSourceAddress.hasProperty(BLOB_PREFIX)) {
+                validateEmptyValue(dataAddress.getStringProperty(BLOB_NAME), BLOB_NAME);
+            }
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
         }

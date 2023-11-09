@@ -48,6 +48,26 @@ public class BlobTransferParticipant extends Participant {
         return createAsset(assetId, properties, dataAddressProperties);
     }
 
+    public String createBlobPrefixAsset(String accountName, String containerName, String blobPrefix) {
+        var assetId = UUID.randomUUID().toString();
+
+        Map<String, Object> dataAddressProperties = Map.of(
+                "type", AzureBlobStoreSchema.TYPE,
+                AzureBlobStoreSchema.ACCOUNT_NAME, accountName,
+                AzureBlobStoreSchema.CONTAINER_NAME, containerName,
+                AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix,
+                "keyName", format("%s-key1", accountName)
+        );
+
+        Map<String, Object> properties = Map.of(
+                "name", assetId,
+                "contenttype", "text/directory",
+                "version", "1.0"
+        );
+
+        return createAsset(assetId, properties, dataAddressProperties);
+    }
+
     public Map<String, Object> getDataDestination(String transferProcessId) {
         return given()
                 .baseUri(managementEndpoint.getUrl().toString())

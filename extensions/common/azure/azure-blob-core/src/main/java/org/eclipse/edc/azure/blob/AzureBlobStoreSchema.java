@@ -27,6 +27,7 @@ public class AzureBlobStoreSchema {
     public static final String CONTAINER_NAME = "container";
     public static final String ACCOUNT_NAME = "account";
     public static final String BLOB_NAME = "blobName";
+    public static final String BLOB_PREFIX = "blobPrefix";
     public static final String FOLDER_NAME = "folderName";
     public static final String CORRELATION_ID = "correlationId";
 }

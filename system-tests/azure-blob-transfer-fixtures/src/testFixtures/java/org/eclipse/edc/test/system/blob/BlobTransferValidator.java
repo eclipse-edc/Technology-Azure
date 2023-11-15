@@ -25,16 +25,18 @@ public class BlobTransferValidator implements ThrowingConsumer<Map<String, Objec
 
     private final BlobServiceClient client;
     private final String expectedContent;
+    private final String expectedName;
 
-    public BlobTransferValidator(BlobServiceClient client, String expectedContent) {
+    public BlobTransferValidator(BlobServiceClient client, String expectedContent, String expectedName) {
         this.client = client;
         this.expectedContent = expectedContent;
+        this.expectedName = expectedName;
     }
-    
+
     @Override
     public void acceptThrows(Map<String, Object> destinationProperties) {
         var container = (String) destinationProperties.get("container");
-        var destinationBlob = client.getBlobContainerClient(container).getBlobClient(ProviderConstants.ASSET_FILE);
+        var destinationBlob = client.getBlobContainerClient(container).getBlobClient(expectedName);
         assertThat(destinationBlob.exists())
                 .withFailMessage("Destination blob %s not created", destinationBlob.getBlobUrl())
                 .isTrue();

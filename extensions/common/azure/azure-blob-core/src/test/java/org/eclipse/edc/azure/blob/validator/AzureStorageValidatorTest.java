@@ -91,6 +91,20 @@ class AzureStorageValidatorTest {
     }
 
     @ParameterizedTest
+    @ArgumentsSource(ValidBlobPrefixProvider.class)
+    void validateBlobPrefix_success(String input) {
+        AzureStorageValidator.validateBlobPrefix(input);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(InvalidBlobPrefixProvider.class)
+    @NullSource
+    void validateBlobPrefix_fail(String input) {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> AzureStorageValidator.validateBlobPrefix(input));
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {  "abcdefghijklmnop", "-", "a/%!_- $K1~"})
     void validateMetadata_success(String input) {
         AzureStorageValidator.validateMetadata(input);
@@ -126,6 +140,33 @@ class AzureStorageValidatorTest {
                     Arguments.of("je`~3j4k%$':\\"),
                     Arguments.of("abcdefghijklmnop".repeat(64)),
                     Arguments.of("a/b".repeat(253)));
+        }
+    }
+
+    private static class InvalidBlobPrefixProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of(""),
+                    Arguments.of("dfhjdhfjhsd"),
+                    Arguments.of("abcdefghijklmnop".repeat(64) + "/"),
+                    Arguments.of("a/b".repeat(253) + "/")
+                    );
+        }
+    }
+
+    private static class ValidBlobPrefixProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of("geq/"),
+                    Arguments.of("Qja143/"),
+                    Arguments.of("ABE/"),
+                    Arguments.of("a name/"),
+                    Arguments.of("end space /"),
+                    Arguments.of("je`~3j4k%$':\\/"),
+                    Arguments.of("abcdefghijklmnop".repeat(63) + "/"),
+                    Arguments.of("a/b".repeat(252) + "/"));
         }
     }
 

@@ -32,6 +32,8 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createAccountName;
+import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobName;
+import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobPrefix;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createContainerName;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,6 +53,8 @@ class AzureStorageDataSinkFactoryTest {
 
     private final String accountName = createAccountName();
     private final String containerName = createContainerName();
+    private final String blobName = createBlobName();
+    private final String blobPrefix = createBlobPrefix();
     private final String keyName = "test-keyname";
     private final AzureSasToken token = new AzureSasToken("test-writeonly-sas", new Random().nextLong());
 
@@ -71,6 +75,18 @@ class AzureStorageDataSinkFactoryTest {
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                                 .keyName(keyName)
                                 .build())
+                        .build())
+                .succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenFolderRequestValid_succeeds() {
+        assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
+                                .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
+                                .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
+                                .keyName(keyName)
+                                .build())
+                        .sourceDataAddress(dataAddress.property(AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix).build())
                         .build())
                 .succeeded()).isTrue();
     }

@@ -20,6 +20,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.sas.BlobContainerSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.StorageSharedKeyCredential;
@@ -76,6 +77,12 @@ public class BlobStoreApiImpl implements BlobStoreApi {
     }
 
     @Override
+    public List<BlobItem> listContainerFolder(String accountName, String containerName, String directory) {
+        var options = new ListBlobsOptions().setPrefix(directory);
+        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs(options, null).stream().toList();
+    }
+
+    @Override
     public void putBlob(String accountName, String containerName, String blobName, byte[] data) {
         var blobServiceClient = getBlobServiceClient(accountName);
         blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName).upload(BinaryData.fromBytes(data), true);
@@ -105,16 +112,15 @@ public class BlobStoreApiImpl implements BlobStoreApi {
         }
 
         var accountKey = vault.resolveSecret(accountName + "-key1");
-
-        if (accountKey == null) {
-            throw new IllegalArgumentException("No Object Storage credential found in vault!");
-        }
-
         var endpoint = createEndpoint(accountName);
-        var blobServiceClient = new BlobServiceClientBuilder()
-                .credential(createCredential(accountKey, accountName))
-                .endpoint(endpoint)
-                .buildClient();
+
+        var blobServiceClient = accountKey == null ?
+                new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build())
+                        .endpoint(endpoint)
+                        .buildClient() :
+                new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
+                        .endpoint(endpoint)
+                        .buildClient();
 
         cache.put(accountName, blobServiceClient);
         return blobServiceClient;

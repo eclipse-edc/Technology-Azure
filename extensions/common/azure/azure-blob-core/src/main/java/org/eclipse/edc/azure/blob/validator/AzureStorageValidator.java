@@ -35,6 +35,7 @@ public class AzureStorageValidator {
     private static final int BLOB_MAX_LENGTH = 1024;
     private static final int METADATA_MIN_LENGTH = 1;
     private static final int METADATA_MAX_LENGTH = 4096;
+    private static final int PATH_SEGMENTS_MAX = 254;
     private static final Pattern ACCOUNT_REGEX = Pattern.compile("^[a-z0-9]+$");
     private static final Pattern CONTAINER_REGEX = Pattern.compile("^[a-z0-9]+(-[a-z0-9]+)*$");
     private static final Pattern METADATA_REGEX = Pattern.compile("^[ -~]*$"); // US-ASCII
@@ -44,10 +45,13 @@ public class AzureStorageValidator {
     private static final String CONTAINER = "container";
     private static final String KEY_NAME = "keyName";
     private static final String METADATA = "metadata";
+    private static final String PREFIX = "prefix";
+
+    private static final String INVALID_PREFIX = "Invalid %s prefix, prefix must end with a '/' character";
     private static final String INVALID_RESOURCE_NAME = "Invalid %s name";
     private static final String INVALID_RESOURCE_NAME_LENGTH = "Invalid %s name length, the name must be between %s and %s characters long";
     private static final String RESOURCE_NAME_EMPTY = "Invalid %s name, the name may not be null, empty or blank";
-    private static final String TOO_MANY_PATH_SEGMENTS = "The number of URL path segments (strings between '/' characters) as part of the blob name cannot exceed 254.";
+    private static final String TOO_MANY_PATH_SEGMENTS = "The number of URL path segments (strings between '/' characters) as part of the blob name cannot exceed %s.";
 
     /**
      * Checks if an account name is valid.
@@ -87,12 +91,25 @@ public class AzureStorageValidator {
      */
     public static void validateBlobName(String blobName) {
         checkLength(blobName, BLOB, BLOB_MIN_LENGTH, BLOB_MAX_LENGTH);
+        checkSegments(blobName);
+    }
 
-        var slashCount = blobName.chars().filter(ch -> ch == '/').count();
+    /**
+     * Checks if a blob prefix is valid.
+     * The restriction is based on Azure Blob Storage folder 'virtualization' which is base on the forward slash (/)
+     * used in the blob path as delimiter. Prefix has to ends with '/'.
+     *
+     * @param blobPrefix A String representing the blob prefix to validate.
+     * @throws IllegalArgumentException if the string does not represent a valid prefix name.
+     */
+    public static void validateBlobPrefix(String blobPrefix) {
+        checkLength(blobPrefix, PREFIX, BLOB_MIN_LENGTH, BLOB_MAX_LENGTH);
+        checkSegments(blobPrefix);
 
-        if (slashCount >= 254) {
-            throw new IllegalArgumentException(TOO_MANY_PATH_SEGMENTS);
+        if (!blobPrefix.endsWith("/")) {
+            throw new IllegalArgumentException(String.format(INVALID_PREFIX, blobPrefix));
         }
+
     }
 
     /**
@@ -131,6 +148,14 @@ public class AzureStorageValidator {
 
         if (name.length() < minLength || name.length() > maxLength) {
             throw new IllegalArgumentException(String.format(INVALID_RESOURCE_NAME_LENGTH, resourceType, minLength, maxLength));
+        }
+    }
+
+    private static void checkSegments(String name) {
+        var slashCount = name.chars().filter(ch -> ch == '/').count();
+
+        if (slashCount >= PATH_SEGMENTS_MAX) {
+            throw new IllegalArgumentException(String.format(TOO_MANY_PATH_SEGMENTS, PATH_SEGMENTS_MAX));
         }
     }
 }

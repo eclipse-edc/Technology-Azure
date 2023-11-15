@@ -153,7 +153,7 @@ class AzureDataFactoryTransferIntegrationTest {
         });
 
         var dataDestination = consumerClient.getDataDestination(transferProcessId);
-        assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT));
+        assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, ProviderConstants.ASSET_FILE));
     }
 
     @AfterAll

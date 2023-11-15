@@ -26,11 +26,14 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_PREFIX;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
@@ -66,10 +69,17 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
         var dataAddress = request.getDestinationDataAddress();
+        var dataSourceAddress = request.getSourceDataAddress();
+
         try {
             validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
             validateKeyName(dataAddress.getKeyName());
+            if (dataSourceAddress.hasProperty(BLOB_PREFIX)) {
+                if (!StringUtils.isNullOrBlank(BLOB_NAME)) {
+                    monitor.warning(String.format("Folder transfer, ignoring property %s", BLOB_NAME));
+                }
+            }
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
         }
@@ -84,6 +94,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         }
 
         var dataAddress = request.getDestinationDataAddress();
+        var dataSourceAddress = request.getSourceDataAddress();
         var requestId = request.getId();
 
         var secret = vault.resolveSecret(dataAddress.getKeyName());
@@ -94,6 +105,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
                 .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
                 .folderName(dataAddress.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME))
                 .blobName(dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME))
+                .blobPrefix(dataSourceAddress.getStringProperty(BLOB_PREFIX))
                 .sharedAccessSignature(token.getSas())
                 .requestId(requestId)
                 .partitionSize(partitionSize)

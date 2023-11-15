@@ -33,10 +33,10 @@ maven/mavencentral/com.azure/azure-core-http-netty/1.13.9, MIT AND Apache-2.0, a
 maven/mavencentral/com.azure/azure-core-management/1.11.5, MIT, approved, #10033
 maven/mavencentral/com.azure/azure-core-management/1.11.7, MIT, approved, #10033
 maven/mavencentral/com.azure/azure-core/1.43.0, MIT AND Apache-2.0, approved, #10548
-maven/mavencentral/com.azure/azure-core/1.44.1, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-core/1.44.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.10.1, MIT AND Apache-2.0, approved, #10086
 maven/mavencentral/com.azure/azure-json/1.1.0, MIT AND Apache-2.0, approved, #10547
-maven/mavencentral/com.azure/azure-messaging-eventgrid/4.19.0, , restricted, clearlydefined
+maven/mavencentral/com.azure/azure-messaging-eventgrid/4.19.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-security-keyvault-keys/4.7.1, MIT, approved, #10872
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.7.0, MIT, approved, #10868
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.7.1, MIT, approved, #10868
@@ -182,15 +182,16 @@ maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.15, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.18, Apache-2.0, approved, #5947
+maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.19, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.15, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.18, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.18, , restricted, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.15, Apache-2.0, approved, #11475
+maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.18, Apache-2.0, approved, #11475
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.15, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.18, , restricted, clearlydefined
+maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.15, Apache-2.0, approved, #11477
+maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.18, Apache-2.0, approved, #11477
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.15, Apache-2.0, approved, #5919
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.18, Apache-2.0, approved, #5919
@@ -409,21 +410,15 @@ maven/mavencentral/org.junit-pioneer/junit-pioneer/2.1.0, EPL-2.0, approved, #10
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.0, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.1, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.9.2, EPL-2.0, approved, #3133
-maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.10.0, EPL-2.0, approved, #9711
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.10.1, EPL-2.0, approved, #9711
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.9.2, EPL-2.0, approved, #3125
-maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.10.0, EPL-2.0, approved, #9708
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.10.1, EPL-2.0, approved, #9708
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.9.2, EPL-2.0, approved, #3134
-maven/mavencentral/org.junit.platform/junit-platform-commons/1.10.0, EPL-2.0, approved, #9715
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.10.1, EPL-2.0, approved, #9715
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.9.2, EPL-2.0, approved, #3130
-maven/mavencentral/org.junit.platform/junit-platform-engine/1.10.0, EPL-2.0, approved, #9709
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.10.1, EPL-2.0, approved, #9709
 maven/mavencentral/org.junit.platform/junit-platform-engine/1.9.2, EPL-2.0, approved, #3128
-maven/mavencentral/org.junit.platform/junit-platform-launcher/1.10.0, EPL-2.0, approved, #9704
 maven/mavencentral/org.junit.platform/junit-platform-launcher/1.10.1, EPL-2.0, approved, #9704
-maven/mavencentral/org.junit/junit-bom/5.10.0, EPL-2.0, approved, #9844
 maven/mavencentral/org.junit/junit-bom/5.10.1, EPL-2.0, approved, #9844
 maven/mavencentral/org.junit/junit-bom/5.9.2, EPL-2.0, approved, #4711
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484

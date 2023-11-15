@@ -28,6 +28,7 @@ public interface ProviderConstants {
     int PROTOCOL_PORT = getFreePort();
     String PROTOCOL_PATH = "/protocol";
     String PROTOCOL_URL = "http://localhost:" + PROTOCOL_PORT + PROTOCOL_PATH;
+    String ASSET_PREFIX = "folderName/";
     String ASSET_FILE = "text-document.txt";
     String MANAGEMENT_URL = "http://localhost:" + MANAGEMENT_PORT + MANAGEMENT_PATH;
     URI CONTROL_URL = URI.create("http://localhost:" + getFreePort() + "/control");

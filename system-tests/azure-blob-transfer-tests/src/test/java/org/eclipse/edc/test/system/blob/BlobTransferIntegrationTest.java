@@ -25,13 +25,18 @@ import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.test.system.utils.Participant;
 import org.eclipse.edc.test.system.utils.PolicyFixtures;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -101,17 +106,22 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
             .protocolEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.PROTOCOL_URL)))
             .build();
 
-    @Test
-    void transferBlob_success() {
+    @ParameterizedTest
+    @ArgumentsSource(BlobNamesToTransferProvider.class)
+    void transferBlob_success(String assetName, String[] blobsToTransfer) {
         // Arrange
         // Upload a blob with test data on provider blob container (in account1).
         createContainer(providerBlobServiceClient, PROVIDER_CONTAINER_NAME);
-        providerBlobServiceClient.getBlobContainerClient(PROVIDER_CONTAINER_NAME)
-                .getBlobClient(ProviderConstants.ASSET_FILE)
-                .upload(BinaryData.fromString(BLOB_CONTENT));
+
+        for (String blobToTransfer : blobsToTransfer) {
+            providerBlobServiceClient.getBlobContainerClient(PROVIDER_CONTAINER_NAME)
+                    .getBlobClient(blobToTransfer)
+                    .upload(BinaryData.fromString(BLOB_CONTENT));
+        }
 
         // Seed data to provider
-        var assetId = providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, ProviderConstants.ASSET_FILE);
+        var assetId = blobsToTransfer.length > 1 ? providerClient.createBlobInFolderAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName)
+                : providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName);
         var policyId = providerClient.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
         providerClient.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
@@ -129,7 +139,21 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME));
 
         var dataDestination = consumerClient.getDataDestination(transferProcessId);
-        assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT));
+        for (String blobToTransfer : blobsToTransfer) {
+            assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, blobToTransfer));
+        }
     }
 
+    private static class BlobNamesToTransferProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of(ProviderConstants.ASSET_PREFIX, (Object) new String[]{
+                            ProviderConstants.ASSET_PREFIX + 1 + ProviderConstants.ASSET_FILE,
+                            ProviderConstants.ASSET_PREFIX + 2 + ProviderConstants.ASSET_FILE,
+                            ProviderConstants.ASSET_PREFIX + 3 + ProviderConstants.ASSET_FILE}),
+                    Arguments.of(ProviderConstants.ASSET_FILE, (Object) new String[]{
+                            ProviderConstants.ASSET_FILE}));
+        }
+    }
 }

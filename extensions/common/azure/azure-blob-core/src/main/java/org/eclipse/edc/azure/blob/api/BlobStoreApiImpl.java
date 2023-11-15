@@ -78,8 +78,7 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     @Override
     public List<BlobItem> listContainerFolder(String accountName, String containerName, String directory) {
-        var options = new ListBlobsOptions()
-                .setPrefix(directory);
+        var options = new ListBlobsOptions().setPrefix(directory);
         return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs(options, null).stream().toList();
     }
 

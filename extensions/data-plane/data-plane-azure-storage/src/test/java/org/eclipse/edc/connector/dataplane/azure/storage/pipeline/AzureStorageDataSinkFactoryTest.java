@@ -92,19 +92,6 @@ class AzureStorageDataSinkFactoryTest {
     }
 
     @Test
-    void validate_whenFolderRequestInValid_fails() {
-        assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
-                                .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
-                                .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                                .property(AzureBlobStoreSchema.BLOB_NAME, blobName)
-                                .keyName(keyName)
-                                .build())
-                        .sourceDataAddress(dataAddress.property(AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix).build())
-                        .build())
-                .failed()).isTrue();
-    }
-
-    @Test
     void validate_whenMissingAccountName_fails() {
         assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)

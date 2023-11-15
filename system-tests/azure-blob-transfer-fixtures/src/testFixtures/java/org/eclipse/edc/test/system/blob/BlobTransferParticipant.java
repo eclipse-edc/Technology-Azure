@@ -48,7 +48,7 @@ public class BlobTransferParticipant extends Participant {
         return createAsset(assetId, properties, dataAddressProperties);
     }
 
-    public String createBlobPrefixAsset(String accountName, String containerName, String blobPrefix) {
+    public String createBlobInFolderAsset(String accountName, String containerName, String blobPrefix) {
         var assetId = UUID.randomUUID().toString();
 
         Map<String, Object> dataAddressProperties = Map.of(

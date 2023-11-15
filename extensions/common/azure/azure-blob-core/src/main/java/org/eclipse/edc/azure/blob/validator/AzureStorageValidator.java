@@ -51,7 +51,6 @@ public class AzureStorageValidator {
     private static final String INVALID_RESOURCE_NAME = "Invalid %s name";
     private static final String INVALID_RESOURCE_NAME_LENGTH = "Invalid %s name length, the name must be between %s and %s characters long";
     private static final String RESOURCE_NAME_EMPTY = "Invalid %s name, the name may not be null, empty or blank";
-    private static final String RESOURCE_NAME_NOT_EMPTY = "Invalid %s name, the name must be null or empty";
     private static final String TOO_MANY_PATH_SEGMENTS = "The number of URL path segments (strings between '/' characters) as part of the blob name cannot exceed %s.";
 
     /**
@@ -96,19 +95,6 @@ public class AzureStorageValidator {
     }
 
     /**
-     * Checks if a property value is empty.
-     *
-     * @param propertyValue A String representing the property value.
-     * @param propertyName A String representing the property name.
-     * @throws IllegalArgumentException if the property value is not empty.
-     */
-    public static void validateEmptyValue(String propertyValue, String propertyName) {
-        if (!StringUtils.isNullOrEmpty(propertyValue)) {
-            throw new IllegalArgumentException(String.format(RESOURCE_NAME_NOT_EMPTY, propertyName));
-        }
-    }
-
-    /**
      * Checks if a blob prefix is valid.
      * The restriction is based on Azure Blob Storage folder 'virtualization' which is base on the forward slash (/)
      * used in the blob path as delimiter. Prefix has to ends with '/'.
@@ -125,7 +111,6 @@ public class AzureStorageValidator {
         }
 
     }
-
 
     /**
      * Checks if a metadata value is valid.

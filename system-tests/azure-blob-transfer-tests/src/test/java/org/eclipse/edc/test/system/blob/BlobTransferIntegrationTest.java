@@ -120,7 +120,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         }
 
         // Seed data to provider
-        var assetId = blobsToTransfer.length > 1 ? providerClient.createBlobPrefixAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName)
+        var assetId = blobsToTransfer.length > 1 ? providerClient.createBlobInFolderAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName)
                 : providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName);
         var policyId = providerClient.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
         providerClient.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);

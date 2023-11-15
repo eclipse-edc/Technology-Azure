@@ -118,21 +118,6 @@ class AzureStorageValidatorTest {
                 .isThrownBy(() -> AzureStorageValidator.validateMetadata(input));
     }
 
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {  "" })
-    void validateEmptyValue_success(String input) {
-        AzureStorageValidator.validateEmptyValue(input, "TEST");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {  " ", "adab", "/", "123" })
-    void validateEmptyValue_fail(String input) {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> AzureStorageValidator.validateEmptyValue(input, "TEST"));
-    }
-
-
     private static class InvalidBlobNameProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {

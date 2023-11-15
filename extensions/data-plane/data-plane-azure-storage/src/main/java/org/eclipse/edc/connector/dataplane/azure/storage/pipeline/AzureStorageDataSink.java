@@ -42,6 +42,7 @@ public class AzureStorageDataSink extends ParallelSink {
     private String containerName;
     private String folderName;
     private String blobName;
+    private String blobPrefix;
     private String sharedAccessSignature;
     private BlobStoreApi blobStoreApi;
     private DataFlowRequest request;
@@ -111,7 +112,7 @@ public class AzureStorageDataSink extends ParallelSink {
     }
 
     String getDestinationBlobName(String partName) {
-        var name = !StringUtils.isNullOrEmpty(blobName) ? blobName : partName;
+        var name = !StringUtils.isNullOrEmpty(blobName) && StringUtils.isNullOrBlank(blobPrefix) ? blobName : partName;
         if (!StringUtils.isNullOrEmpty(folderName)) {
             return folderName.endsWith("/") ? folderName + name : folderName + "/" + name;
         } else {
@@ -146,6 +147,11 @@ public class AzureStorageDataSink extends ParallelSink {
 
         public Builder blobName(String blobName) {
             sink.blobName = blobName;
+            return this;
+        }
+
+        public Builder blobPrefix(String blobPrefix) {
+            sink.blobPrefix = blobPrefix;
             return this;
         }
 

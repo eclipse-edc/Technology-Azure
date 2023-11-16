@@ -23,22 +23,15 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.SettingResolver;
-
-import java.util.Objects;
 
 /**
  * Provides Azure Identity SDK and Azure Resource Manager SDK objects configured based on runtime settings.
  */
-@Provides({ AzureEnvironment.class, TokenCredential.class, AzureProfile.class, AzureResourceManager.class })
+@Provides({AzureEnvironment.class, TokenCredential.class, AzureProfile.class, AzureResourceManager.class})
 @Extension(value = AzureResourceManagerExtension.NAME)
 public class AzureResourceManagerExtension implements ServiceExtension {
 
     public static final String NAME = "Azure Resource Manager";
-
-    private static String requiredSetting(SettingResolver context, String s) {
-        return Objects.requireNonNull(context.getSetting(s, null), s);
-    }
 
     @Override
     public String name() {
@@ -47,8 +40,8 @@ public class AzureResourceManagerExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var tenantId = requiredSetting(context, "edc.azure.tenant.id");
-        var subscriptionId = requiredSetting(context, "edc.azure.subscription.id");
+        var tenantId = context.getConfig().getString("edc.azure.tenant.id");
+        var subscriptionId = context.getConfig().getString("edc.azure.subscription.id");
 
         // Detect credential source based on runtime environment, e.g. Azure CLI, environment variables
         var credential = new DefaultAzureCredentialBuilder().build();

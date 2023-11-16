@@ -17,6 +17,8 @@ package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
+import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
@@ -30,6 +32,8 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createAccountName;
+import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobName;
+import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobPrefix;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createContainerName;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,16 +41,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AzureStorageDataSinkFactoryTest {
-    private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
-    private final Vault vault = mock(Vault.class);
+    private final BlobStoreApi blobStoreApi = mock();
+    private final Vault vault = mock();
     private final TypeManager typeManager = new TypeManager();
-    private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, mock(Monitor.class), vault, typeManager);
+    private final Monitor monitor = mock();
+    private final BlobMetadataProvider metadataProvider = new BlobMetadataProviderImpl(monitor);
+    private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, monitor, vault, typeManager, metadataProvider);
     private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
     private final DataFlowRequest.Builder invalidRequest = createRequest("test-type");
     private final DataAddress.Builder dataAddress = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
 
     private final String accountName = createAccountName();
     private final String containerName = createContainerName();
+    private final String blobName = createBlobName();
+    private final String blobPrefix = createBlobPrefix();
     private final String keyName = "test-keyname";
     private final AzureSasToken token = new AzureSasToken("test-writeonly-sas", new Random().nextLong());
 
@@ -67,6 +75,18 @@ class AzureStorageDataSinkFactoryTest {
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                                 .keyName(keyName)
                                 .build())
+                        .build())
+                .succeeded()).isTrue();
+    }
+
+    @Test
+    void validate_whenFolderRequestValid_succeeds() {
+        assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
+                                .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
+                                .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
+                                .keyName(keyName)
+                                .build())
+                        .sourceDataAddress(dataAddress.property(AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix).build())
                         .build())
                 .succeeded()).isTrue();
     }

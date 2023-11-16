@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 
+import com.azure.storage.blob.models.BlobItem;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -33,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createAccountName;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobName;
+import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobPrefix;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createContainerName;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createSharedKey;
@@ -42,14 +45,15 @@ import static org.mockito.Mockito.when;
 
 class AzureStorageDataSourceTest {
 
-    Monitor monitor = mock(Monitor.class);
-    BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
+    Monitor monitor = mock();
+    BlobStoreApi blobStoreApi = mock();
     DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
 
     String accountName = createAccountName();
     String containerName = createContainerName();
     String sharedKey = createSharedKey();
     String blobName = createBlobName();
+    String blobPrefix = createBlobPrefix();
     String content = "Test Content";
 
     Exception exception = new TestCustomException("Test exception message");
@@ -64,7 +68,19 @@ class AzureStorageDataSourceTest {
             .blobStoreApi(blobStoreApi)
             .monitor(monitor)
             .build();
-    BlobAdapter destination = mock(BlobAdapter.class);
+
+    AzureStorageDataSource dataSourceFolder = AzureStorageDataSource.Builder.newInstance()
+            .accountName(accountName)
+            .containerName(containerName)
+            .blobPrefix(blobPrefix)
+            .sharedKey(sharedKey)
+            .requestId(request.build().getId())
+            .retryPolicy(RetryPolicy.ofDefaults())
+            .blobStoreApi(blobStoreApi)
+            .monitor(monitor)
+            .build();
+    BlobAdapter destination = mock();
+    BlobItem blobItem = mock();
     ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes(UTF_8));
 
     @BeforeEach
@@ -79,8 +95,21 @@ class AzureStorageDataSourceTest {
     }
 
     @Test
-    void openPartStream_succeeds() {
+    void openPartStreamBlob_succeeds() {
         var result = dataSource.openPartStream().getContent();
+        assertThat(result).map(DataSource.Part::openStream).containsExactly(input);
+    }
+
+    @Test
+    void openPartStreamBlobs_succeeds() {
+        when(blobStoreApi.listContainerFolder(
+                accountName,
+                containerName,
+                blobPrefix))
+                .thenReturn(List.of(blobItem));
+        when(blobItem.getName()).thenReturn(blobName);
+
+        var result = dataSourceFolder.openPartStream().getContent();
         assertThat(result).map(DataSource.Part::openStream).containsExactly(input);
     }
 

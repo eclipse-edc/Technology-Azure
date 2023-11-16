@@ -36,7 +36,6 @@ class AzureVaultTest {
 
     private final Monitor monitor = mock(Monitor.class);
     private final SecretClient secretClient = mock(SecretClient.class);
-
     private final AzureVault vault = new AzureVault(monitor, secretClient);
 
     @Test

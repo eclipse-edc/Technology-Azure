@@ -78,7 +78,7 @@ public class AzureDataFactoryTransferManager {
      * @param request the data flow request.
      * @return a {@link CompletableFuture} that completes when the data transfer completes.
      */
-    public CompletableFuture<StreamResult<Void>> transfer(DataFlowRequest request) {
+    public CompletableFuture<StreamResult<Object>> transfer(DataFlowRequest request) {
 
         PipelineResource pipeline = pipelineFactory.createPipeline(request);
 
@@ -108,7 +108,7 @@ public class AzureDataFactoryTransferManager {
     }
 
     @NotNull
-    private CompletableFuture<StreamResult<Void>> awaitRunCompletion(String runId) {
+    private CompletableFuture<StreamResult<Object>> awaitRunCompletion(String runId) {
         monitor.debug("Awaiting ADF pipeline completion for run " + runId);
 
         var timeout = clock.instant().plus(maxDuration);
@@ -142,7 +142,7 @@ public class AzureDataFactoryTransferManager {
         return completedFuture(StreamResult.error("ADF run timed out"));
     }
 
-    private StreamResult<Void> complete(String accountName, String containerName, String sharedAccessSignature) {
+    private StreamResult<Object> complete(String accountName, String containerName, String sharedAccessSignature) {
         try {
             // Write an empty blob to indicate completion
             blobStoreApi.getBlobAdapter(accountName, containerName, COMPLETE_BLOB_NAME, new AzureSasCredential(sharedAccessSignature))

@@ -28,11 +28,12 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_PREFIX;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateBlobName;
+import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateBlobPrefix;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
-import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyName;
 
 /**
  * Instantiates {@link AzureStorageDataSource}s for requests whose source data type is {@link AzureBlobStoreSchema#TYPE}.
@@ -61,8 +62,11 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
         try {
             validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
-            validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
-            validateKeyName(dataAddress.getKeyName());
+            if (dataAddress.hasProperty(BLOB_PREFIX)) {
+                validateBlobPrefix(dataAddress.getStringProperty(BLOB_PREFIX));
+            } else {
+                validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
+            }
         } catch (IllegalArgumentException e) {
             return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
         }
@@ -75,15 +79,23 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
 
         var dataAddress = request.getSourceDataAddress();
 
-        return AzureStorageDataSource.Builder.newInstance()
+        var builder = AzureStorageDataSource.Builder.newInstance()
                 .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
                 .containerName(dataAddress.getStringProperty(CONTAINER_NAME))
-                .sharedKey(vault.resolveSecret(dataAddress.getKeyName()))
                 .blobStoreApi(blobStoreApi)
                 .blobName(dataAddress.getStringProperty(BLOB_NAME))
+                .blobPrefix(dataAddress.getStringProperty(BLOB_PREFIX))
                 .requestId(request.getId())
                 .retryPolicy(retryPolicy)
-                .monitor(monitor)
-                .build();
+                .monitor(monitor);
+
+        if (null != dataAddress.getKeyName() && !dataAddress.getKeyName().isEmpty()) {
+            monitor.debug("Attempting to use shared key authentication for Azure Storage data source");
+            builder.sharedKey(vault.resolveSecret(dataAddress.getKeyName()));
+        } else {
+            monitor.debug("Attempting to use default identity for Azure Storage data source");
+        }
+
+        return builder.build();
     }
 }

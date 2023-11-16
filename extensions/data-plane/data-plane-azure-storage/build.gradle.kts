@@ -29,5 +29,3 @@ dependencies {
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-blob-core")))
 }
-
-

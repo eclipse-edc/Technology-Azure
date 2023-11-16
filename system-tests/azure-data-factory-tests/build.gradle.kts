@@ -18,13 +18,13 @@ plugins {
 }
 
 dependencies {
-    
+
     testImplementation(project(":extensions:common:azure:azure-blob-core"))
     testImplementation(project(":extensions:common:vault:vault-azure"))
-    testImplementation(libs.edc.junit)
-    testImplementation(testFixtures(project(":system-tests:tests")))
-    testImplementation(testFixtures(project(":system-tests:azure-tests")))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
+    testImplementation(testFixtures(project(":system-tests:azure-blob-transfer-fixtures")))
+
+    testImplementation(libs.edc.junit)
     testImplementation(libs.azure.storageblob)
     testImplementation(libs.restAssured)
     testImplementation(libs.azure.identity)

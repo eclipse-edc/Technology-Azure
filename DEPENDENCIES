@@ -1,33 +1,29 @@
-maven/mavencentral/com.apicatalog/carbon-did/0.0.2, Apache-2.0, approved, #9239
-maven/mavencentral/com.apicatalog/iron-verifiable-credentials/0.8.1, Apache-2.0, approved, #9234
-maven/mavencentral/com.apicatalog/titanium-json-ld/1.0.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.apicatalog/titanium-json-ld/1.3.1, Apache-2.0, approved, #8912
 maven/mavencentral/com.apicatalog/titanium-json-ld/1.3.2, Apache-2.0, approved, #8912
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.32.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.32.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-datafactory/1.0.0-beta.23, MIT, approved, #10875
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.32.0, , restricted, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.32.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.32.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.32.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.7, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-http-netty/1.13.9, MIT AND Apache-2.0, approved, #7948
 maven/mavencentral/com.azure/azure-core-management/1.11.5, MIT, approved, #10033
@@ -69,7 +65,6 @@ maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.14.
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.15.3, Apache-2.0, approved, #9237
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.12.1, Apache-2.0, approved, CQ23167
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15.1, Apache-2.0, approved, #8802
-maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15.2, Apache-2.0, approved, #8802
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.15.3, Apache-2.0, approved, #8802
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.15.3, Apache-2.0, approved, #9179
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.12.1, Apache-2.0, approved, CQ23727
@@ -80,15 +75,17 @@ maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.15.2
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.15.3, Apache-2.0, approved, #7930
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.15.3, Apache-2.0, approved, #9235
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.1, Apache-2.0, approved, #9236
-maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.2, Apache-2.0, approved, #9236
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.15.3, Apache-2.0, approved, #9236
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.14.1, Apache-2.0, approved, #5308
 maven/mavencentral/com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/2.15.3, Apache-2.0, approved, #9241
 maven/mavencentral/com.fasterxml.jackson/jackson-bom/2.15.3, Apache-2.0, approved, #7929
 maven/mavencentral/com.fasterxml.woodstox/woodstox-core/6.5.1, Apache-2.0, approved, #7950
 maven/mavencentral/com.github.docker-java/docker-java-api/3.3.3, Apache-2.0, approved, #10346
+maven/mavencentral/com.github.docker-java/docker-java-api/3.3.4, Apache-2.0, approved, #10346
 maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.3, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
+maven/mavencentral/com.github.docker-java/docker-java-transport-zerodep/3.3.4, Apache-2.0 AND (Apache-2.0 AND BSD-3-Clause), approved, #7946
 maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.3, Apache-2.0, approved, #7942
+maven/mavencentral/com.github.docker-java/docker-java-transport/3.3.4, Apache-2.0, approved, #7942
 maven/mavencentral/com.github.stephenc.jcip/jcip-annotations/1.0-1, Apache-2.0, approved, CQ21949
 maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0, approved, #20
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.7.1, Apache-2.0, approved, clearlydefined
@@ -122,7 +119,6 @@ maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
 maven/mavencentral/info.picocli/picocli/4.6.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.github.classgraph/classgraph/4.8.138, MIT, approved, CQ22530
 maven/mavencentral/io.github.classgraph/classgraph/4.8.154, MIT, approved, CQ22530
-maven/mavencentral/io.github.classgraph/classgraph/4.8.162, MIT, approved, CQ22530
 maven/mavencentral/io.netty/netty-buffer/4.1.100.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-buffer/4.1.94.Final, Apache-2.0, approved, CQ21842
 maven/mavencentral/io.netty/netty-codec-dns/4.1.100.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
@@ -178,23 +174,17 @@ maven/mavencentral/io.rest-assured/json-path/5.3.2, Apache-2.0, approved, #9261
 maven/mavencentral/io.rest-assured/rest-assured-common/5.3.2, Apache-2.0, approved, #9264
 maven/mavencentral/io.rest-assured/rest-assured/5.3.2, Apache-2.0, approved, #9262
 maven/mavencentral/io.rest-assured/xml-path/5.3.2, Apache-2.0, approved, #9267
-maven/mavencentral/io.setl/rdf-urdna/1.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.15, Apache-2.0, approved, #5947
-maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.18, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.19, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.15, Apache-2.0, approved, #5929
-maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.18, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.15, Apache-2.0, approved, #11475
-maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.2.18, Apache-2.0, approved, #11475
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.15, Apache-2.0, approved, #11477
-maven/mavencentral/io.swagger.core.v3/swagger-jaxrs2-jakarta/2.2.18, Apache-2.0, approved, #11477
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.15, Apache-2.0, approved, #5919
-maven/mavencentral/io.swagger.core.v3/swagger-models-jakarta/2.2.18, Apache-2.0, approved, #5919
 maven/mavencentral/jakarta.activation/jakarta.activation-api/2.1.0, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
 maven/mavencentral/jakarta.annotation/jakarta.annotation-api/2.1.1, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.ca
 maven/mavencentral/jakarta.inject/jakarta.inject-api/2.0.1, Apache-2.0, approved, clearlydefined
@@ -221,7 +211,6 @@ maven/mavencentral/org.antlr/antlr4-runtime/4.9.3, BSD-3-Clause, approved, #322
 maven/mavencentral/org.apache.commons/commons-compress/1.24.0, Apache-2.0 AND BSD-3-Clause AND bzip2-1.0.6 AND LicenseRef-Public-Domain, approved, #10368
 maven/mavencentral/org.apache.commons/commons-lang3/3.11, Apache-2.0, approved, CQ22642
 maven/mavencentral/org.apache.commons/commons-lang3/3.12.0, Apache-2.0, approved, clearlydefined
-maven/mavencentral/org.apache.commons/commons-lang3/3.13.0, Apache-2.0, approved, #9820
 maven/mavencentral/org.apache.groovy/groovy-bom/4.0.11, Apache-2.0, approved, #9266
 maven/mavencentral/org.apache.groovy/groovy-json/4.0.11, Apache-2.0, approved, #7411
 maven/mavencentral/org.apache.groovy/groovy-xml/4.0.11, Apache-2.0, approved, #10179
@@ -240,7 +229,6 @@ maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, c
 maven/mavencentral/org.checkerframework/checker-qual/3.12.0, MIT, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.31.0, MIT, approved, clearlydefined
 maven/mavencentral/org.codehaus.woodstox/stax2-api/4.2.1, BSD-2-Clause, approved, #2670
-maven/mavencentral/org.eclipse.edc/aggregate-service-spi/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/api-core/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/api-observability/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/asset-api/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -301,12 +289,9 @@ maven/mavencentral/org.eclipse.edc/http-spi/0.4.1-SNAPSHOT, Apache-2.0, approved
 maven/mavencentral/org.eclipse.edc/http/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/iam-mock/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-did-spi/0.3.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/identity-did-spi/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-hub-spi/0.3.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/identity-hub-spi/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-hub-store-spi/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/identity-hub-store-sql/0.3.1, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/identity-trust-spi/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jersey-core/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jersey-providers/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/jetty-core/0.4.1-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -406,6 +391,7 @@ maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.9.10, Apache-2.0, approv
 maven/mavencentral/org.jetbrains/annotations/13.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/17.0.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/24.0.1, Apache-2.0, approved, #7417
+maven/mavencentral/org.jetbrains/annotations/24.1.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.junit-pioneer/junit-pioneer/2.1.0, EPL-2.0, approved, #10550
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.0, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.1, EPL-2.0, approved, #9714
@@ -444,9 +430,9 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.35, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
 maven/mavencentral/org.slf4j/slf4j-api/2.0.5, MIT, approved, #5915
-maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
 maven/mavencentral/org.testcontainers/junit-jupiter/1.19.1, MIT, approved, #10344
+maven/mavencentral/org.testcontainers/junit-jupiter/1.19.2, MIT, approved, #10344
 maven/mavencentral/org.testcontainers/testcontainers/1.19.1, Apache-2.0 AND MIT, approved, #10347
+maven/mavencentral/org.testcontainers/testcontainers/1.19.2, Apache-2.0 AND MIT, approved, #10347
 maven/mavencentral/org.yaml/snakeyaml/2.0, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #7275
 maven/mavencentral/org.yaml/snakeyaml/2.1, Apache-2.0, approved, #9847
-maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232

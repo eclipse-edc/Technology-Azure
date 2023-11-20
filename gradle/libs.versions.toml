@@ -5,7 +5,7 @@ format.version = "1.1"
 awaitility = "4.2.0"
 azure-rm = "2.32.0"
 bouncyCastle-jdk18on = "1.76"
-edc = "0.4.1-SNAPSHOT"
+edc = "0.4.2-SNAPSHOT"
 # we need to pin the version of IH, because this is the last version to contain the DWN implementation
 # current snapshot builds of IH don't have feature parity yet.
 # todo: remove this once IH supports credential presentation and issuance

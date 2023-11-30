@@ -28,7 +28,6 @@ dependencies {
 
     implementation(libs.edc.transfer.dataplane)
     implementation(libs.edc.dpf.client)
-    implementation(libs.edc.dpf.selector.client)
     implementation(libs.edc.dpf.selector.core)
     implementation(project(":extensions:data-plane:data-plane-azure-storage"))
 

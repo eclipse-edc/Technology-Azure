@@ -17,6 +17,7 @@ package org.eclipse.edc.test.system.blob;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.valueOf;
@@ -37,16 +38,17 @@ public interface ProviderConstants {
     String MANAGEMENT_URL = "http://localhost:" + MANAGEMENT_PORT + MANAGEMENT_PATH;
     URI CONTROL_URL = URI.create("http://localhost:" + getFreePort() + "/control");
     String BLOB_CONTENT = "Test blob content";
-    Map<String, String> PROVIDER_PROPERTIES = Map.ofEntries(
-                Map.entry("web.http.port", valueOf(ProviderConstants.CONNECTOR_PORT)),
-                Map.entry("web.http.path", ProviderConstants.CONNECTOR_PATH),
-                Map.entry("web.http.management.port", valueOf(ProviderConstants.MANAGEMENT_PORT)),
-                Map.entry("web.http.management.path", ProviderConstants.MANAGEMENT_PATH),
-                Map.entry("web.http.protocol.port", valueOf(ProviderConstants.PROTOCOL_PORT)),
-                Map.entry("web.http.protocol.path", ProviderConstants.PROTOCOL_PATH),
-                Map.entry("web.http.control.port", valueOf(ProviderConstants.CONTROL_URL.getPort())),
-                Map.entry("web.http.control.path", ProviderConstants.CONTROL_URL.getPath()),
-                Map.entry(ServiceExtensionContext.PARTICIPANT_ID, ProviderConstants.PARTICIPANT_ID),
-                Map.entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
-                Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString()));
+    Map<String, String> PROVIDER_PROPERTIES = new HashMap<>() {{
+                put("web.http.port", valueOf(ProviderConstants.CONNECTOR_PORT));
+                put("web.http.path", ProviderConstants.CONNECTOR_PATH);
+                put("web.http.management.port", valueOf(ProviderConstants.MANAGEMENT_PORT));
+                put("web.http.management.path", ProviderConstants.MANAGEMENT_PATH);
+                put("web.http.protocol.port", valueOf(ProviderConstants.PROTOCOL_PORT));
+                put("web.http.protocol.path", ProviderConstants.PROTOCOL_PATH);
+                put("web.http.control.port", valueOf(ProviderConstants.CONTROL_URL.getPort()));
+                put("web.http.control.path", ProviderConstants.CONTROL_URL.getPath());
+                put(ServiceExtensionContext.PARTICIPANT_ID, ProviderConstants.PARTICIPANT_ID);
+                put("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL);
+                put("edc.jsonld.http.enabled", Boolean.TRUE.toString());
+            }};
 }

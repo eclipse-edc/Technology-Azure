@@ -15,11 +15,7 @@
 package org.eclipse.edc.vault.azure;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.security.CertificateResolver;
-import org.eclipse.edc.spi.security.PrivateKeyResolver;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.security.VaultCertificateResolver;
-import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.injection.ObjectFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -48,10 +44,7 @@ public class AzureVaultExtensionTest {
     @Test
     void verifyInitialize() {
         extension.initialize(context);
-
         assertThat(context.getService(Vault.class)).isInstanceOf(AzureVault.class);
-        assertThat(context.getService(PrivateKeyResolver.class)).isInstanceOf(VaultPrivateKeyResolver.class);
-        assertThat(context.getService(CertificateResolver.class)).isInstanceOf(VaultCertificateResolver.class);
     }
 
     @BeforeAll

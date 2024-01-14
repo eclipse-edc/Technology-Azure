@@ -22,14 +22,11 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.CertificateResolver;
-import org.eclipse.edc.spi.security.PrivateKeyResolver;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.security.VaultCertificateResolver;
-import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-@Provides({Vault.class, PrivateKeyResolver.class, CertificateResolver.class})
+@Provides({Vault.class, CertificateResolver.class})
 @Extension(value = AzureVaultExtension.NAME)
 public class AzureVaultExtension implements ServiceExtension {
 
@@ -55,7 +52,5 @@ public class AzureVaultExtension implements ServiceExtension {
         var vault = new AzureVault(monitor, client);
 
         context.registerService(Vault.class, vault);
-        context.registerService(PrivateKeyResolver.class, new VaultPrivateKeyResolver(vault));
-        context.registerService(CertificateResolver.class, new VaultCertificateResolver(vault));
     }
 }

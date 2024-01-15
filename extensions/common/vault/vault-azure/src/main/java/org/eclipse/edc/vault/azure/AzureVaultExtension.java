@@ -18,18 +18,13 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.security.CertificateResolver;
-import org.eclipse.edc.spi.security.PrivateKeyResolver;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.security.VaultCertificateResolver;
-import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-@Provides({Vault.class, PrivateKeyResolver.class, CertificateResolver.class})
 @Extension(value = AzureVaultExtension.NAME)
 public class AzureVaultExtension implements ServiceExtension {
 
@@ -45,17 +40,13 @@ public class AzureVaultExtension implements ServiceExtension {
         return NAME;
     }
 
-    @Override
-    public void initialize(ServiceExtensionContext context) {
+    @Provider
+    public Vault createVault(ServiceExtensionContext context) {
         var name = context.getConfig().getString(VAULT_NAME);
         var client = new SecretClientBuilder()
                 .vaultUrl("https://" + name + ".vault.azure.net")
                 .credential(new DefaultAzureCredentialBuilder().build())
                 .buildClient();
-        var vault = new AzureVault(monitor, client);
-
-        context.registerService(Vault.class, vault);
-        context.registerService(PrivateKeyResolver.class, new VaultPrivateKeyResolver(vault));
-        context.registerService(CertificateResolver.class, new VaultCertificateResolver(vault));
+        return new AzureVault(monitor, client);
     }
 }

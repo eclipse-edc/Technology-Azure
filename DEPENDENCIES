@@ -323,7 +323,6 @@ maven/mavencentral/org.eclipse.edc/policy-engine/0.5.1-SNAPSHOT, Apache-2.0, app
 maven/mavencentral/org.eclipse.edc/policy-evaluator/0.5.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.5.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.5.1-SNAPSHOT, Apache-2.0, approved, technology.edc
-maven/mavencentral/org.eclipse.edc/registration-service-spi/0.5.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/registration-service-store-spi/0.3.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/registration-service-store-spi/0.5.1-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.3.1, Apache-2.0, approved, technology.edc

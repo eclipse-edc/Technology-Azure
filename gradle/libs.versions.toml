@@ -3,9 +3,9 @@ format.version = "1.1"
 
 [versions]
 awaitility = "4.2.0"
-azure-rm = "2.32.0"
-bouncyCastle-jdk18on = "1.76"
-edc = "0.4.1-SNAPSHOT"
+azure-rm = "2.33.0"
+bouncyCastle-jdk18on = "1.77"
+edc = "0.4.2-SNAPSHOT"
 # we need to pin the version of IH, because this is the last version to contain the DWN implementation
 # current snapshot builds of IH don't have feature parity yet.
 # todo: remove this once IH supports credential presentation and issuance
@@ -15,19 +15,19 @@ httpMockServer = "5.15.0"
 jakarta-json = "2.0.1"
 junit = "5.10.1"
 mockito = "5.2.0"
-nimbus = "9.32"
+nimbus = "9.37.3"
 openTelemetry = "1.18.0"
 opentelemetry-proto = "1.0.0-alpha"
-postgres = "42.6.0"
+postgres = "42.7.0"
 restAssured = "5.3.2"
 rsApi = "3.1.0"
-testcontainers = "1.19.1"
+testcontainers = "1.19.3"
 
 
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-assertj = { module = "org.assertj:assertj-core", version = "3.24.2" }
+assertj = { module = "org.assertj:assertj-core", version = "3.25.1" }
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 bouncyCastle-bcprovJdk18on = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
@@ -116,13 +116,13 @@ testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.re
 
 
 # Azure dependencies
-azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.19.0" }
-azure-identity = { group = "com.azure", name = "azure-identity", version = "1.10.1" }
-azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.7.0" }
+azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.20.1" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.11.1" }
+azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.7.3" }
 azure-mgmt-resources = { module = "com.microsoft.azure:azure-mgmt-resources", version = "1.41.4" }
 azure-resourcemanager = { group = "com.azure.resourcemanager", name = "azure-resourcemanager", version.ref = "azure-rm" }
 azure-resourcemanager-authorization = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-authorization", version.ref = "azure-rm" }
-azure-resourcemanager-datafactory = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-datafactory", version = "1.0.0-beta.23" }
+azure-resourcemanager-datafactory = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-datafactory", version = "1.0.0-beta.24" }
 azure-resourcemanager-keyvault = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-keyvault", version.ref = "azure-rm" }
 azure-resourcemanager-storage = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-storage", version.ref = "azure-rm" }
 azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.24.1" }

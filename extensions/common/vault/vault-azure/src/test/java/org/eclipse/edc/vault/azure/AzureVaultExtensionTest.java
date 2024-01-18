@@ -15,20 +15,16 @@
 package org.eclipse.edc.vault.azure;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.security.CertificateResolver;
-import org.eclipse.edc.spi.security.PrivateKeyResolver;
-import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.security.VaultCertificateResolver;
-import org.eclipse.edc.spi.security.VaultPrivateKeyResolver;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.system.injection.ObjectFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.eclipse.edc.spi.system.configuration.Config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(DependencyInjectionExtension.class)
 public class AzureVaultExtensionTest {
@@ -36,31 +32,17 @@ public class AzureVaultExtensionTest {
     private static final String VAULT_NAME = "aVault";
     private static final String VAULT_NAME_SETTING = "edc.vault.name";
 
-    private ServiceExtensionContext context;
-    private AzureVaultExtension extension;
-
-    @BeforeEach
-    void setUp(ServiceExtensionContext context, ObjectFactory factory) {
-        this.context = context;
-        extension = factory.constructInstance(AzureVaultExtension.class);
-    }
 
     @Test
-    void verifyInitialize() {
-        extension.initialize(context);
+    void verifyCreateVault(AzureVaultExtension extension, ServiceExtensionContext context) {
+        Config cfg = mock();
+        when(cfg.getString(VAULT_NAME_SETTING)).thenReturn(VAULT_NAME);
+        when(context.getConfig()).thenReturn(cfg);
 
-        assertThat(context.getService(Vault.class)).isInstanceOf(AzureVault.class);
-        assertThat(context.getService(PrivateKeyResolver.class)).isInstanceOf(VaultPrivateKeyResolver.class);
-        assertThat(context.getService(CertificateResolver.class)).isInstanceOf(VaultCertificateResolver.class);
-    }
 
-    @BeforeAll
-    static void setProps() {
-        System.setProperty(VAULT_NAME_SETTING, VAULT_NAME);
-    }
+        assertThat(extension.createVault(context)).isInstanceOf(AzureVault.class);
+        verify(context, atLeastOnce()).getConfig();
+        verify(cfg).getString(VAULT_NAME_SETTING);
 
-    @AfterAll
-    static void unsetProps() {
-        System.clearProperty(VAULT_NAME_SETTING);
     }
 }

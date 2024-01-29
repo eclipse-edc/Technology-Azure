@@ -22,9 +22,6 @@ dependencies {
     testImplementation(project(":extensions:common:azure:azure-blob-core"))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(project(":system-tests:azure-blob-transfer-fixtures")))
-
-    testRuntimeOnly(project(":system-tests:runtimes:azure-storage-transfer-provider"))
-    testRuntimeOnly(project(":system-tests:runtimes:azure-storage-transfer-consumer"))
 }
 
 edcBuild {

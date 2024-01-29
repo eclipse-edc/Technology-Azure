@@ -49,6 +49,14 @@ import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.PROVIDER_PROPERTIES;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+/**
+ * This test class is used to test the blob transfer between two blob accounts.
+ * In contrast to {@link BlobTransferIntegrationTest}, this test class uses a pre-provisioned container on the consumer side.
+ * The pre-provisioned container is created before the transfer process is started.
+ * For this test to work, there must not be a provisioning extension configured on the consumer side, otherwise the
+ * data destination properties will be replaced as a whole, losing the provided properties, e.g. the correlation id.
+ * Please refer to the moduleName argument of the {@link PreProvisionedTransferIntegrationTest#consumer} configuration.
+ **/
 @Testcontainers
 @AzureStorageIntegrationTest
 public class PreProvisionedTransferIntegrationTest extends AbstractAzureBlobTest {

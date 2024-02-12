@@ -2,14 +2,17 @@
 format.version = "1.1"
 
 [versions]
-awaitility = "4.2.0"
-azure-rm = "2.33.0"
-bouncyCastle-jdk18on = "1.77"
-edc = "0.4.2-SNAPSHOT"
+edc = "0.5.1-SNAPSHOT"
 # we need to pin the version of IH, because this is the last version to contain the DWN implementation
 # current snapshot builds of IH don't have feature parity yet.
 # todo: remove this once IH supports credential presentation and issuance
 identityhub = "0.3.1"
+# we need to pin the version of Registration service because the release was momentarly stopped at 0.4.1
+registrationservice = "0.4.1"
+
+awaitility = "4.2.0"
+azure-rm = "2.33.0"
+bouncyCastle-jdk18on = "1.77"
 failsafe = "3.3.2"
 httpMockServer = "5.15.0"
 jakarta-json = "2.0.1"
@@ -67,7 +70,7 @@ edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.
 edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-provision-http = { module = "org.eclipse.edc:provision-http", version.ref = "edc" }
-edc-rs-spi-store = { module = "org.eclipse.edc:registration-service-store-spi", version.ref = "edc" }
+edc-rs-spi-store = { module = "org.eclipse.edc:registration-service-store-spi", version.ref = "registrationservice" }
 edc-spi-catalog = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }

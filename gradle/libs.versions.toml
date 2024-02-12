@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.5.1-SNAPSHOT"
+edc = "0.5.2-SNAPSHOT"
 # we need to pin the version of IH, because this is the last version to contain the DWN implementation
 # current snapshot builds of IH don't have feature parity yet.
 # todo: remove this once IH supports credential presentation and issuance

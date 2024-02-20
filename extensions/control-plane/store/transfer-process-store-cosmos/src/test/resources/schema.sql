@@ -19,22 +19,24 @@ CREATE TABLE IF NOT EXISTS edc_transfer_process
     transferprocess_id       VARCHAR           NOT NULL
         CONSTRAINT transfer_process_pk
             PRIMARY KEY,
-    type                     VARCHAR           NOT NULL,
-    state                    INTEGER           NOT NULL,
-    state_count              INTEGER DEFAULT 0 NOT NULL,
-    state_time_stamp         BIGINT,
-    created_at               BIGINT            NOT NULL,
-    updated_at               BIGINT            NOT NULL,
-    trace_context            JSON,
-    error_detail             VARCHAR,
-    resource_manifest        JSON,
-    provisioned_resource_set JSON,
-    content_data_address     JSON,
-    deprovisioned_resources  JSON,
-    private_properties       JSON,
-    callback_addresses       JSON,
-    pending                  BOOLEAN DEFAULT FALSE,
-    lease_id                 VARCHAR
+    type                       VARCHAR           NOT NULL,
+    state                      INTEGER           NOT NULL,
+    state_count                INTEGER DEFAULT 0 NOT NULL,
+    state_time_stamp           BIGINT,
+    created_at                 BIGINT            NOT NULL,
+    updated_at                 BIGINT            NOT NULL,
+    trace_context              JSON,
+    error_detail               VARCHAR,
+    resource_manifest          JSON,
+    provisioned_resource_set   JSON,
+    content_data_address       JSON,
+    deprovisioned_resources    JSON,
+    private_properties         JSON,
+    callback_addresses         JSON,
+    pending                    BOOLEAN  DEFAULT FALSE,
+    transfer_type              VARCHAR,
+    protocol_messages          JSON,
+    lease_id                   VARCHAR
         CONSTRAINT transfer_process_lease_lease_id_fk
             REFERENCES edc_lease
             ON DELETE SET NULL
@@ -62,7 +64,6 @@ CREATE TABLE IF NOT EXISTS edc_data_request
     process_id          VARCHAR NOT NULL,
     connector_address   VARCHAR NOT NULL,
     protocol            VARCHAR NOT NULL,
-    connector_id        VARCHAR,
     asset_id            VARCHAR NOT NULL,
     contract_id         VARCHAR NOT NULL,
     data_destination    JSON    NOT NULL,
@@ -79,4 +80,3 @@ CREATE UNIQUE INDEX IF NOT EXISTS data_request_id_uindex
 
 CREATE UNIQUE INDEX IF NOT EXISTS lease_lease_id_uindex
     ON edc_lease (lease_id);
-

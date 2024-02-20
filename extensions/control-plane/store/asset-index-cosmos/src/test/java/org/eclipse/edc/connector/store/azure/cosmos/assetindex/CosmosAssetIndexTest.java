@@ -40,18 +40,6 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
     private static final BaseSqlDialectStatements SQL_STATEMENTS = new PostgresDialectStatements();
     private SqlAssetIndex sqlAssetIndex;
 
-    @BeforeAll
-    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
-        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
-    }
-
-    @AfterAll
-    static void tearDown(CosmosPostgresTestExtension.SqlHelper runner) {
-        runner.dropTable(SQL_STATEMENTS.getAssetTable());
-        runner.dropTable(SQL_STATEMENTS.getDataAddressTable());
-        runner.dropTable(SQL_STATEMENTS.getAssetPropertyTable());
-    }
-
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper runner, DataSourceRegistry reg) {
         var typeManager = new TypeManager();
@@ -68,6 +56,18 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
     @Override
     protected SqlAssetIndex getAssetIndex() {
         return sqlAssetIndex;
+    }
+
+    @BeforeAll
+    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.dropTable(SQL_STATEMENTS.getAssetTable());
+        runner.dropTable(SQL_STATEMENTS.getDataAddressTable());
+        runner.dropTable(SQL_STATEMENTS.getAssetPropertyTable());
     }
 
 

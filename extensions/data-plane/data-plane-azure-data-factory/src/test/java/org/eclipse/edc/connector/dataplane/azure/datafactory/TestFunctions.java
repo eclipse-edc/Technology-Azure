@@ -16,7 +16,7 @@ package org.eclipse.edc.connector.dataplane.azure.datafactory;
 
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.util.Map;
 
@@ -52,7 +52,7 @@ public class TestFunctions {
                 .getProperties();
     }
 
-    public static DataFlowRequest createFlowRequest() {
+    public static DataFlowStartMessage createFlowRequest() {
         return createRequest(AzureBlobStoreSchema.TYPE)
                 .sourceDataAddress(createDataAddress(AzureBlobStoreSchema.TYPE).properties(sourceProperties()).build())
                 .destinationDataAddress(createDataAddress(AzureBlobStoreSchema.TYPE).properties(destinationProperties()).build())

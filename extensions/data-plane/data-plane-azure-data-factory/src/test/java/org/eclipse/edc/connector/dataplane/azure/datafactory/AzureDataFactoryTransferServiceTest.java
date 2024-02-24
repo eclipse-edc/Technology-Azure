@@ -17,7 +17,7 @@ package org.eclipse.edc.connector.dataplane.azure.datafactory;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -37,14 +37,14 @@ class AzureDataFactoryTransferServiceTest {
             validator,
             transferManager);
 
-    private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
+    private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
     private final Result<Boolean> failure = Result.failure("Test Failure");
     private final Result<Boolean> success = Result.success(true);
     @SuppressWarnings("unchecked")
     private final CompletableFuture<StreamResult<Object>> result = mock(CompletableFuture.class);
 
     @ParameterizedTest
-    @ValueSource(booleans = {true, false})
+    @ValueSource(booleans = { true, false })
     void canHandle_onResult(boolean expected) {
         // Arrange
         when(validator.canHandle(request.build())).thenReturn(expected);

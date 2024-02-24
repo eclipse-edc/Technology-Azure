@@ -23,7 +23,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource.Part;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.InputStreamDataSource;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -59,7 +59,7 @@ class AzureStorageDataSinkTest {
     private final Monitor monitor = mock();
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final BlobStoreApi blobStoreApi = mock();
-    private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
+    private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
     private final ServiceExtensionContext context = mock();
     private final String accountName = createAccountName();
     private final String containerName = createContainerName();
@@ -80,7 +80,7 @@ class AzureStorageDataSinkTest {
             .metadataProvider(metadataProvider)
             .build();
 
-    private final DataFlowRequest preBuiltRequest = request.build();
+    private final DataFlowStartMessage preBuiltRequest = request.build();
 
     private final AzureStorageDataSink dataSinkWithCorrelationId = AzureStorageDataSink.Builder.newInstance()
             .accountName(accountName)
@@ -176,25 +176,17 @@ class AzureStorageDataSinkTest {
         verify(completionMarkerOutput).close();
     }
 
-    private void assertThatTransferPartsFails(Part part, String logMessage, Object... args) {
-        var message = format(logMessage, args);
-        var result = dataSink.transferParts(List.of(part));
-        assertThat(result.failed()).isTrue();
-        assertThat(result.getFailureMessages()).containsExactly(message);
-        verify(monitor).severe(message, exception);
-    }
-
     @ParameterizedTest
-    @CsvSource(value = {"blob, lob,  foo,  foo/lob",
-                        "blob, null, foo,  foo/blob",
-                        "blob, ''  , foo,  foo/blob",
-                        "blob, lob,  foo/, foo/lob",
-                        "blob, null, foo/, foo/blob",
-                        "blob, ''  , foo/, foo/blob",
-                        "blob, lob,  null, lob",
-                        "blob, lob,  '',   lob",
-                        "blob, '',   '',   blob"},
-            nullValues = {"null"})
+    @CsvSource(value = { "blob, lob,  foo,  foo/lob",
+            "blob, null, foo,  foo/blob",
+            "blob, ''  , foo,  foo/blob",
+            "blob, lob,  foo/, foo/lob",
+            "blob, null, foo/, foo/blob",
+            "blob, ''  , foo/, foo/blob",
+            "blob, lob,  null, lob",
+            "blob, lob,  '',   lob",
+            "blob, '',   '',   blob" },
+            nullValues = { "null" })
     void getDestinationBlobName_shouldBeProperlyConcatenated(String blobName, String altName, String folderName, String expected) {
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
@@ -213,5 +205,13 @@ class AzureStorageDataSinkTest {
                 .request(request.build())
                 .build();
         assertEquals(expected, sink.getDestinationBlobName(blobName));
+    }
+
+    private void assertThatTransferPartsFails(Part part, String logMessage, Object... args) {
+        var message = format(logMessage, args);
+        var result = dataSink.transferParts(List.of(part));
+        assertThat(result.failed()).isTrue();
+        assertThat(result.getFailureMessages()).containsExactly(message);
+        verify(monitor).severe(message, exception);
     }
 }

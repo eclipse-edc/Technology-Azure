@@ -22,7 +22,7 @@ import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class AzureDataFactoryTransferManager {
      * @param request the data flow request.
      * @return a {@link CompletableFuture} that completes when the data transfer completes.
      */
-    public CompletableFuture<StreamResult<Object>> transfer(DataFlowRequest request) {
+    public CompletableFuture<StreamResult<Object>> transfer(DataFlowStartMessage request) {
 
         PipelineResource pipeline = pipelineFactory.createPipeline(request);
 

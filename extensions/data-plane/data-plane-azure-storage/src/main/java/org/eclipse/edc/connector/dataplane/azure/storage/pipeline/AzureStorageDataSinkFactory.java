@@ -25,7 +25,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,32 +62,12 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public boolean canHandle(DataFlowRequest request) {
+    public boolean canHandle(DataFlowStartMessage request) {
         return AzureBlobStoreSchema.TYPE.equals(request.getDestinationDataAddress().getType());
     }
 
     @Override
-    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
-        var dataAddress = request.getDestinationDataAddress();
-        var dataSourceAddress = request.getSourceDataAddress();
-
-        try {
-            validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
-            validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
-            validateKeyName(dataAddress.getKeyName());
-            if (dataSourceAddress.hasProperty(BLOB_PREFIX)) {
-                if (!StringUtils.isNullOrBlank(BLOB_NAME)) {
-                    monitor.warning(String.format("Folder transfer, ignoring property %s", BLOB_NAME));
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
-        }
-        return Result.success();
-    }
-
-    @Override
-    public DataSink createSink(DataFlowRequest request) {
+    public DataSink createSink(DataFlowStartMessage request) {
         var validate = validateRequest(request);
         if (validate.failed()) {
             throw new EdcException(validate.getFailure().getMessages().toString());
@@ -115,5 +95,25 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
                 .request(request)
                 .metadataProvider(metadataProvider)
                 .build();
+    }
+
+    @Override
+    public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
+        var dataAddress = request.getDestinationDataAddress();
+        var dataSourceAddress = request.getSourceDataAddress();
+
+        try {
+            validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
+            validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
+            validateKeyName(dataAddress.getKeyName());
+            if (dataSourceAddress.hasProperty(BLOB_PREFIX)) {
+                if (!StringUtils.isNullOrBlank(BLOB_NAME)) {
+                    monitor.warning(String.format("Folder transfer, ignoring property %s", BLOB_NAME));
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
+        }
+        return Result.success();
     }
 }

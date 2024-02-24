@@ -21,7 +21,7 @@ import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataPr
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +37,7 @@ import static java.lang.String.format;
 public class AzureStorageDataSink extends ParallelSink {
     // Name of the empty blob used to indicate completion. Used by consumer-side status checker.
     public static final String COMPLETE_BLOB_NAME = ".complete";
-
+    private final List<String> completedFiles = new ArrayList<>();
     private String accountName;
     private String containerName;
     private String folderName;
@@ -45,11 +45,23 @@ public class AzureStorageDataSink extends ParallelSink {
     private String blobPrefix;
     private String sharedAccessSignature;
     private BlobStoreApi blobStoreApi;
-    private DataFlowRequest request;
+    private DataFlowStartMessage request;
     private BlobMetadataProvider metadataProvider;
-    private final List<String> completedFiles = new ArrayList<>();
 
     private AzureStorageDataSink() {
+    }
+
+    void registerCompletedFile(String name) {
+        completedFiles.add(name + COMPLETE_BLOB_NAME);
+    }
+
+    String getDestinationBlobName(String partName) {
+        var name = !StringUtils.isNullOrEmpty(blobName) && StringUtils.isNullOrBlank(blobPrefix) ? blobName : partName;
+        if (!StringUtils.isNullOrEmpty(folderName)) {
+            return folderName.endsWith("/") ? folderName + name : folderName + "/" + name;
+        } else {
+            return name;
+        }
     }
 
     /**
@@ -82,10 +94,6 @@ public class AzureStorageDataSink extends ParallelSink {
         return StreamResult.success();
     }
 
-    void registerCompletedFile(String name) {
-        completedFiles.add(name + COMPLETE_BLOB_NAME);
-    }
-
     @Override
     protected StreamResult<Object> complete() {
         for (var completedFile : completedFiles) {
@@ -109,15 +117,6 @@ public class AzureStorageDataSink extends ParallelSink {
         var message = format(logMessage, args);
         monitor.severe(message, e);
         return StreamResult.error(message);
-    }
-
-    String getDestinationBlobName(String partName) {
-        var name = !StringUtils.isNullOrEmpty(blobName) && StringUtils.isNullOrBlank(blobPrefix) ? blobName : partName;
-        if (!StringUtils.isNullOrEmpty(folderName)) {
-            return folderName.endsWith("/") ? folderName + name : folderName + "/" + name;
-        } else {
-            return name;
-        }
     }
 
     public static class Builder extends ParallelSink.Builder<Builder, AzureStorageDataSink> {
@@ -165,7 +164,7 @@ public class AzureStorageDataSink extends ParallelSink {
             return this;
         }
 
-        public Builder request(DataFlowRequest request) {
+        public Builder request(DataFlowStartMessage request) {
             sink.request = request;
             return this;
         }

@@ -17,7 +17,7 @@ package org.eclipse.edc.connector.dataplane.azure.datafactory;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
@@ -33,7 +33,7 @@ class AzureDataFactoryTransferRequestValidator {
     /**
      * Returns true if this service can transfer the request.
      */
-    boolean canHandle(DataFlowRequest request) {
+    boolean canHandle(DataFlowStartMessage request) {
         return AzureBlobStoreSchema.TYPE.equals(request.getSourceDataAddress().getType()) &&
                 AzureBlobStoreSchema.TYPE.equals(request.getDestinationDataAddress().getType());
     }
@@ -41,7 +41,7 @@ class AzureDataFactoryTransferRequestValidator {
     /**
      * Returns true if the request is valid.
      */
-    @NotNull Result<Boolean> validate(DataFlowRequest request) {
+    @NotNull Result<Boolean> validate(DataFlowStartMessage request) {
         try {
             validateSource(request.getSourceDataAddress());
             validateDestination(request.getDestinationDataAddress());

@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.dataplane.azure.storage.metadata;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 /**
  * {@summary For a user of this interface, it represents a method to add additional metadata fields to destination blob}
@@ -30,9 +30,9 @@ public interface BlobMetadataDecorator {
      * {@summary Provide additional metadata fields using the supplied builder and the supplied sources (see arguments).}
      *
      * @param request The data flow request; intended to be used as source of information for new metadata fields
-     * @param part The transferred file part; intended to be used as source of information for new metadata fields
+     * @param part    The transferred file part; intended to be used as source of information for new metadata fields
      * @param builder The builder class to be used to add metadata fields
      * @return The builder class must be again returned from this method
      */
-    BlobMetadata.Builder decorate(DataFlowRequest request, DataSource.Part part, BlobMetadata.Builder builder);
+    BlobMetadata.Builder decorate(DataFlowStartMessage request, DataSource.Part part, BlobMetadata.Builder builder);
 }

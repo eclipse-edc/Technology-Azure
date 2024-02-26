@@ -30,7 +30,7 @@ import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.util.List;
 import java.util.UUID;
@@ -62,7 +62,7 @@ class DataFactoryPipelineFactory {
      * @param request the transfer request.
      * @return the created pipeline resource.
      */
-    PipelineResource createPipeline(DataFlowRequest request) {
+    PipelineResource createPipeline(DataFlowStartMessage request) {
         var baseName = ADF_RESOURCE_NAME_PREFIX + UUID.randomUUID();
 
         var sourceDataset = createSourceDataset(baseName + "-src", request.getSourceDataAddress());

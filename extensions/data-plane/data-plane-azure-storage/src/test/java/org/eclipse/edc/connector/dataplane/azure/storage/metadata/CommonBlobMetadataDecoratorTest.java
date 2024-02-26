@@ -19,7 +19,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.util.string.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,14 +43,14 @@ import static org.mockito.Mockito.when;
 
 public class CommonBlobMetadataDecoratorTest {
 
-    private final TypeManager typeManager = mock();
-    private final DataFlowRequest.Builder requestBuilder = createRequest(AzureBlobStoreSchema.TYPE);
     private static final String TEST_ORIGINAL_NAME = "original-name";
     private static final String TEST_CONNECTOR_ID = "some-connector-id";
     private static final String TEST_PARTICIPANT_ID = "some-participant-id";
+    private final TypeManager typeManager = mock();
+    private final DataFlowStartMessage.Builder requestBuilder = createRequest(AzureBlobStoreSchema.TYPE);
 
     @ParameterizedTest
-    @CsvSource(value = {"correlation-id", "''", "null"}, nullValues = {"null"})
+    @CsvSource(value = { "correlation-id", "''", "null" }, nullValues = { "null" })
     void decorate_succeeds(String correlationId) {
 
         var context = mock(ServiceExtensionContext.class);
@@ -73,7 +73,7 @@ public class CommonBlobMetadataDecoratorTest {
         var builder = mock(BlobMetadata.Builder.class);
         when(builder.put(anyString(), anyString())).thenReturn(builder);
 
-        DataFlowRequest sampleRequest;
+        DataFlowStartMessage sampleRequest;
         if (correlationId != null) {
             sampleRequest = requestBuilder.destinationDataAddress(
                     DataAddress.Builder.newInstance()

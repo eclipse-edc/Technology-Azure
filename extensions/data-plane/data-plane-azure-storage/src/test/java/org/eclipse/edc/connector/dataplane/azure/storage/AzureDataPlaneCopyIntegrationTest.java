@@ -34,7 +34,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
         when(vault.resolveSecret(account2KeyName))
                 .thenReturn(typeManager.writeValueAsString(secretToken));
 
-        var request = DataFlowRequest.Builder.newInstance()
+        var request = DataFlowStartMessage.Builder.newInstance()
                 .sourceDataAddress(source)
                 .destinationDataAddress(destination)
                 .id(UUID.randomUUID().toString())

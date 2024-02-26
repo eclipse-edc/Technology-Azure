@@ -20,7 +20,7 @@ import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,8 +37,8 @@ class AzureStorageDataSourceFactoryTest {
     private final BlobStoreApi blobStoreApi = mock();
     private final Vault vault = mock();
     private final AzureStorageDataSourceFactory factory = new AzureStorageDataSourceFactory(blobStoreApi, RetryPolicy.ofDefaults(), mock(Monitor.class), vault);
-    private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
-    private final DataFlowRequest.Builder invalidRequest = createRequest("test-type");
+    private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
+    private final DataFlowStartMessage.Builder invalidRequest = createRequest("test-type");
     private final DataAddress.Builder dataAddress = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
 
     private final String accountName = createAccountName();

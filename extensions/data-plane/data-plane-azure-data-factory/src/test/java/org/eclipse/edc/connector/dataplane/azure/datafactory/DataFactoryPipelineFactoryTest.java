@@ -17,7 +17,7 @@ package org.eclipse.edc.connector.dataplane.azure.datafactory;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -40,7 +40,7 @@ class DataFactoryPipelineFactoryTest {
     private final KeyVaultSecret writeOnlySasSecret = new KeyVaultSecret("wo-sas-name", typeManager.writeValueAsString(azureSasToken));
     private final KeyVaultSecret destinationSecret = new KeyVaultSecret("test-secret-name", "test-dest-secret");
 
-    private final DataFlowRequest request = TestFunctions.createFlowRequest();
+    private final DataFlowStartMessage request = TestFunctions.createFlowRequest();
 
     private final String keyVaultLinkedService = "test-linked-service";
     private final DataFactoryPipelineFactory factory = new DataFactoryPipelineFactory(keyVaultLinkedService, keyVaultClient, client, typeManager);

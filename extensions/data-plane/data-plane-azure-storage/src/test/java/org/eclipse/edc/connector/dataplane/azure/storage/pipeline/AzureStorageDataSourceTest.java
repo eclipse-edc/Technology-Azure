@@ -22,7 +22,7 @@ import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +47,7 @@ class AzureStorageDataSourceTest {
 
     Monitor monitor = mock();
     BlobStoreApi blobStoreApi = mock();
-    DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
+    DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
 
     String accountName = createAccountName();
     String containerName = createContainerName();

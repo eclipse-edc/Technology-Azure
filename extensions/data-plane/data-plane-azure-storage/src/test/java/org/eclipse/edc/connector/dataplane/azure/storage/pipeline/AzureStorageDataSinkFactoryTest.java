@@ -24,7 +24,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -47,8 +47,8 @@ class AzureStorageDataSinkFactoryTest {
     private final Monitor monitor = mock();
     private final BlobMetadataProvider metadataProvider = new BlobMetadataProviderImpl(monitor);
     private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, monitor, vault, typeManager, metadataProvider);
-    private final DataFlowRequest.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
-    private final DataFlowRequest.Builder invalidRequest = createRequest("test-type");
+    private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
+    private final DataFlowStartMessage.Builder invalidRequest = createRequest("test-type");
     private final DataAddress.Builder dataAddress = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
 
     private final String accountName = createAccountName();

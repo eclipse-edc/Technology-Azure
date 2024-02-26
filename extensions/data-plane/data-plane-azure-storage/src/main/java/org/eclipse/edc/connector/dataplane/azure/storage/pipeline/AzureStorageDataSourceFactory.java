@@ -23,7 +23,7 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
@@ -52,29 +52,12 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public boolean canHandle(DataFlowRequest request) {
+    public boolean canHandle(DataFlowStartMessage request) {
         return AzureBlobStoreSchema.TYPE.equals(request.getSourceDataAddress().getType());
     }
 
     @Override
-    public @NotNull Result<Void> validateRequest(DataFlowRequest request) {
-        var dataAddress = request.getSourceDataAddress();
-        try {
-            validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
-            validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
-            if (dataAddress.hasProperty(BLOB_PREFIX)) {
-                validateBlobPrefix(dataAddress.getStringProperty(BLOB_PREFIX));
-            } else {
-                validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
-            }
-        } catch (IllegalArgumentException e) {
-            return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
-        }
-        return Result.success();
-    }
-
-    @Override
-    public DataSource createSource(DataFlowRequest request) {
+    public DataSource createSource(DataFlowStartMessage request) {
         validateRequest(request).orElseThrow(f -> new EdcException(f.getFailureDetail()));
 
         var dataAddress = request.getSourceDataAddress();
@@ -97,5 +80,22 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
         }
 
         return builder.build();
+    }
+
+    @Override
+    public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
+        var dataAddress = request.getSourceDataAddress();
+        try {
+            validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
+            validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
+            if (dataAddress.hasProperty(BLOB_PREFIX)) {
+                validateBlobPrefix(dataAddress.getStringProperty(BLOB_PREFIX));
+            } else {
+                validateBlobName(dataAddress.getStringProperty(BLOB_NAME));
+            }
+        } catch (IllegalArgumentException e) {
+            return Result.failure("AzureStorage source address is invalid: " + e.getMessage());
+        }
+        return Result.success();
     }
 }

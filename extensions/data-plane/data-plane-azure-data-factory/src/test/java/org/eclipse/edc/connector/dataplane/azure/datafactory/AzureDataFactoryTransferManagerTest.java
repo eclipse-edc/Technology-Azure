@@ -28,7 +28,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,7 +63,7 @@ class AzureDataFactoryTransferManagerTest {
     private final KeyVaultClient keyVaultClient = mock(KeyVaultClient.class);
     private final KeyVaultSecret keyVaultSecret = mock(KeyVaultSecret.class);
     private final BlobAdapter blobAdapter = mock(BlobAdapter.class);
-    private final DataFlowRequest request = TestFunctions.createFlowRequest();
+    private final DataFlowStartMessage request = TestFunctions.createFlowRequest();
     private final PipelineResource pipeline = mock(PipelineResource.class);
     private final CreateRunResponse runResponse = mock(CreateRunResponse.class);
     private final String runId = UUID.randomUUID().toString();

@@ -135,7 +135,6 @@ class AzureDataFactoryCopyIntegrationTest {
                 .destinationDataAddress(destination)
                 .id(UUID.randomUUID().toString())
                 .processId(UUID.randomUUID().toString())
-                .trackable(true)
                 .build();
 
         // Generate write-only sas for destination container and store as secret

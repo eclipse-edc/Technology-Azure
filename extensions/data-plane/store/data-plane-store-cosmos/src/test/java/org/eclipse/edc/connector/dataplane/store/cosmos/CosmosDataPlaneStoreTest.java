@@ -119,7 +119,6 @@ public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
                 .callbackAddress(URI.create("http://any"))
                 .source(DataAddress.Builder.newInstance().type("src-type").build())
                 .destination(DataAddress.Builder.newInstance().type("dest-type").build())
-                .trackable(true)
                 .state(state.code())
                 .build();
     }

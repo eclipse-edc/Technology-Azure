@@ -143,7 +143,7 @@ class AzureDataFactoryCopyIntegrationTest {
         setSecret(consumerStorage, vault, destSecretKeyName);
 
         // Act
-        dataPlaneManager.initiate(request);
+        dataPlaneManager.start(request);
 
         // Assert
         var destinationBlob = consumerStorage.client

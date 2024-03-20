@@ -41,8 +41,8 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;
 import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
-import static org.eclipse.edc.spi.system.ServiceExtensionContext.PARTICIPANT_ID;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
@@ -148,12 +148,12 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
             return Stream.of(
-                    Arguments.of(ProviderConstants.ASSET_PREFIX, (Object) new String[]{
+                    Arguments.of(ProviderConstants.ASSET_PREFIX, new String[]{
                             ProviderConstants.ASSET_PREFIX + 1 + ProviderConstants.ASSET_FILE,
                             ProviderConstants.ASSET_PREFIX + 2 + ProviderConstants.ASSET_FILE,
-                            ProviderConstants.ASSET_PREFIX + 3 + ProviderConstants.ASSET_FILE}),
-                    Arguments.of(ProviderConstants.ASSET_FILE, (Object) new String[]{
-                            ProviderConstants.ASSET_FILE}));
+                            ProviderConstants.ASSET_PREFIX + 3 + ProviderConstants.ASSET_FILE }),
+                    Arguments.of(ProviderConstants.ASSET_FILE, new String[]{
+                            ProviderConstants.ASSET_FILE }));
         }
     }
 }

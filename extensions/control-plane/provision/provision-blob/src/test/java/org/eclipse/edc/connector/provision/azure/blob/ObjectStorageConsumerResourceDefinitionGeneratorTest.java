@@ -17,7 +17,6 @@
 package org.eclipse.edc.connector.provision.azure.blob;
 
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
 import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -41,8 +40,7 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dr = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataRequest(dr).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
         var definition = generator.generate(transferProcess, policy);
@@ -66,8 +64,7 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dr = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataRequest(dr).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
         var definition = generator.generate(transferProcess, policy);
@@ -85,8 +82,7 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dataRequest = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataRequest(dataRequest).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
         var definition = generator.canGenerate(transferProcess, policy);
@@ -100,8 +96,7 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dataRequest = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataRequest(dataRequest).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
         var definition = generator.canGenerate(transferProcess, policy);

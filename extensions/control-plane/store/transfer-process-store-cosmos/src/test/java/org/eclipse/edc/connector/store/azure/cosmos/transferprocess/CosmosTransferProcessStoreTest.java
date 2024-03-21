@@ -65,7 +65,6 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         }, STATEMENTS, clock);
 
         helper.truncateTable(STATEMENTS.getTransferProcessTableName());
-        helper.truncateTable(STATEMENTS.getDataRequestTable());
         helper.truncateTable(STATEMENTS.getLeaseTableName());
     }
 
@@ -92,7 +91,6 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     @AfterAll
     static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
         helper.dropTable(STATEMENTS.getTransferProcessTableName());
-        helper.dropTable(STATEMENTS.getDataRequestTable());
         helper.dropTable(STATEMENTS.getLeaseTableName());
     }
 

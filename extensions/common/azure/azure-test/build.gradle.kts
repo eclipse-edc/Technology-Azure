@@ -20,9 +20,9 @@ plugins {
 
 dependencies {
     api(libs.edc.controlplane.spi)
+    testFixturesApi(libs.edc.spi.transaction.datasource)
     testFixturesApi(libs.postgres)
     testFixturesApi(libs.testcontainers.junit)
-
     testFixturesApi(libs.edc.util)
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.sql.core)

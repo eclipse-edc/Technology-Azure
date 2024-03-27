@@ -19,7 +19,6 @@ plugins {
 val techAzScmUrl: String by project
 val techAzScmConnection: String by project
 val annotationProcessorVersion: String by project
-val metaModelVersion: String by project
 
 buildscript {
     dependencies {

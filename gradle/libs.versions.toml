@@ -14,18 +14,11 @@ awaitility = "4.2.0"
 azure-rm = "2.33.0"
 bouncyCastle-jdk18on = "1.77"
 failsafe = "3.3.2"
-httpMockServer = "5.15.0"
-jakarta-json = "2.0.1"
 junit = "5.10.1"
-mockito = "5.2.0"
-nimbus = "9.37.3"
-openTelemetry = "1.18.0"
-opentelemetry-proto = "1.0.0-alpha"
 postgres = "42.7.2"
 restAssured = "5.3.2"
 rsApi = "3.1.0"
 testcontainers = "1.19.6"
-
 
 
 [libraries]
@@ -101,23 +94,13 @@ edc-sql-participant-store = { module = "org.eclipse.edc:participant-store-sql", 
 
 # third-partyi deps
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }
-opentelemetry-annotations = { module = "io.opentelemetry:opentelemetry-extension-annotations", version.ref = "openTelemetry" }
-opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version.ref = "openTelemetry" }
-opentelemetry-proto = { module = "io.opentelemetry.proto:opentelemetry-proto", version.ref = "opentelemetry-proto" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
-jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
-mockserver-client = { module = "org.mock-server:mockserver-client-java", version.ref = "httpMockServer" }
-mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "httpMockServer" }
-nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
-
 
 # Azure dependencies
 azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.21.0" }

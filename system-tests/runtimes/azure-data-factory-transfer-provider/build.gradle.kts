@@ -20,6 +20,7 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.edc.core.connector)
     implementation(libs.edc.spi.dataplane)
     implementation(libs.edc.util)
     implementation(libs.edc.core.controlplane)

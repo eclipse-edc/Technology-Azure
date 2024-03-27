@@ -10,7 +10,7 @@ identityhub = "0.3.1"
 # we need to pin the version of Registration service because the release was momentarly stopped at 0.4.1
 registrationservice = "0.4.1"
 
-awaitility = "4.2.0"
+awaitility = "4.2.1"
 azure-rm = "2.33.0"
 bouncyCastle-jdk18on = "1.77"
 failsafe = "3.3.2"

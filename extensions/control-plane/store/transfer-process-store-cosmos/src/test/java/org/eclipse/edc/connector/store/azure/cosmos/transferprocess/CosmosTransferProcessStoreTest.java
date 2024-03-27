@@ -14,20 +14,13 @@
 
 package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
-import org.awaitility.Awaitility;
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions;
 import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TransferProcessStoreTestBase;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedResourceSet;
-import org.eclipse.edc.connector.transfer.spi.types.ResourceManifest;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.persistence.EdcPersistenceException;
-import org.eclipse.edc.spi.query.Criterion;
-import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.query.SortOrder;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
@@ -36,47 +29,22 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
-import java.time.Clock;
 import java.time.Duration;
-import java.util.List;
 import javax.sql.DataSource;
 
-import static java.util.stream.IntStream.range;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEFAULT_DATASOURCE_NAME;
-import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createDataRequest;
-import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcess;
-import static org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions.createTransferProcessBuilder;
-import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.INITIAL;
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
-import static org.eclipse.edc.spi.persistence.StateEntityStore.hasState;
-import static org.hamcrest.Matchers.hasSize;
 
 @PostgresCosmosTest
 @ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
     private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements();
-    private final Clock clock = Clock.systemUTC();
     private SqlTransferProcessStore store;
     private LeaseUtil leaseUtil;
-
-    @BeforeAll
-    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
-    }
-
-    @AfterAll
-    static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.dropTable(STATEMENTS.getTransferProcessTableName());
-        helper.dropTable(STATEMENTS.getDataRequestTable());
-        helper.dropTable(STATEMENTS.getLeaseTableName());
-    }
 
     @BeforeEach
     void setUp(DataSourceRegistry reg, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSource datasource) {
@@ -97,125 +65,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         }, STATEMENTS, clock);
 
         helper.truncateTable(STATEMENTS.getTransferProcessTableName());
-        helper.truncateTable(STATEMENTS.getDataRequestTable());
         helper.truncateTable(STATEMENTS.getLeaseTableName());
-    }
-
-    @Test
-    void find_queryByDataRequest_propNotExist() {
-        var da = createDataRequest();
-        var tp = createTransferProcessBuilder("testprocess1")
-                .dataRequest(da)
-                .build();
-        store.save(tp);
-        store.save(createTransferProcess("testprocess2"));
-
-        var query = QuerySpec.Builder.newInstance()
-                .filter(List.of(new Criterion("dataRequest.notexist", "=", "somevalue")))
-                .build();
-
-        assertThat(store.findAll(query)).isEmpty();
-    }
-
-
-    @Test
-    void find_queryByResourceManifest_propNotExist() {
-        var rm = ResourceManifest.Builder.newInstance()
-                .definitions(List.of(TestFunctions.TestResourceDef.Builder.newInstance().id("rd-id").transferProcessId("testprocess1").build())).build();
-        var tp = createTransferProcessBuilder("testprocess1")
-                .resourceManifest(rm)
-                .build();
-        store.save(tp);
-        store.save(createTransferProcess("testprocess2"));
-
-        // throws exception when an explicit mapping exists
-        var query = QuerySpec.Builder.newInstance()
-                .filter(List.of(new Criterion("resourceManifest.foobar", "=", "someval")))
-                .build();
-
-        assertThat(store.findAll(query)).isEmpty();
-
-        // returns empty when the invalid value is embedded in JSON
-        var query2 = QuerySpec.Builder.newInstance()
-                .filter(List.of(new Criterion("resourceManifest.definitions.notexist", "=", "someval")))
-                .build();
-
-        assertThat(store.findAll(query2)).isEmpty();
-    }
-
-
-    @Test
-    void find_queryByProvisionedResourceSet_propNotExist() {
-        var resource = TestFunctions.TestProvisionedResource.Builder.newInstance()
-                .resourceDefinitionId("rd-id")
-                .transferProcessId("testprocess1")
-                .id("pr-id")
-                .build();
-        var prs = ProvisionedResourceSet.Builder.newInstance()
-                .resources(List.of(resource))
-                .build();
-        var tp = createTransferProcessBuilder("testprocess1")
-                .provisionedResourceSet(prs)
-                .build();
-        store.save(tp);
-        store.save(createTransferProcess("testprocess2"));
-
-        // throws exception when an explicit mapping exists
-        var query = QuerySpec.Builder.newInstance()
-                .filter(List.of(new Criterion("provisionedResourceSet.foobar.transferProcessId", "=", "testprocess1")))
-                .build();
-        assertThat(store.findAll(query)).isEmpty();
-
-        // returns empty when the invalid value is embedded in JSON
-        var query2 = QuerySpec.Builder.newInstance()
-                .filter(List.of(new Criterion("provisionedResourceSet.resources.foobar", "=", "someval")))
-                .build();
-
-        assertThat(store.findAll(query2)).isEmpty();
-    }
-
-
-    @Test
-    void find_queryByLease() {
-        store.save(createTransferProcess("testprocess1"));
-
-        var query = QuerySpec.Builder.newInstance()
-                .filter(List.of(new Criterion("lease.leasedBy", "=", "foobar")))
-                .build();
-
-        assertThat(store.findAll(query)).isEmpty();
-
-    }
-
-    @Test
-    void create_withoutDataRequest_throwsException() {
-        var t1 = TestFunctions.createTransferProcessBuilder("id1")
-                .dataRequest(null)
-                .build();
-        assertThatThrownBy(() -> getTransferProcessStore().save(t1)).isInstanceOf(EdcPersistenceException.class);
-    }
-
-
-    @Test
-    void nextNotLeased_expiredLease() {
-        var t = createTransferProcess("id1", INITIAL);
-        getTransferProcessStore().save(t);
-
-        leaseEntity(t.getId(), CONNECTOR_NAME, Duration.ofMillis(100));
-
-        Awaitility.await().atLeast(Duration.ofMillis(100))
-                .atMost(Duration.ofMillis(5000)) //this is different from the superclass - with the connection to cosmos it may take longer than 500ms
-                .until(() -> getTransferProcessStore().nextNotLeased(10, hasState(INITIAL.code())), hasSize(1));
-    }
-
-    @Test
-    protected void findAll_verifySorting_invalidProperty() {
-        range(0, 10).forEach(i -> getTransferProcessStore().save(createTransferProcess("test-neg-" + i)));
-
-        var query = QuerySpec.Builder.newInstance().sortField("notexist").sortOrder(SortOrder.DESC).build();
-
-        assertThatThrownBy(() -> getTransferProcessStore().findAll(query))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Override
@@ -225,16 +75,23 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
     @Override
     protected void leaseEntity(String negotiationId, String owner, Duration duration) {
-        getLeaseUtil().leaseEntity(negotiationId, owner, duration);
+        leaseUtil.leaseEntity(negotiationId, owner, duration);
     }
 
     @Override
     protected boolean isLeasedBy(String negotiationId, String owner) {
-        return getLeaseUtil().isLeased(negotiationId, owner);
+        return leaseUtil.isLeased(negotiationId, owner);
     }
 
-    protected LeaseUtil getLeaseUtil() {
-        return leaseUtil;
+    @BeforeAll
+    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getTransferProcessTableName());
+        helper.dropTable(STATEMENTS.getLeaseTableName());
     }
 
 }

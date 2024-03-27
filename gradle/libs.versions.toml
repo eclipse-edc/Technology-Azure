@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.5.1-SNAPSHOT"
+edc = "0.5.2-SNAPSHOT"
 # we need to pin the version of IH, because this is the last version to contain the DWN implementation
 # current snapshot builds of IH don't have feature parity yet.
 # todo: remove this once IH supports credential presentation and issuance
@@ -14,18 +14,11 @@ awaitility = "4.2.0"
 azure-rm = "2.33.0"
 bouncyCastle-jdk18on = "1.77"
 failsafe = "3.3.2"
-httpMockServer = "5.15.0"
-jakarta-json = "2.0.1"
 junit = "5.10.1"
-mockito = "5.2.0"
-nimbus = "9.37.3"
-openTelemetry = "1.18.0"
-opentelemetry-proto = "1.0.0-alpha"
-postgres = "42.7.0"
+postgres = "42.7.2"
 restAssured = "5.3.2"
 rsApi = "3.1.0"
-testcontainers = "1.19.3"
-
+testcontainers = "1.19.6"
 
 
 [libraries]
@@ -76,6 +69,7 @@ edc-spi-contract = { module = "org.eclipse.edc:contract-spi", version.ref = "edc
 edc-spi-policy = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-spi-core = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-spi-transfer = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc" }
+edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
@@ -100,27 +94,17 @@ edc-sql-participant-store = { module = "org.eclipse.edc:participant-store-sql", 
 
 # third-partyi deps
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }
-opentelemetry-annotations = { module = "io.opentelemetry:opentelemetry-extension-annotations", version.ref = "openTelemetry" }
-opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version.ref = "openTelemetry" }
-opentelemetry-proto = { module = "io.opentelemetry.proto:opentelemetry-proto", version.ref = "opentelemetry-proto" }
 restAssured = { module = "io.rest-assured:rest-assured", version.ref = "restAssured" }
-jakartaJson = { module = "org.glassfish:jakarta.json", version.ref = "jakarta-json" }
 jakarta-rsApi = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "rsApi" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 edc-jsonld = { module = "org.eclipse.edc:json-ld", version.ref = "edc" }
-mockserver-client = { module = "org.mock-server:mockserver-client-java", version.ref = "httpMockServer" }
-mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "httpMockServer" }
-nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 
-
 # Azure dependencies
-azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.20.1" }
-azure-identity = { group = "com.azure", name = "azure-identity", version = "1.11.1" }
+azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.21.0" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.11.2" }
 azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.7.3" }
 azure-mgmt-resources = { module = "com.microsoft.azure:azure-mgmt-resources", version = "1.41.4" }
 azure-resourcemanager = { group = "com.azure.resourcemanager", name = "azure-resourcemanager", version.ref = "azure-rm" }
@@ -128,7 +112,7 @@ azure-resourcemanager-authorization = { group = "com.azure.resourcemanager", nam
 azure-resourcemanager-datafactory = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-datafactory", version = "1.0.0-beta.24" }
 azure-resourcemanager-keyvault = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-keyvault", version.ref = "azure-rm" }
 azure-resourcemanager-storage = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-storage", version.ref = "azure-rm" }
-azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.24.1" }
+azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.25.2" }
 
 [bundles]
 

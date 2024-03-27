@@ -16,7 +16,7 @@ package org.eclipse.edc.connector.dataplane.azure.datafactory;
 
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +38,7 @@ import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class AzureDataFactoryTransferRequestValidatorTest {
-    private static final DataFlowRequest.Builder REQUEST = createRequest(AzureBlobStoreSchema.TYPE);
+    private static final DataFlowStartMessage.Builder REQUEST = createRequest(AzureBlobStoreSchema.TYPE);
 
     private final Map<String, Object> sourceProperties = TestFunctions.sourceProperties();
     private final Map<String, Object> destinationProperties = TestFunctions.destinationProperties();
@@ -52,7 +52,7 @@ class AzureDataFactoryTransferRequestValidatorTest {
         // Arrange
         var source = createDataAddress(sourceType);
         var destination = createDataAddress(destinationType);
-        var request = DataFlowRequest.Builder.newInstance()
+        var request = DataFlowStartMessage.Builder.newInstance()
                 .processId(UUID.randomUUID().toString())
                 .sourceDataAddress(source.build())
                 .destinationDataAddress(destination.build());

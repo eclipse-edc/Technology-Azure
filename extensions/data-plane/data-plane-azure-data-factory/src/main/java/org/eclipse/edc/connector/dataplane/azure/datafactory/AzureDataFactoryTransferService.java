@@ -19,7 +19,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -37,22 +37,22 @@ public class AzureDataFactoryTransferService implements TransferService {
     }
 
     @Override
-    public boolean canHandle(DataFlowRequest request) {
+    public boolean canHandle(DataFlowStartMessage request) {
         return validator.canHandle(request);
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowRequest request) {
+    public @NotNull Result<Boolean> validate(DataFlowStartMessage request) {
         return validator.validate(request);
     }
 
     @Override
-    public CompletableFuture<StreamResult<Object>> transfer(DataFlowRequest request) {
+    public CompletableFuture<StreamResult<Object>> transfer(DataFlowStartMessage request) {
         return transferManager.transfer(request);
     }
 
     @Override
-    public CompletableFuture<StreamResult<Object>> transfer(DataFlowRequest request, DataSink sink) {
+    public CompletableFuture<StreamResult<Object>> transfer(DataFlowStartMessage request, DataSink sink) {
         throw new UnsupportedOperationException("not implemented");
     }
 

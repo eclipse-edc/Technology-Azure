@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.dataplane.azure.storage.metadata;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 /**
  * {@summary This service provides the user the possibility to register decorators to be used for metadata provisioning.}
@@ -36,8 +36,8 @@ public interface BlobMetadataProvider {
      * {@summary Provision metadata for all registered decorators}
      *
      * @param request The data flow request to be passed as a source of information to each registered decorator
-     * @param part The transferred data part to be passed as a source of information to each registered decorator
+     * @param part    The transferred data part to be passed as a source of information to each registered decorator
      * @return The final set of metadata to be set on a destination blob
      */
-    BlobMetadata provideSinkMetadata(DataFlowRequest request, DataSource.Part part);
+    BlobMetadata provideSinkMetadata(DataFlowStartMessage request, DataSource.Part part);
 }

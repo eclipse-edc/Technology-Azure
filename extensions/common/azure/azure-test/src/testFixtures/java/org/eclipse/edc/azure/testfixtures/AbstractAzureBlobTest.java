@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.eclipse.edc.junit.testfixtures.TestUtils.getFreePort;
+import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -58,14 +58,6 @@ public abstract class AbstractAzureBlobTest {
         createContainer(providerBlobServiceClient, providerContainerName);
     }
 
-    protected void createContainer(BlobServiceClient client, String containerName) {
-        assertFalse(client.getBlobContainerClient(containerName).exists());
-
-        var blobContainerClient = client.createBlobContainer(containerName);
-        assertTrue(blobContainerClient.exists());
-        containerCleanup.add(() -> client.deleteBlobContainer(containerName));
-    }
-
     @AfterEach
     public void teardown() {
         for (var cleanup : containerCleanup) {
@@ -75,5 +67,13 @@ public abstract class AbstractAzureBlobTest {
                 fail("teardown failed, subsequent tests might fail as well!");
             }
         }
+    }
+
+    protected void createContainer(BlobServiceClient client, String containerName) {
+        assertFalse(client.getBlobContainerClient(containerName).exists());
+
+        var blobContainerClient = client.createBlobContainer(containerName);
+        assertTrue(blobContainerClient.exists());
+        containerCleanup.add(() -> client.deleteBlobContainer(containerName));
     }
 }

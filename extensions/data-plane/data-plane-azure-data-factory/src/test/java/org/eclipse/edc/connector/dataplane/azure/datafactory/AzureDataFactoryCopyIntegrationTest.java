@@ -31,7 +31,7 @@ import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -130,12 +130,11 @@ class AzureDataFactoryCopyIntegrationTest {
                 .keyName(destSecretKeyName)
                 .build();
 
-        var request = DataFlowRequest.Builder.newInstance()
+        var request = DataFlowStartMessage.Builder.newInstance()
                 .sourceDataAddress(source)
                 .destinationDataAddress(destination)
                 .id(UUID.randomUUID().toString())
                 .processId(UUID.randomUUID().toString())
-                .trackable(true)
                 .build();
 
         // Generate write-only sas for destination container and store as secret
@@ -144,7 +143,7 @@ class AzureDataFactoryCopyIntegrationTest {
         setSecret(consumerStorage, vault, destSecretKeyName);
 
         // Act
-        dataPlaneManager.initiate(request);
+        dataPlaneManager.start(request);
 
         // Assert
         var destinationBlob = consumerStorage.client

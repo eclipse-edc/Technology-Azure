@@ -17,11 +17,10 @@
 package org.eclipse.edc.connector.provision.azure.blob;
 
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
-import org.eclipse.edc.connector.transfer.spi.types.DataRequest;
+import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.asset.Asset;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -31,12 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class ObjectStorageConsumerResourceDefinitionGeneratorTest {
 
-    private ObjectStorageConsumerResourceDefinitionGenerator generator;
-
-    @BeforeEach
-    void setUp() {
-        generator = new ObjectStorageConsumerResourceDefinitionGenerator();
-    }
+    private final ObjectStorageConsumerResourceDefinitionGenerator generator =
+            new ObjectStorageConsumerResourceDefinitionGenerator();
 
     @Test
     void generate_withContainerName() {
@@ -45,10 +40,10 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dr = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
-        var definition = generator.generate(dr, policy);
+        var definition = generator.generate(transferProcess, policy);
 
         assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
         var objectDef = (ObjectStorageResourceDefinition) definition;
@@ -69,10 +64,10 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dr = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
-        var definition = generator.generate(dr, policy);
+        var definition = generator.generate(transferProcess, policy);
 
         assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
         var objectDef = (ObjectStorageResourceDefinition) definition;
@@ -87,10 +82,11 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dataRequest = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
-        var definition = generator.canGenerate(dataRequest, policy);
+        var definition = generator.canGenerate(transferProcess, policy);
+
         assertThat(definition).isTrue();
     }
 
@@ -100,10 +96,11 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
                 .build();
         var asset = Asset.Builder.newInstance().build();
-        var dataRequest = DataRequest.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
         var policy = Policy.Builder.newInstance().build();
 
-        var definition = generator.canGenerate(dataRequest, policy);
+        var definition = generator.canGenerate(transferProcess, policy);
+
         assertThat(definition).isFalse();
     }
 

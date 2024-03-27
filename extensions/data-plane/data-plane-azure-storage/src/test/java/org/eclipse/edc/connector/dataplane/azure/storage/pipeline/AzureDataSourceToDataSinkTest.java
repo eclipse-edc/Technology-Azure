@@ -22,7 +22,7 @@ import org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 class AzureDataSourceToDataSinkTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Monitor monitor = mock();
-    private final DataFlowRequest request = createRequest(AzureBlobStoreSchema.TYPE).build();
+    private final DataFlowStartMessage request = createRequest(AzureBlobStoreSchema.TYPE).build();
     private final String requestId = request.getId();
     private final ServiceExtensionContext context = mock();
     private final FakeBlobAdapter fakeSource = new FakeBlobAdapter();
@@ -263,6 +263,7 @@ class AzureDataSourceToDataSinkTest {
         }
 
         @Override
-        public void setMetadata(Map<String, String> metadata) {}
+        public void setMetadata(Map<String, String> metadata) {
+        }
     }
 }

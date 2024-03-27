@@ -16,7 +16,7 @@ package org.eclipse.edc.connector.dataplane.azure.storage.metadata;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class BlobMetadataProviderImpl implements BlobMetadataProvider {
     }
 
     @Override
-    public BlobMetadata provideSinkMetadata(DataFlowRequest request, DataSource.Part part) {
+    public BlobMetadata provideSinkMetadata(DataFlowStartMessage request, DataSource.Part part) {
         var metadata = new BlobMetadata.Builder(monitor);
         blobMetadataDecorators.forEach(decorator -> decorator.decorate(request, part, metadata));
         return metadata.build();

@@ -30,7 +30,6 @@ class AzureEventGridPublisher implements TransferProcessListener {
     private final Monitor monitor;
     private final EventGridPublisherAsyncClient<EventGridEvent> client;
     private final String eventTypeTransferprocess = "dataspaceconnector/transfer/transferprocess";
-    private final String eventTypeMetadata = "dataspaceconnector/metadata/store";
     private final String connectorId;
 
     AzureEventGridPublisher(String connectorId, Monitor monitor, EventGridPublisherAsyncClient<EventGridEvent> client) {
@@ -68,7 +67,7 @@ class AzureEventGridPublisher implements TransferProcessListener {
     }
 
     private Mono<Void> sendEvent(String what, String where, Object payload) {
-        BinaryData data = BinaryData.fromObject(payload);
+        var data = BinaryData.fromObject(payload);
         var evt = new EventGridEvent(what, where, data, "0.1");
         return client.sendEvent(evt);
     }
@@ -78,7 +77,7 @@ class AzureEventGridPublisher implements TransferProcessListener {
         return TransferProcessDto.Builder.newInstance()
                 .connector(connectorId)
                 .state(TransferProcessStates.from(process.getState()))
-                .requestId(process.getDataRequest().getId())
+                .requestId(process.getCorrelationId())
                 .type(process.getType())
                 .build();
     }

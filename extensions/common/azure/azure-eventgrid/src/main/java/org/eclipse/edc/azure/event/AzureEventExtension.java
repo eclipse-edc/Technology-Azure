@@ -19,6 +19,7 @@ import com.azure.messaging.eventgrid.EventGridPublisherClientBuilder;
 import org.eclipse.edc.connector.transfer.spi.observe.TransferProcessObservable;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
@@ -30,6 +31,13 @@ import java.util.Objects;
 public class AzureEventExtension implements ServiceExtension {
 
     public static final String NAME = "Azure Events";
+    @Setting
+    public static final String TOPIC_NAME_SETTING = "edc.events.topic.name";
+    @Setting
+    public static final String TOPIC_ENDPOINT_SETTING = "edc.events.topic.endpoint";
+    public static final String DEFAULT_SYSTEM_TOPIC_NAME = "connector-events";
+    public static final String DEFAULT_ENDPOINT_NAME_TEMPLATE = "https://%s.westeurope-1.eventgrid.azure.net/api/events";
+
     @Inject
     private Monitor monitor;
 
@@ -43,9 +51,9 @@ public class AzureEventExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var config = new AzureEventGridConfig(context);
-        var topicName = config.getTopic();
-        var endpoint = config.getEndpoint(topicName);
+        var topicName = context.getSetting(TOPIC_NAME_SETTING, DEFAULT_SYSTEM_TOPIC_NAME);
+        var endpoint = context.getSetting(TOPIC_ENDPOINT_SETTING, DEFAULT_ENDPOINT_NAME_TEMPLATE.formatted(topicName));
+
         monitor.info("AzureEventExtension: will use topic endpoint " + endpoint);
 
         var publisherClient = new EventGridPublisherClientBuilder()

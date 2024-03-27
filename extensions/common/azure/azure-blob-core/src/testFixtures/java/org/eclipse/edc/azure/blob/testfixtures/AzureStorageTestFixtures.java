@@ -15,7 +15,7 @@
 package org.eclipse.edc.azure.blob.testfixtures;
 
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.eclipse.edc.spi.types.domain.transfer.DataFlowRequest;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -26,8 +26,8 @@ public class AzureStorageTestFixtures {
     private AzureStorageTestFixtures() {
     }
 
-    public static DataFlowRequest.Builder createRequest(String type) {
-        return DataFlowRequest.Builder.newInstance()
+    public static DataFlowStartMessage.Builder createRequest(String type) {
+        return DataFlowStartMessage.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
                 .processId(UUID.randomUUID().toString())
                 .sourceDataAddress(createDataAddress(type).build())

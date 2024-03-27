@@ -74,7 +74,6 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         }
 
         var dataAddress = request.getDestinationDataAddress();
-        var dataSourceAddress = request.getSourceDataAddress();
         var requestId = request.getId();
 
         var secret = vault.resolveSecret(dataAddress.getKeyName());
@@ -85,7 +84,6 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
                 .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
                 .folderName(dataAddress.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME))
                 .blobName(dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME))
-                .blobPrefix(dataSourceAddress.getStringProperty(BLOB_PREFIX))
                 .sharedAccessSignature(token.getSas())
                 .requestId(requestId)
                 .partitionSize(partitionSize)

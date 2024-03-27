@@ -204,7 +204,7 @@ class AzureStorageDataSinkTest {
                 .blobName(altName)
                 .request(request.build())
                 .build();
-        assertEquals(expected, sink.getDestinationBlobName(blobName));
+        assertEquals(expected, sink.getDestinationBlobName(blobName,1));
     }
 
     private void assertThatTransferPartsFails(Part part, String logMessage, Object... args) {

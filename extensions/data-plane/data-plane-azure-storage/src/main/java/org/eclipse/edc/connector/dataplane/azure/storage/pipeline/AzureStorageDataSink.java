@@ -42,7 +42,6 @@ public class AzureStorageDataSink extends ParallelSink {
     private String containerName;
     private String folderName;
     private String blobName;
-    private String blobPrefix;
     private String sharedAccessSignature;
     private BlobStoreApi blobStoreApi;
     private DataFlowStartMessage request;
@@ -55,22 +54,21 @@ public class AzureStorageDataSink extends ParallelSink {
         completedFiles.add(name + COMPLETE_BLOB_NAME);
     }
 
-    String getDestinationBlobName(String partName) {
-        var name = !StringUtils.isNullOrEmpty(blobName) && StringUtils.isNullOrBlank(blobPrefix) ? blobName : partName;
+    String getDestinationBlobName(String partName, int partsSize) {
+        var name = (partsSize == 1 && !StringUtils.isNullOrEmpty(blobName)) ? blobName : partName;
         if (!StringUtils.isNullOrEmpty(folderName)) {
             return folderName.endsWith("/") ? folderName + name : folderName + "/" + name;
         } else {
             return name;
         }
     }
-
     /**
      * Writes data into an Azure storage container.
      */
     @Override
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
         for (DataSource.Part part : parts) {
-            var name = getDestinationBlobName(part.name());
+            var name =  getDestinationBlobName(part.name(), parts.size());
             try (var input = part.openStream()) {
                 try (var output = getAdapter(name).getOutputStream()) {
                     try {
@@ -93,6 +91,8 @@ public class AzureStorageDataSink extends ParallelSink {
         }
         return StreamResult.success();
     }
+
+    
 
     @Override
     protected StreamResult<Object> complete() {
@@ -146,11 +146,6 @@ public class AzureStorageDataSink extends ParallelSink {
 
         public Builder blobName(String blobName) {
             sink.blobName = blobName;
-            return this;
-        }
-
-        public Builder blobPrefix(String blobPrefix) {
-            sink.blobPrefix = blobPrefix;
             return this;
         }
 

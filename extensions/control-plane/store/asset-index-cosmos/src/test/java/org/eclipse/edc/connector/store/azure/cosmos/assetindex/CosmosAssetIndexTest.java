@@ -17,11 +17,11 @@ package org.eclipse.edc.connector.store.azure.cosmos.assetindex;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
-import org.eclipse.edc.connector.store.sql.assetindex.SqlAssetIndex;
-import org.eclipse.edc.connector.store.sql.assetindex.schema.BaseSqlDialectStatements;
-import org.eclipse.edc.connector.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.asset.spi.testfixtures.AssetIndexTestBase;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.SqlAssetIndex;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.schema.BaseSqlDialectStatements;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.testfixtures.asset.AssetIndexTestBase;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
@@ -40,6 +40,18 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
     private static final BaseSqlDialectStatements SQL_STATEMENTS = new PostgresDialectStatements();
     private SqlAssetIndex sqlAssetIndex;
 
+    @BeforeAll
+    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.dropTable(SQL_STATEMENTS.getAssetTable());
+        runner.dropTable(SQL_STATEMENTS.getDataAddressTable());
+        runner.dropTable(SQL_STATEMENTS.getAssetPropertyTable());
+    }
+
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper runner, DataSourceRegistry reg) {
         var typeManager = new TypeManager();
@@ -56,18 +68,6 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
     @Override
     protected SqlAssetIndex getAssetIndex() {
         return sqlAssetIndex;
-    }
-
-    @BeforeAll
-    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
-        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
-    }
-
-    @AfterAll
-    static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
-        runner.dropTable(SQL_STATEMENTS.getAssetTable());
-        runner.dropTable(SQL_STATEMENTS.getDataAddressTable());
-        runner.dropTable(SQL_STATEMENTS.getAssetPropertyTable());
     }
 
 

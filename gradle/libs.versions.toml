@@ -73,6 +73,7 @@ edc-spi-transaction-datasource = { module = "org.eclipse.edc:transaction-datasou
 edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-jsonld = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-spi-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
+edc-spi-asset = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
 edc-transfer-dataplane = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
 edc-transfer-httppull-receiver = { module = "org.eclipse.edc:transfer-pull-http-receiver", version.ref = "edc" }
 edc-transfer-httppull-receiver-dynamic = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }

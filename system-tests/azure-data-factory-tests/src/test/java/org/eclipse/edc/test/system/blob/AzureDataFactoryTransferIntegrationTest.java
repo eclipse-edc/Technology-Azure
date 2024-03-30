@@ -20,10 +20,10 @@ import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AzureSettings;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureDataFactoryIntegrationTest;
-import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
-import org.eclipse.edc.test.system.utils.Participant;
 import org.eclipse.edc.vault.azure.AzureVault;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -44,11 +44,11 @@ import static java.lang.String.valueOf;
 import static java.lang.System.getenv;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates.COMPLETED;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
-import static org.eclipse.edc.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @AzureDataFactoryIntegrationTest
@@ -119,6 +119,11 @@ class AzureDataFactoryTransferIntegrationTest {
             .protocolEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.PROTOCOL_URL)))
             .build();
 
+    @AfterAll
+    static void cleanUp() {
+        CONTAINER_CLEANUP.parallelStream().forEach(Runnable::run);
+    }
+
     @Test
     void transferBlob_success() {
         // Arrange
@@ -154,10 +159,5 @@ class AzureDataFactoryTransferIntegrationTest {
 
         var dataDestination = consumerClient.getDataDestination(transferProcessId);
         assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, ProviderConstants.ASSET_FILE));
-    }
-
-    @AfterAll
-    static void cleanUp() {
-        CONTAINER_CLEANUP.parallelStream().forEach(Runnable::run);
     }
 }

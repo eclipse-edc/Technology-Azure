@@ -16,10 +16,10 @@ package org.eclipse.edc.connector.store.azure.cosmos.transferprocess;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
-import org.eclipse.edc.connector.store.sql.transferprocess.store.SqlTransferProcessStore;
-import org.eclipse.edc.connector.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
-import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TestFunctions;
-import org.eclipse.edc.connector.transfer.spi.testfixtures.store.TransferProcessStoreTestBase;
+import org.eclipse.edc.connector.controlplane.store.sql.transferprocess.store.SqlTransferProcessStore;
+import org.eclipse.edc.connector.controlplane.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.transfer.spi.testfixtures.store.TestFunctions;
+import org.eclipse.edc.connector.controlplane.transfer.spi.testfixtures.store.TransferProcessStoreTestBase;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -45,6 +45,17 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements();
     private SqlTransferProcessStore store;
     private LeaseUtil leaseUtil;
+
+    @BeforeAll
+    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getTransferProcessTableName());
+        helper.dropTable(STATEMENTS.getLeaseTableName());
+    }
 
     @BeforeEach
     void setUp(DataSourceRegistry reg, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSource datasource) {
@@ -81,17 +92,6 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     @Override
     protected boolean isLeasedBy(String negotiationId, String owner) {
         return leaseUtil.isLeased(negotiationId, owner);
-    }
-
-    @BeforeAll
-    static void createDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
-    }
-
-    @AfterAll
-    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.dropTable(STATEMENTS.getTransferProcessTableName());
-        helper.dropTable(STATEMENTS.getLeaseTableName());
     }
 
 }

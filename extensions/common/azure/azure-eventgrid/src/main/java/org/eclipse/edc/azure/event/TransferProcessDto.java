@@ -18,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import org.eclipse.edc.connector.transfer.spi.types.TransferProcess;
-import org.eclipse.edc.connector.transfer.spi.types.TransferProcessStates;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 
 /**
  * Data transfer object for {@link TransferProcess} instances.

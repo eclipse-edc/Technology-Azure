@@ -17,7 +17,7 @@ package org.eclipse.edc.test.system.blob;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
-import org.eclipse.edc.test.system.utils.Participant;
+import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 
 import java.util.Map;
 import java.util.UUID;
@@ -95,15 +95,15 @@ public class BlobTransferParticipant extends Participant {
             super(new BlobTransferParticipant());
         }
 
+        @JsonCreator
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
         @Override
         public BlobTransferParticipant build() {
             super.build();
             return participant;
-        }
-
-        @JsonCreator
-        public static Builder newInstance() {
-            return new Builder();
         }
     }
 }

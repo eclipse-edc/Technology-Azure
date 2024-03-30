@@ -17,11 +17,11 @@ package org.eclipse.edc.connector.store.azure.cosmos.contractdefinition;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
-import org.eclipse.edc.connector.contract.spi.offer.store.ContractDefinitionStore;
-import org.eclipse.edc.connector.contract.spi.testfixtures.offer.store.ContractDefinitionStoreTestBase;
-import org.eclipse.edc.connector.store.sql.contractdefinition.SqlContractDefinitionStore;
-import org.eclipse.edc.connector.store.sql.contractdefinition.schema.BaseSqlDialectStatements;
-import org.eclipse.edc.connector.store.sql.contractdefinition.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.testfixtures.offer.store.ContractDefinitionStoreTestBase;
+import org.eclipse.edc.connector.controlplane.store.sql.contractdefinition.SqlContractDefinitionStore;
+import org.eclipse.edc.connector.controlplane.store.sql.contractdefinition.schema.BaseSqlDialectStatements;
+import org.eclipse.edc.connector.controlplane.store.sql.contractdefinition.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -42,6 +42,16 @@ class CosmosContractDefinitionStoreTest extends ContractDefinitionStoreTestBase 
     private static final BaseSqlDialectStatements SQL_STATEMENTS = new PostgresDialectStatements();
     private SqlContractDefinitionStore sqlContractDefinitionStore;
 
+    @BeforeAll
+    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
+        runner.dropTable(SQL_STATEMENTS.getContractDefinitionTable());
+    }
+
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
         var typeManager = new TypeManager();
@@ -54,16 +64,6 @@ class CosmosContractDefinitionStoreTest extends ContractDefinitionStoreTestBase 
     @Override
     protected ContractDefinitionStore getContractDefinitionStore() {
         return sqlContractDefinitionStore;
-    }
-
-    @BeforeAll
-    static void prepare(CosmosPostgresTestExtension.SqlHelper runner) {
-        runner.executeStatement(getResourceFileContentAsString("schema.sql"));
-    }
-
-    @AfterAll
-    static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
-        runner.dropTable(SQL_STATEMENTS.getContractDefinitionTable());
     }
 
 }

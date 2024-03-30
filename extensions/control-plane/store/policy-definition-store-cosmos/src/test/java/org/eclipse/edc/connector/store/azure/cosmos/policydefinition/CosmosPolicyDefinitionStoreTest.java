@@ -16,9 +16,9 @@ package org.eclipse.edc.connector.store.azure.cosmos.policydefinition;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
-import org.eclipse.edc.connector.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
-import org.eclipse.edc.connector.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
-import org.eclipse.edc.connector.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
+import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
+import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -39,6 +39,16 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
     private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements();
     private SqlPolicyDefinitionStore sqlPolicyStore;
 
+    @BeforeAll
+    static void prepare(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getPolicyTable());
+    }
+
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
         var manager = new TypeManager();
@@ -53,16 +63,6 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
     @Override
     protected SqlPolicyDefinitionStore getPolicyDefinitionStore() {
         return sqlPolicyStore;
-    }
-
-    @BeforeAll
-    static void prepare(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
-    }
-
-    @AfterAll
-    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.dropTable(STATEMENTS.getPolicyTable());
     }
 
 }

@@ -17,10 +17,10 @@ package org.eclipse.edc.connector.store.azure.cosmos.contractnegotiation;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.PostgresCosmosTest;
-import org.eclipse.edc.connector.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
-import org.eclipse.edc.connector.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
-import org.eclipse.edc.connector.store.sql.contractnegotiation.store.schema.BaseSqlDialectStatements;
-import org.eclipse.edc.connector.store.sql.contractnegotiation.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.connector.controlplane.contract.spi.testfixtures.negotiation.store.ContractNegotiationStoreTestBase;
+import org.eclipse.edc.connector.controlplane.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
+import org.eclipse.edc.connector.controlplane.store.sql.contractnegotiation.store.schema.BaseSqlDialectStatements;
+import org.eclipse.edc.connector.controlplane.store.sql.contractnegotiation.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -49,6 +49,18 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     private static final BaseSqlDialectStatements STATEMENTS = new PostgresDialectStatements();
     private SqlContractNegotiationStore store;
     private LeaseUtil leaseUtil;
+
+    @AfterAll
+    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.dropTable(STATEMENTS.getContractNegotiationTable());
+        helper.dropTable(STATEMENTS.getContractAgreementTable());
+        helper.dropTable(STATEMENTS.getLeaseTableName());
+    }
+
+    @BeforeAll
+    static void prepare(CosmosPostgresTestExtension.SqlHelper helper) {
+        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
+    }
 
     @BeforeEach
     void setUp(DataSource dataSource, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
@@ -80,21 +92,9 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     protected void leaseEntity(String negotiationId, String owner, Duration duration) {
         leaseUtil.leaseEntity(negotiationId, owner, duration);
     }
-    
+
     @Override
     protected boolean isLeasedBy(String negotiationId, String owner) {
         return leaseUtil.isLeased(negotiationId, owner);
-    }
-
-    @AfterAll
-    static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.dropTable(STATEMENTS.getContractNegotiationTable());
-        helper.dropTable(STATEMENTS.getContractAgreementTable());
-        helper.dropTable(STATEMENTS.getLeaseTableName());
-    }
-
-    @BeforeAll
-    static void prepare(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.executeStatement(getResourceFileContentAsString("schema.sql"));
     }
 }

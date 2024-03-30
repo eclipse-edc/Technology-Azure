@@ -16,7 +16,7 @@ package org.eclipse.edc.azure.blob;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.eclipse.edc.connector.transfer.spi.types.SecretToken;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.SecretToken;
 
 @JsonTypeName("dataspaceconnector:azuretoken")
 public class AzureSasToken implements SecretToken {

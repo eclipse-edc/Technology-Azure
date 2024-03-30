@@ -22,7 +22,7 @@ dependencies {
     implementation(libs.failsafe.core)
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
-    testImplementation(testFixtures(libs.edc.spi.core))
+    testImplementation(testFixtures(libs.edc.spi.asset))
     testImplementation(libs.edc.sql.core)
     testImplementation(libs.edc.sql.assetindex)
 

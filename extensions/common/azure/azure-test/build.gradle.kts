@@ -23,7 +23,7 @@ dependencies {
     testFixturesApi(libs.edc.spi.transaction.datasource)
     testFixturesApi(libs.postgres)
     testFixturesApi(libs.testcontainers.junit)
-    testFixturesApi(libs.edc.util)
+    testFixturesApi(libs.edc.lib.util)
     testFixturesApi(libs.edc.junit)
     testFixturesApi(libs.edc.sql.core)
     testFixturesApi(libs.azure.storageblob)

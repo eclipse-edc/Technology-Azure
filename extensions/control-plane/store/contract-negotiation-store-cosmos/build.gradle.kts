@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     api(libs.edc.spi.contract)
-    api(libs.edc.util)
+    api(libs.edc.lib.util)
 
     implementation(libs.failsafe.core)
 

@@ -35,7 +35,7 @@ dependencies {
 
     implementation(project(":extensions:control-plane:provision:provision-blob"))
 
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
     implementation(libs.edc.core.controlplane.apiclient)
 
 

@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     api(libs.edc.controlplane.spi)
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
 
     implementation(libs.azure.eventgrid)
 }

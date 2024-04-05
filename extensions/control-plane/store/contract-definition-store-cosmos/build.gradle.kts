@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     testImplementation(libs.edc.spi.contract)
-    testImplementation(libs.edc.util)
+    testImplementation(libs.edc.lib.util)
 
     implementation(libs.failsafe.core)
 

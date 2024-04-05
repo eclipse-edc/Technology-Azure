@@ -21,7 +21,7 @@ dependencies {
     api(libs.edc.controlplane.spi)
     implementation(libs.azure.storageblob)
     implementation(libs.azure.identity)
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
 
     testFixturesApi(libs.edc.core.dataPlane.util)
 

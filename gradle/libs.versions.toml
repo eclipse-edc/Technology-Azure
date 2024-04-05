@@ -77,8 +77,11 @@ edc-spi-asset = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
 edc-transfer-dataplane = { module = "org.eclipse.edc:transfer-data-plane", version.ref = "edc" }
 edc-transfer-httppull-receiver = { module = "org.eclipse.edc:transfer-pull-http-receiver", version.ref = "edc" }
 edc-transfer-httppull-receiver-dynamic = { module = "org.eclipse.edc:transfer-pull-http-dynamic-receiver", version.ref = "edc" }
-edc-util = { module = "org.eclipse.edc:util", version.ref = "edc" }
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
+
+# EDC libs
+edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
+
 
 # EDC dependencies for testing
 edc-sql-core = { module = "org.eclipse.edc:sql-core", version.ref = "edc" }

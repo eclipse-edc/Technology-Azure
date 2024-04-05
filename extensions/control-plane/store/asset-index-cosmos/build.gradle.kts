@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     api(libs.edc.spi.core)
-    api(libs.edc.util)
+    api(libs.edc.lib.util)
     implementation(libs.failsafe.core)
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))

@@ -16,6 +16,7 @@ package org.eclipse.edc.registration.store.cosmos;
 
 import org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension;
 import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.registration.spi.model.Participant;
 import org.eclipse.edc.registration.store.spi.ParticipantStore;
 import org.eclipse.edc.registration.store.spi.ParticipantStoreTestBase;
@@ -23,7 +24,6 @@ import org.eclipse.edc.registration.store.sql.SqlParticipantStore;
 import org.eclipse.edc.registration.store.sql.schema.ParticipantStatements;
 import org.eclipse.edc.registration.store.sql.schema.PostgresSqlParticipantStatements;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -61,7 +61,7 @@ class CosmosParticipantStoreIntegrationTest extends ParticipantStoreTestBase {
     void setUp(DataSourceRegistry reg, QueryExecutor queryExecutor, TransactionContext transactionContext, CosmosPostgresTestExtension.SqlHelper helper) {
         var statements = new PostgresSqlParticipantStatements();
 
-        var manager = new TypeManager();
+        var manager = new JacksonTypeManager();
         manager.registerTypes(Participant.class);
 
         store = new SqlParticipantStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, manager.getMapper(), statements, queryExecutor);

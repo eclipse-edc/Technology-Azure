@@ -22,8 +22,8 @@ import org.eclipse.edc.connector.controlplane.contract.spi.testfixtures.offer.st
 import org.eclipse.edc.connector.controlplane.store.sql.contractdefinition.SqlContractDefinitionStore;
 import org.eclipse.edc.connector.controlplane.store.sql.contractdefinition.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.controlplane.store.sql.contractdefinition.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -54,7 +54,7 @@ class CosmosContractDefinitionStoreTest extends ContractDefinitionStoreTestBase 
 
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
-        var typeManager = new TypeManager();
+        var typeManager = new JacksonTypeManager();
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
         sqlContractDefinitionStore = new SqlContractDefinitionStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, SQL_STATEMENTS, typeManager.getMapper(), queryExecutor);

@@ -20,8 +20,8 @@ import org.eclipse.edc.connector.controlplane.store.sql.transferprocess.store.Sq
 import org.eclipse.edc.connector.controlplane.store.sql.transferprocess.store.schema.postgres.PostgresDialectStatements;
 import org.eclipse.edc.connector.controlplane.transfer.spi.testfixtures.store.TestFunctions;
 import org.eclipse.edc.connector.controlplane.transfer.spi.testfixtures.store.TransferProcessStoreTestBase;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
@@ -60,7 +60,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     @BeforeEach
     void setUp(DataSourceRegistry reg, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSource datasource) {
 
-        var typeManager = new TypeManager();
+        var typeManager = new JacksonTypeManager();
         typeManager.registerTypes(TestFunctions.TestResourceDef.class, TestFunctions.TestProvisionedResource.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 

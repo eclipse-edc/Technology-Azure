@@ -26,6 +26,7 @@ import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamFailure;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -59,7 +60,7 @@ class AzureDataFactoryTransferManagerTest {
     private final DataFactoryClient client = mock(DataFactoryClient.class);
     private final DataFactoryPipelineFactory pipelineFactory = mock(DataFactoryPipelineFactory.class);
     private final BlobStoreApi blobStoreApi = mock(BlobStoreApi.class);
-    private final TypeManager typeManager = new TypeManager();
+    private final TypeManager typeManager = new JacksonTypeManager();
     private final KeyVaultClient keyVaultClient = mock(KeyVaultClient.class);
     private final KeyVaultSecret keyVaultSecret = mock(KeyVaultSecret.class);
     private final BlobAdapter blobAdapter = mock(BlobAdapter.class);

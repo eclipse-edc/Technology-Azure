@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     implementation(libs.edc.core.dataPlane.util)
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
     implementation(libs.azure.identity)
     implementation(libs.azure.resourcemanager)
     implementation(libs.azure.resourcemanager.authorization)

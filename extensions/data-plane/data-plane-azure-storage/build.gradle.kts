@@ -21,7 +21,7 @@ dependencies {
     api(libs.edc.core.dataPlane.util)
     api(libs.edc.spi.dataplane)
     implementation(libs.edc.core.dataPlane.util)
-    implementation(libs.edc.util)
+    implementation(libs.edc.lib.util)
 
     implementation(libs.azure.storageblob)
     implementation(libs.failsafe.core)

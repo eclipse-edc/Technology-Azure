@@ -22,13 +22,13 @@ import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.connector.dataplane.store.sql.SqlDataPlaneStore;
 import org.eclipse.edc.connector.dataplane.store.sql.schema.postgres.PostgresDataPlaneStatements;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.assertions.AbstractResultAssert;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.entity.Entity;
 import org.eclipse.edc.spi.entity.MutableEntity;
 import org.eclipse.edc.spi.entity.StatefulEntity;
 import org.eclipse.edc.spi.result.StoreFailure;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
@@ -84,7 +84,7 @@ public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
 
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, DataSourceRegistry reg, CosmosPostgresTestExtension.SqlHelper helper) {
-        var typeManager = new TypeManager();
+        var typeManager = new JacksonTypeManager();
         typeManager.registerTypes(DataPlaneInstance.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
         leaseUtil = new LeaseUtil(transactionContext, helper.connectionSupplier(), STATEMENTS, clock);

@@ -19,15 +19,18 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
-import org.eclipse.edc.connector.transfer.spi.types.ProvisionedDataDestinationResource;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedDataDestinationResource;
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
-import static org.eclipse.edc.spi.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 @JsonDeserialize(builder = ObjectContainerProvisionedResource.Builder.class)
 @JsonTypeName("dataspaceconnector:objectcontainerprovisionedresource")
 public class ObjectContainerProvisionedResource extends ProvisionedDataDestinationResource {
+
+    private ObjectContainerProvisionedResource() {
+    }
 
     public String getAccountName() {
         return getDataAddress().getStringProperty(ACCOUNT_NAME);
@@ -35,9 +38,6 @@ public class ObjectContainerProvisionedResource extends ProvisionedDataDestinati
 
     public String getContainerName() {
         return getDataAddress().getStringProperty(CONTAINER_NAME);
-    }
-
-    private ObjectContainerProvisionedResource() {
     }
 
     @JsonPOJOBuilder(withPrefix = "")

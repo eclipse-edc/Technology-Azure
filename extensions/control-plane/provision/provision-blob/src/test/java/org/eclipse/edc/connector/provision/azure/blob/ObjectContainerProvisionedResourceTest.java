@@ -15,6 +15,7 @@
 package org.eclipse.edc.connector.provision.azure.blob;
 
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 class ObjectContainerProvisionedResourceTest {
 
     private ObjectContainerProvisionedResource resource;
-    private final TypeManager typeManager = new TypeManager();
+    private final TypeManager typeManager = new JacksonTypeManager();
 
     @BeforeEach
     void setUp() {

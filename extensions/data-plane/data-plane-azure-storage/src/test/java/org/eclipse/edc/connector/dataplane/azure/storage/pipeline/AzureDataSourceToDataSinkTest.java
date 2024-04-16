@@ -24,6 +24,7 @@ import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataPr
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -62,7 +63,13 @@ class AzureDataSourceToDataSinkTest {
     private final String sinkAccountName = AzureStorageTestFixtures.createAccountName();
     private final String sinkContainerName = AzureStorageTestFixtures.createContainerName();
     private final String sinkSharedAccessSignature = AzureStorageTestFixtures.createSharedAccessSignature();
+    private final DestinationBlobName destinationBlobName = mock(DestinationBlobName.class);
 
+    @BeforeEach
+    void setUp() {
+        when(destinationBlobName.resolve(fakeSource.name, 1)).thenReturn(fakeSource.name);
+    }
+    
     /**
      * Verifies a sink is able to pull data from the source without exceptions if both endpoints are functioning.
      */
@@ -105,7 +112,6 @@ class AzureDataSourceToDataSinkTest {
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
-        var destinationBlobName = new DestinationBlobName(fakeSource.name, "");
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -168,7 +174,6 @@ class AzureDataSourceToDataSinkTest {
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
-        var destinationBlobName = new DestinationBlobName(fakeSource.name, "");
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -225,7 +230,6 @@ class AzureDataSourceToDataSinkTest {
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
-        var destinationBlobName = new DestinationBlobName(fakeSource.name, "");
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)

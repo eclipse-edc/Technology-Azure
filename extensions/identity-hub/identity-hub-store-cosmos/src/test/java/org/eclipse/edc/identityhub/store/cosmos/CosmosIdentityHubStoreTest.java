@@ -20,7 +20,7 @@ import org.eclipse.edc.identityhub.store.spi.IdentityHubStore;
 import org.eclipse.edc.identityhub.store.spi.IdentityHubStoreTestBase;
 import org.eclipse.edc.identityhub.store.sql.SqlIdentityHubStore;
 import org.eclipse.edc.identityhub.store.sql.schema.BaseSqlIdentityHubStatements;
-import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -51,7 +51,7 @@ public class CosmosIdentityHubStoreTest extends IdentityHubStoreTestBase {
     @BeforeEach
     void setUp(TransactionContext transactionContext, DataSourceRegistry reg, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper) {
         var statements = new BaseSqlIdentityHubStatements();
-        var typeManager = new TypeManager();
+        var typeManager = new JacksonTypeManager();
 
         store = new SqlIdentityHubStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, statements, typeManager.getMapper(), queryExecutor);
         helper.truncateTable(STATEMENTS.getTable());

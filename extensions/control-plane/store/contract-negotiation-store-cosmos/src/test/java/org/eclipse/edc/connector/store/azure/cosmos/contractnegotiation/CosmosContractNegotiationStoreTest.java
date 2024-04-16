@@ -21,8 +21,8 @@ import org.eclipse.edc.connector.controlplane.contract.spi.testfixtures.negotiat
 import org.eclipse.edc.connector.controlplane.store.sql.contractnegotiation.store.SqlContractNegotiationStore;
 import org.eclipse.edc.connector.controlplane.store.sql.contractnegotiation.store.schema.BaseSqlDialectStatements;
 import org.eclipse.edc.connector.controlplane.store.sql.contractnegotiation.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
@@ -65,7 +65,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     @BeforeEach
     void setUp(DataSource dataSource, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
         var statements = new PostgresDialectStatements();
-        var manager = new TypeManager();
+        var manager = new JacksonTypeManager();
 
         manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 

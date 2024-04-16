@@ -16,6 +16,7 @@ package org.eclipse.edc.connector.dataplane.azure.datafactory;
 
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
 import org.eclipse.edc.azure.blob.AzureSasToken;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.when;
 class DataFactoryPipelineFactoryTest {
 
     private final DataFactoryClient client = mock(DataFactoryClient.class, RETURNS_DEEP_STUBS);
-    private final TypeManager typeManager = new TypeManager();
+    private final TypeManager typeManager = new JacksonTypeManager();
     private final KeyVaultClient keyVaultClient = mock(KeyVaultClient.class);
     private final AzureSasToken azureSasToken = new AzureSasToken("test-wo-sas", new Random().nextLong());
     private final KeyVaultSecret writeOnlySasSecret = new KeyVaultSecret("wo-sas-name", typeManager.writeValueAsString(azureSasToken));

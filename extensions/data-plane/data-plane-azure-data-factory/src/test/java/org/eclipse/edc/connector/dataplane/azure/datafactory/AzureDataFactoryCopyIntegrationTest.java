@@ -27,6 +27,7 @@ import org.eclipse.edc.azure.testfixtures.annotations.AzureDataFactoryIntegratio
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -76,7 +77,7 @@ class AzureDataFactoryCopyIntegrationTest {
     private static final List<Runnable> SECRET_CLEANUP = new ArrayList<>();
     private static Properties savedProperties;
     private final String blobName = createBlobName();
-    private final TypeManager typeManager = new TypeManager();
+    private final TypeManager typeManager = new JacksonTypeManager();
 
     @BeforeAll
     static void beforeAll() throws FileNotFoundException {

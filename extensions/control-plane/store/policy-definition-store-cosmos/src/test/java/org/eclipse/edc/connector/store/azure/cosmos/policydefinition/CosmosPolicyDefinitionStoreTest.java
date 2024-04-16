@@ -19,8 +19,8 @@ import org.eclipse.edc.azure.testfixtures.annotations.ParallelPostgresCosmosTest
 import org.eclipse.edc.connector.controlplane.policy.spi.testfixtures.store.PolicyDefinitionStoreTestBase;
 import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.SqlPolicyDefinitionStore;
 import org.eclipse.edc.connector.controlplane.store.sql.policydefinition.store.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
@@ -51,7 +51,7 @@ class CosmosPolicyDefinitionStoreTest extends PolicyDefinitionStoreTestBase {
 
     @BeforeEach
     void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSourceRegistry reg) {
-        var manager = new TypeManager();
+        var manager = new JacksonTypeManager();
 
         manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 

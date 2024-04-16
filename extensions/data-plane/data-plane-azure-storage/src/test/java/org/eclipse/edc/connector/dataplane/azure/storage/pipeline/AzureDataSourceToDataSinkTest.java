@@ -19,6 +19,7 @@ import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures;
+import org.eclipse.edc.connector.dataplane.azure.storage.DestinationBlobName;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -104,6 +105,7 @@ class AzureDataSourceToDataSinkTest {
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var destinationBlobName = new DestinationBlobName(fakeSource.name, "");
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -115,6 +117,7 @@ class AzureDataSourceToDataSinkTest {
                 .monitor(monitor)
                 .request(request)
                 .metadataProvider(metadataProvider)
+                .destinationBlobName(destinationBlobName)
                 .build();
 
         assertThat(dataSink.transfer(dataSource)).succeedsWithin(500, TimeUnit.MILLISECONDS)
@@ -165,6 +168,7 @@ class AzureDataSourceToDataSinkTest {
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var destinationBlobName = new DestinationBlobName(fakeSource.name, "");
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -174,6 +178,7 @@ class AzureDataSourceToDataSinkTest {
                 .blobStoreApi(fakeSinkFactory)
                 .executorService(executor)
                 .metadataProvider(metadataProvider)
+                .destinationBlobName(destinationBlobName)
                 .request(request)
                 .monitor(monitor)
                 .build();
@@ -220,6 +225,7 @@ class AzureDataSourceToDataSinkTest {
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
+        var destinationBlobName = new DestinationBlobName(fakeSource.name, "");
 
         var dataSink = AzureStorageDataSink.Builder.newInstance()
                 .accountName(sinkAccountName)
@@ -229,6 +235,7 @@ class AzureDataSourceToDataSinkTest {
                 .blobStoreApi(blobApi)
                 .executorService(executor)
                 .metadataProvider(metadataProvider)
+                .destinationBlobName(destinationBlobName)
                 .request(request)
                 .monitor(monitor)
                 .build();

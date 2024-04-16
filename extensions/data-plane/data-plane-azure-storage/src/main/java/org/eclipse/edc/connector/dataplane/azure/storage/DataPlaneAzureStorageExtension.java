@@ -70,7 +70,6 @@ public class DataPlaneAzureStorageExtension implements ServiceExtension {
 
         var sourceFactory = new AzureStorageDataSourceFactory(blobStoreApi, retryPolicy, monitor, vault);
         pipelineService.registerFactory(sourceFactory);
-
         var sinkFactory = new AzureStorageDataSinkFactory(blobStoreApi, executorContainer.getExecutorService(), 5, monitor, vault, typeManager, metadataProvider);
         pipelineService.registerFactory(sinkFactory);
     }

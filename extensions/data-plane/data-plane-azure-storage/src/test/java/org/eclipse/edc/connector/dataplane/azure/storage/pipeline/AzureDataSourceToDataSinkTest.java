@@ -69,7 +69,7 @@ class AzureDataSourceToDataSinkTest {
     void setUp() {
         when(destinationBlobName.resolve(fakeSource.name, 1)).thenReturn(fakeSource.name);
     }
-    
+
     /**
      * Verifies a sink is able to pull data from the source without exceptions if both endpoints are functioning.
      */

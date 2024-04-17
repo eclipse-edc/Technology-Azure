@@ -14,15 +14,20 @@
 
 package org.eclipse.edc.vault.azure;
 
+import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +36,8 @@ public class AzureVaultExtensionTest {
 
     private static final String VAULT_NAME = "aVault";
     private static final String VAULT_NAME_SETTING = "edc.vault.name";
+    private static final String VAULT_NAME_OVERRIDE_SETTING = "edc.vault.override";
+    private static final String VAULT_NAME_OVERRIDE_UNSAFE_SETTING = "edc.vault.override.unsafe";
 
 
     @Test
@@ -44,5 +51,41 @@ public class AzureVaultExtensionTest {
         verify(context, atLeastOnce()).getConfig();
         verify(cfg).getString(VAULT_NAME_SETTING);
 
+    }
+
+    @Test
+    void createCustomVault_whenConfiguredWithOverride_shouldNotBeUnsafeByDefault(
+            AzureVaultExtension extension,
+            ServiceExtensionContext context
+    ) {
+        var builder = spy(new SecretClientBuilder());
+        Config cfg = mock();
+        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
+        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(false);
+        when(context.getConfig()).thenReturn(cfg);
+
+        extension.createCustomVault(cfg, builder);
+        verify(context, atLeastOnce()).getConfig();
+        verify(cfg).getString(VAULT_NAME_OVERRIDE_SETTING);
+        verify(cfg).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
+        verify(builder, never()).disableChallengeResourceVerification();
+    }
+
+    @Test
+    void createCustomVault_whenConfiguredWithUnsafeOverride_shouldUseAnyValue(
+            AzureVaultExtension extension,
+            ServiceExtensionContext context
+    ) {
+        var builder = spy(new SecretClientBuilder());
+        Config cfg = mock();
+        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
+        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(true);
+        when(context.getConfig()).thenReturn(cfg);
+
+        extension.createCustomVault(cfg, builder);
+        verify(context, atLeastOnce()).getConfig();
+        verify(cfg).getString(VAULT_NAME_OVERRIDE_SETTING);
+        verify(cfg, atLeastOnce()).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
+        verify(builder).disableChallengeResourceVerification();
     }
 }

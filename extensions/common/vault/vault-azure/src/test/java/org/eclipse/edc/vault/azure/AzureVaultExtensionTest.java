@@ -58,10 +58,11 @@ public class AzureVaultExtensionTest {
             ServiceExtensionContext context
     ) {
         var builder = spy(new SecretClientBuilder());
-        Config cfg = mockConfiguration(context, false);
+        Config cfg = mockConfiguration(context);
+        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(false);
 
         extension.createCustomVault(cfg, builder);
-        assertConfigUsage(context, cfg);
+        assertConfigUsageForCustomVault(context, cfg);
         verify(builder, never()).disableChallengeResourceVerification();
     }
 
@@ -71,25 +72,26 @@ public class AzureVaultExtensionTest {
             ServiceExtensionContext context
     ) {
         var builder = spy(new SecretClientBuilder());
-        Config cfg = mockConfiguration(context, true);
+        Config cfg = mockConfiguration(context);
+        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(true);
 
         extension.createCustomVault(cfg, builder);
-        assertConfigUsage(context, cfg);
+        assertConfigUsageForCustomVault(context, cfg);
         verify(builder).disableChallengeResourceVerification();
     }
 
     @NotNull
-    private static Config mockConfiguration(ServiceExtensionContext context, boolean unsafe) {
+    private static Config mockConfiguration(ServiceExtensionContext context) {
         Config cfg = mock();
         when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
-        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(unsafe);
         when(context.getConfig()).thenReturn(cfg);
         return cfg;
     }
 
-    private static void assertConfigUsage(ServiceExtensionContext context, Config cfg) {
+    private static void assertConfigUsageForCustomVault(ServiceExtensionContext context, Config cfg) {
         verify(context, atLeastOnce()).getConfig();
         verify(cfg, atLeastOnce()).getString(VAULT_NAME_OVERRIDE_SETTING);
         verify(cfg, atLeastOnce()).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
+        verify(cfg, never()).getString(VAULT_NAME);
     }
 }

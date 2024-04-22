@@ -14,9 +14,7 @@
 
 package org.eclipse.edc.vault.azure;
 
-import com.azure.core.annotation.ServiceClientBuilder;
 import com.azure.identity.DefaultAzureCredentialBuilder;
-import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -56,16 +54,15 @@ public class AzureVaultExtension implements ServiceExtension {
         Config config = context.getConfig();
         var override = config.getString(VAULT_OVERRIDE);
 
-        if (override != null && !override.isEmpty()) {
+        if (override != null && !override.trim().isEmpty()) {
             return createCustomVault(config, new SecretClientBuilder());
         } else {
-            return createVault(config);
+            return createDefaultVault(config);
         }
-
     }
 
     @NotNull
-    private AzureVault createVault(Config config) {
+    private AzureVault createDefaultVault(Config config) {
         var name = config.getString(VAULT_NAME);
         var credentials = new DefaultAzureCredentialBuilder().build();
         var client = new SecretClientBuilder()

@@ -16,14 +16,13 @@ package org.eclipse.edc.vault.azure;
 
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -59,15 +58,10 @@ public class AzureVaultExtensionTest {
             ServiceExtensionContext context
     ) {
         var builder = spy(new SecretClientBuilder());
-        Config cfg = mock();
-        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
-        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(false);
-        when(context.getConfig()).thenReturn(cfg);
+        Config cfg = mockConfiguration(context, false);
 
         extension.createCustomVault(cfg, builder);
-        verify(context, atLeastOnce()).getConfig();
-        verify(cfg).getString(VAULT_NAME_OVERRIDE_SETTING);
-        verify(cfg).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
+        assertConfigUsage(context, cfg);
         verify(builder, never()).disableChallengeResourceVerification();
     }
 
@@ -77,15 +71,25 @@ public class AzureVaultExtensionTest {
             ServiceExtensionContext context
     ) {
         var builder = spy(new SecretClientBuilder());
-        Config cfg = mock();
-        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
-        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(true);
-        when(context.getConfig()).thenReturn(cfg);
+        Config cfg = mockConfiguration(context, true);
 
         extension.createCustomVault(cfg, builder);
-        verify(context, atLeastOnce()).getConfig();
-        verify(cfg).getString(VAULT_NAME_OVERRIDE_SETTING);
-        verify(cfg, atLeastOnce()).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
+        assertConfigUsage(context, cfg);
         verify(builder).disableChallengeResourceVerification();
+    }
+
+    @NotNull
+    private static Config mockConfiguration(ServiceExtensionContext context, boolean unsafe) {
+        Config cfg = mock();
+        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
+        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(unsafe);
+        when(context.getConfig()).thenReturn(cfg);
+        return cfg;
+    }
+
+    private static void assertConfigUsage(ServiceExtensionContext context, Config cfg) {
+        verify(context, atLeastOnce()).getConfig();
+        verify(cfg, atLeastOnce()).getString(VAULT_NAME_OVERRIDE_SETTING);
+        verify(cfg, atLeastOnce()).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
     }
 }

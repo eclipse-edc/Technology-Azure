@@ -74,8 +74,7 @@ public class AzureVaultExtensionTest {
     }
 
     @Test
-    void createCustomVault_whenConfiguredWithUnsafeOverride_shouldUseAnyValue(
-            AzureVaultExtension extension, ServiceExtensionContext context) {
+    void createCustomVault_whenConfiguredWithUnsafeOverride_shouldUseAnyValue(AzureVaultExtension extension, ServiceExtensionContext context) {
         var builder = spy(new SecretClientBuilder());
         var cfg = mockConfiguration(context);
         when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(true);

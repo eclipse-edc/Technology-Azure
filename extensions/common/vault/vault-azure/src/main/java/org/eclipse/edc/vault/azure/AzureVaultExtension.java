@@ -35,7 +35,7 @@ public class AzureVaultExtension implements ServiceExtension {
     @Setting("Name of the Azure Vault")
     private static final String VAULT_NAME = "edc.vault.name";
 
-    @Setting("If non blank, ignore edc.vault.name and use this value as an Azure vault.")
+    @Setting("If non blank, ignore " + VAULT_NAME + " and use this value as an Azure vault.")
     private static final String VAULT_OVERRIDE = "edc.vault.override";
 
     @Setting(value = "If true, allow the usage of non-azure domains for the vault.", type = "boolean")

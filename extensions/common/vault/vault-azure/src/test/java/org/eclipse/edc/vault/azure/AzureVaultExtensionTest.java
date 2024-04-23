@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Amadeus - initial API and implementation
+ *       sovity - Add custom Azure vault settings
  *
  */
 

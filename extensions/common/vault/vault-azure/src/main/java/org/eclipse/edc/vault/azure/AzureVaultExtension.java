@@ -51,7 +51,7 @@ public class AzureVaultExtension implements ServiceExtension {
 
     @Provider
     public Vault createVault(ServiceExtensionContext context) {
-        Config config = context.getConfig();
+        var config = context.getConfig();
         var override = config.getString(VAULT_OVERRIDE);
 
         if (override != null && !override.trim().isEmpty()) {

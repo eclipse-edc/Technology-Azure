@@ -85,7 +85,7 @@ public class AzureVaultExtension implements ServiceExtension {
         var credentials = new DefaultAzureCredentialBuilder().build();
 
         try {
-            new URL(override);
+            new URL(override).toURI();
         } catch (MalformedURLException e) {
             throw new EdcException("Invalid URL '" + override + "' for setting key " + VAULT_URL_OVERRIDE, e);
         }

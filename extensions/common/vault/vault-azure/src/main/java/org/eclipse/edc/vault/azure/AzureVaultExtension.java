@@ -9,7 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
- *       sovity - Add custom Azure vault settings
+ *       sovity GmbH - Add custom Azure vault settings
  *
  */
 

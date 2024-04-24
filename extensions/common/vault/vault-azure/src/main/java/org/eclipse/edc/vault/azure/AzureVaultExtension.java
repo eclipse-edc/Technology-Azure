@@ -30,6 +30,7 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 @Extension(value = AzureVaultExtension.NAME)
@@ -86,7 +87,7 @@ public class AzureVaultExtension implements ServiceExtension {
 
         try {
             new URL(override).toURI();
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             throw new EdcException("Invalid URL '" + override + "' for setting key " + VAULT_URL_OVERRIDE, e);
         }
 

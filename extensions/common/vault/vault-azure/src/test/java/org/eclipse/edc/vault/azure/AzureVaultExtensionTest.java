@@ -57,7 +57,7 @@ public class AzureVaultExtensionTest {
     @Test
     void createVault_whenConfiguredWithInvalidUrl_shouldRefuseInvalidUrls(AzureVaultExtension extension, ServiceExtensionContext context) {
         Config cfg = mock();
-        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("not a valid URL");
+        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com/ ^> not an RFC 2396 compliant URL <^");
         when(context.getConfig()).thenReturn(cfg);
 
         Assertions.assertThrows(EdcException.class, () -> extension.createVault(context));

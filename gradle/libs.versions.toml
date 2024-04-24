@@ -116,7 +116,7 @@ azure-resourcemanager-authorization = { group = "com.azure.resourcemanager", nam
 azure-resourcemanager-datafactory = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-datafactory", version = "1.0.0-beta.24" }
 azure-resourcemanager-keyvault = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-keyvault", version.ref = "azure-rm" }
 azure-resourcemanager-storage = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-storage", version.ref = "azure-rm" }
-azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.25.2" }
+azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.25.4" }
 
 [bundles]
 

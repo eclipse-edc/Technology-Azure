@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 Microsoft Corporation
+ *  Copyright (c) 2024 BMW Corporation
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.connector.dataplane.azure.storage;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -22,49 +23,68 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DestinationBlobNameTest {
 
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, blobName,  null, 1, blobName",
-            "partName, blobName,  '', 1, blobName",
-    }, nullValues = { "null" })
-    void shouldReturnBlobName_whenFolderNameIsNullOrEmptyAndPartSizeIsEqualToOne(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldReturnBlobName_whenFolderNameIsEmptyAndPartSizeIsEqualToOne() {
 
+        String partName="partName", blobName = "blobName",folderName="",expected="blobName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
+    }
+    @Test
+    void shouldReturnBlobName_whenFolderNameIsNullAndPartSizeIsEqualToOne() {
+
+        String partName="partName", blobName = "blobName",folderName=null,expected="blobName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, blobName,  null, 2, partName",
-            "partName, blobName,  '', 2, partName",
-    }, nullValues = { "null" })
-    void shouldReturnPartName_whenFolderNameIsNullOrEmptyAndPartSizeIsGraterThanOne(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldReturnPartName_whenFolderNameIsEmptyAndPartSizeIsGraterThanOne() {
 
+        String partName="partName", blobName = "blobName",folderName="",expected="partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, null, folderName, 1, folderName/partName",
-            "partName, ''  , folderName, 1,  folderName/partName",
+    @Test
+    void shouldReturnPartName_whenFolderNameIsNullAndPartSizeIsGraterThanOne() {
 
-    }, nullValues = { "null" })
-    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNullOrEmpty(String partName, String blobName, String folderName, int partSize, String expected) {
-
+        String partName="partName", blobName = "blobName",folderName=null,expected="partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, null, folderName/, 1, folderName/partName",
-            "partName, ''  , folderName/, 1, folderName/partName",
-    }, nullValues = { "null" })
-    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNullOrEmptyAndFolderNameEndsWithSlash(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsEmpty() {
 
+        String partName="partName", blobName = "",folderName="folderName",expected="folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNull() {
+
+        String partName="partName", blobName = null,folderName="folderName",expected="folderName/partName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNullAndFolderNameEndsWithSlash() {
+
+        String partName="partName", blobName = null,folderName="folderName/",expected="folderName/partName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
+    }
+
+
+    @Test
+    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsEmptyAndFolderNameEndsWithSlash() {
+
+        String partName="partName", blobName = "",folderName="folderName/",expected="folderName/partName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -80,43 +100,35 @@ public class DestinationBlobNameTest {
         assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, blobName, folderName, 1, folderName/blobName",
-    }, nullValues = { "null" })
-    void shouldAppendFolderNameWithBlobNameUsingSlash_whenPartSizeEqualsOne(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldAppendFolderNameWithBlobNameUsingSlash_whenPartSizeEqualsOne() {
 
+        String partName = "partName", blobName="blobName", folderName="folderName", expected="folderName/blobName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, blobName,  folderName/, 1,  folderName/blobName",
-    }, nullValues = { "null" })
-    void shouldAppendFolderNameWithBlobNameUsingSlash_whenPartSizeEqualsOneAndFolderNameEndsWithSlash(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldAppendFolderNameWithBlobNameUsingSlash_whenPartSizeEqualsOneAndFolderNameEndsWithSlash() {
 
+        String partName = "partName", blobName="blobName", folderName="folderName/", expected="folderName/blobName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, blobName, folderName, 2, folderName/partName",
-    }, nullValues = { "null" })
-    void shouldAppendFolderNameWithPartNameUsingSlash_whenPartSizeIsGraterThanOne(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldAppendFolderNameWithPartNameUsingSlash_whenPartSizeIsGraterThanOne() {
 
+        String partName = "partName", blobName="blobName", folderName="folderName", expected="folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, blobName,  folderName/, 2,  folderName/partName",
-    }, nullValues = { "null" })
-    void shouldAppendFolderNameWithPartNameUsingSlash_whenPartSizeIsGraterThanOneAndFolderNameEndsWithSlash(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldAppendFolderNameWithPartNameUsingSlash_whenPartSizeIsGraterThanOneAndFolderNameEndsWithSlash() {
 
+        String partName = "partName", blobName="blobName", folderName="folderName", expected="folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 }

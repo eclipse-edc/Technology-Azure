@@ -15,10 +15,9 @@
 package org.eclipse.edc.connector.dataplane.azure.storage;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class DestinationBlobNameTest {
 
@@ -34,16 +33,6 @@ public class DestinationBlobNameTest {
     }
 
     @Test
-    void shouldReturnBlobName_whenFolderNameIsNullAndPartSizeIsEqualToOne() {
-
-        var partName = "partName";
-        var blobName = "blobName";
-        var expected = "blobName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, null);
-        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
-    }
-
-    @Test
     void shouldReturnPartName_whenFolderNameIsEmptyAndPartSizeIsGraterThanOne() {
 
         var partName = "partName";
@@ -55,16 +44,6 @@ public class DestinationBlobNameTest {
     }
 
     @Test
-    void shouldReturnPartName_whenFolderNameIsNullAndPartSizeIsGraterThanOne() {
-
-        var partName = "partName";
-        var blobName = "blobName";
-        var expected = "partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, null);
-        assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
-    }
-
-    @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsEmpty() {
 
         var partName = "partName";
@@ -72,26 +51,6 @@ public class DestinationBlobNameTest {
         var folderName = "folderName";
         var expected = "folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNull() {
-
-        var partName = "partName";
-        var folderName = "folderName";
-        var expected = "folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(null, folderName);
-        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNullAndFolderNameEndsWithSlash() {
-
-        var partName = "partName";
-        var folderName = "folderName/";
-        var expected = "folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(null, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -107,17 +66,15 @@ public class DestinationBlobNameTest {
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "partName, '',   '', 1, partName",
-            "partName, null,   null, 1, partName",
-            "partName, null,   '', 1, partName",
-            "partName, '',   null, 1, partName",
-    }, nullValues = { "null" })
-    void shouldUsePartName_whenBothBlobNameAndFolderNameIsNullOrEmpty(String partName, String blobName, String folderName, int partSize, String expected) {
+    @Test
+    void shouldUsePartName_whenBothBlobNameAndFolderNameIsEmpty() {
 
+        var partName = "partName";
+        var blobName = "";
+        var folderName = "";
+        var expected = "partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThat(destinationBlobName.resolve(partName, partSize)).isEqualTo(expected);
+        assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
     @Test
@@ -162,5 +119,16 @@ public class DestinationBlobNameTest {
         var expected = "folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldThrowAnException_whenPartNameAndBlobNameIsEmpty() {
+
+        var partName = "";
+        var blobName = "";
+        var folderName = "folderName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> destinationBlobName.resolve(partName, 1));
     }
 }

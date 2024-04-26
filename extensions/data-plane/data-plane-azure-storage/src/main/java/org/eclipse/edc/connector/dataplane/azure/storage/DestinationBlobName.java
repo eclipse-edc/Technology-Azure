@@ -16,6 +16,9 @@ package org.eclipse.edc.connector.dataplane.azure.storage;
 
 import org.eclipse.edc.util.string.StringUtils;
 
+/**
+ * Utility class responsible for determining the name under which a file will be saved.
+ */
 public class DestinationBlobName {
 
     private final String folderName;
@@ -27,6 +30,13 @@ public class DestinationBlobName {
         this.folderName = folderName;
     }
 
+    /**
+     * Resolves the name under which a resource should be saved based on its part name and size.
+     *
+     * @param partName The name of the resource part.
+     * @param partsSize The size of the resource part.
+     * @return A String representing the resolved name for the resource.
+     */
     public String resolve(String partName, int partsSize) {
 
         var name = (partsSize == 1 && !StringUtils.isNullOrEmpty(this.blobName)) ? this.blobName : partName;

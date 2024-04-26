@@ -40,8 +40,6 @@ public class AzureStorageDataSink extends ParallelSink {
     private final List<String> completedFiles = new ArrayList<>();
     private String accountName;
     private String containerName;
-    private String folderName;
-    private String blobName;
     private String sharedAccessSignature;
     private BlobStoreApi blobStoreApi;
     private DataFlowStartMessage request;
@@ -130,16 +128,6 @@ public class AzureStorageDataSink extends ParallelSink {
 
         public Builder containerName(String containerName) {
             sink.containerName = containerName;
-            return this;
-        }
-
-        public Builder folderName(String folderName) {
-            sink.folderName = folderName;
-            return this;
-        }
-
-        public Builder blobName(String blobName) {
-            sink.blobName = blobName;
             return this;
         }
 

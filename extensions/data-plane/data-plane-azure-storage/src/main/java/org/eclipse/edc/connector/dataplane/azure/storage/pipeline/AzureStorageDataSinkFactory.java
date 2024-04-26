@@ -81,14 +81,12 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         var token = typeManager.readValue(secret, AzureSasToken.class);
         var folderName = dataAddress.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME);
         var blobName = dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME);
-        var destinationBlobName = new DestinationBlobName(blobName, blobName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
 
         return AzureStorageDataSink.Builder.newInstance()
                 .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
                 .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
                 .destinationBlobName(destinationBlobName)
-                .folderName(folderName)
-                .blobName(blobName)
                 .sharedAccessSignature(token.getSas())
                 .requestId(requestId)
                 .partitionSize(partitionSize)

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 BMW Corporation
+ *  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Marco Primo
+ *       Marco Pirmo (BMW AG)
  *
  */
 
@@ -22,26 +22,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DestinationBlobNameTest {
 
-
     @Test
     void shouldReturnBlobName_whenFolderNameIsEmptyAndPartSizeIsEqualToOne() {
 
-        String partName="partName", blobName = "blobName",folderName="",expected="blobName";
+        var partName = "partName";
+        var blobName = "blobName";
+        var folderName = "";
+        var expected = "blobName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
+
     @Test
     void shouldReturnBlobName_whenFolderNameIsNullAndPartSizeIsEqualToOne() {
 
-        String partName="partName", blobName = "blobName",folderName=null,expected="blobName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var partName = "partName";
+        var blobName = "blobName";
+        var expected = "blobName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, null);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
     @Test
     void shouldReturnPartName_whenFolderNameIsEmptyAndPartSizeIsGraterThanOne() {
 
-        String partName="partName", blobName = "blobName",folderName="",expected="partName";
+        var partName = "partName";
+        var blobName = "blobName";
+        var folderName = "";
+        var expected = "partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
@@ -49,15 +57,20 @@ public class DestinationBlobNameTest {
     @Test
     void shouldReturnPartName_whenFolderNameIsNullAndPartSizeIsGraterThanOne() {
 
-        String partName="partName", blobName = "blobName",folderName=null,expected="partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var partName = "partName";
+        var blobName = "blobName";
+        var expected = "partName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, null);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
     @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsEmpty() {
 
-        String partName="partName", blobName = "",folderName="folderName",expected="folderName/partName";
+        var partName = "partName";
+        var blobName = "";
+        var folderName = "folderName";
+        var expected = "folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
@@ -65,16 +78,20 @@ public class DestinationBlobNameTest {
     @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNull() {
 
-        String partName="partName", blobName = null,folderName="folderName",expected="folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var partName = "partName";
+        var folderName = "folderName";
+        var expected = "folderName/partName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(null, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
     @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsNullAndFolderNameEndsWithSlash() {
 
-        String partName="partName", blobName = null,folderName="folderName/",expected="folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var partName = "partName";
+        var folderName = "folderName/";
+        var expected = "folderName/partName";
+        DestinationBlobName destinationBlobName = new DestinationBlobName(null, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -82,7 +99,10 @@ public class DestinationBlobNameTest {
     @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenBlobNameIsEmptyAndFolderNameEndsWithSlash() {
 
-        String partName="partName", blobName = "",folderName="folderName/",expected="folderName/partName";
+        var partName = "partName";
+        var blobName = "";
+        var folderName = "folderName/";
+        var expected = "folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
@@ -103,7 +123,10 @@ public class DestinationBlobNameTest {
     @Test
     void shouldAppendFolderNameWithBlobNameUsingSlash_whenPartSizeEqualsOne() {
 
-        String partName = "partName", blobName="blobName", folderName="folderName", expected="folderName/blobName";
+        var partName = "partName";
+        var blobName = "blobName";
+        var folderName = "folderName";
+        var expected = "folderName/blobName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
@@ -111,7 +134,10 @@ public class DestinationBlobNameTest {
     @Test
     void shouldAppendFolderNameWithBlobNameUsingSlash_whenPartSizeEqualsOneAndFolderNameEndsWithSlash() {
 
-        String partName = "partName", blobName="blobName", folderName="folderName/", expected="folderName/blobName";
+        var partName = "partName";
+        var blobName = "blobName";
+        var folderName = "folderName/";
+        var expected = "folderName/blobName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
@@ -119,7 +145,10 @@ public class DestinationBlobNameTest {
     @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenPartSizeIsGraterThanOne() {
 
-        String partName = "partName", blobName="blobName", folderName="folderName", expected="folderName/partName";
+        var partName = "partName";
+        var blobName = "blobName";
+        var folderName = "folderName";
+        var expected = "folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
@@ -127,7 +156,10 @@ public class DestinationBlobNameTest {
     @Test
     void shouldAppendFolderNameWithPartNameUsingSlash_whenPartSizeIsGraterThanOneAndFolderNameEndsWithSlash() {
 
-        String partName = "partName", blobName="blobName", folderName="folderName", expected="folderName/partName";
+        var partName = "partName";
+        var blobName = "blobName";
+        var folderName = "folderName";
+        var expected = "folderName/partName";
         DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }

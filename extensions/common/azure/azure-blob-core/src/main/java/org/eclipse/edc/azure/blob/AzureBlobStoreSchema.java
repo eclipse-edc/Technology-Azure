@@ -28,6 +28,7 @@ public class AzureBlobStoreSchema {
     public static final String BLOB_PREFIX = "blobPrefix";
     public static final String FOLDER_NAME = "folderName";
     public static final String CORRELATION_ID = "correlationId";
+    
     private AzureBlobStoreSchema() {
     }
 }

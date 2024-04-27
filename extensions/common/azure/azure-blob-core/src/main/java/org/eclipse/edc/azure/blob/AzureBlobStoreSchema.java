@@ -20,14 +20,14 @@ package org.eclipse.edc.azure.blob;
  */
 public class AzureBlobStoreSchema {
 
-    private AzureBlobStoreSchema() {
-    }
-
     public static final String TYPE = "AzureStorage";
+    public static final String TRANSFERTYPE_PUSH = TYPE + "-PUSH";
     public static final String CONTAINER_NAME = "container";
     public static final String ACCOUNT_NAME = "account";
     public static final String BLOB_NAME = "blobName";
     public static final String BLOB_PREFIX = "blobPrefix";
     public static final String FOLDER_NAME = "folderName";
     public static final String CORRELATION_ID = "correlationId";
+    private AzureBlobStoreSchema() {
+    }
 }

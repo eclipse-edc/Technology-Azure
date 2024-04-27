@@ -86,7 +86,11 @@ public class BlobTransferParticipant extends Participant {
                         .add(AzureBlobStoreSchema.ACCOUNT_NAME, accountName))
                 .build();
 
-        return super.requestAsset(provider, assetId, createObjectBuilder().build(), destination);
+        return this.requestAssetFrom(assetId, provider)
+                .withPrivateProperties(createObjectBuilder().build())
+                .withDestination(destination)
+                .withTransferType(AzureBlobStoreSchema.TRANSFERTYPE_PUSH)
+                .execute();
     }
 
     public static final class Builder extends Participant.Builder<BlobTransferParticipant, Builder> {

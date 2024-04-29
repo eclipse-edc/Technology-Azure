@@ -17,7 +17,6 @@ package org.eclipse.edc.connector.dataplane.azure.storage;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class DestinationBlobNameTest {
 
@@ -121,14 +120,4 @@ public class DestinationBlobNameTest {
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
-    @Test
-    void shouldThrowAnException_whenPartNameAndBlobNameIsEmpty() {
-
-        var partName = "";
-        var blobName = "";
-        var folderName = "folderName";
-        var destinationBlobName = new DestinationBlobName(blobName, folderName);
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> destinationBlobName.resolve(partName, 1));
-    }
 }

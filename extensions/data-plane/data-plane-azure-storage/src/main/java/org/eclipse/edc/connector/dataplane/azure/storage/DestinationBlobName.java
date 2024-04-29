@@ -23,8 +23,6 @@ public class DestinationBlobName {
 
     private final String folderName;
     private final String blobName;
-    private static final String PARTNAME_VALIDATION_MESSAGE = "partName cannot be null or blank when blobName is empty or not provided.";
-
 
     public DestinationBlobName(String blobName, String folderName) {
 
@@ -40,26 +38,21 @@ public class DestinationBlobName {
      * @return A String representing the resolved name for the resource.
      */
     public String resolve(String partName, int partsSize) {
-        var sb = new StringBuilder();
-        if (StringUtils.isNullOrBlank(blobName)) {
-            if (StringUtils.isNullOrBlank(partName)) {
-                throw new IllegalArgumentException(PARTNAME_VALIDATION_MESSAGE);
-            }
-        }
+        var name = "";
         if (!StringUtils.isNullOrBlank(folderName)) {
             if (folderName.endsWith("/")) {
-                sb.append(folderName);
+                name += folderName;
             } else {
-                sb.append(folderName).append("/");
+                name += folderName + "/";
             }
         }
         if (partsSize == 1 && !StringUtils.isNullOrBlank(blobName)) {
-            sb.append(blobName);
+            name += blobName;
         } else {
-            sb.append(partName);
+            name += partName;
         }
 
-        return sb.toString();
+        return name;
     }
 
 }

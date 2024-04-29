@@ -17,6 +17,7 @@ package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.azure.storage.DestinationBlobName;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
@@ -74,18 +75,18 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         }
 
         var dataAddress = request.getDestinationDataAddress();
-        var dataSourceAddress = request.getSourceDataAddress();
         var requestId = request.getId();
 
         var secret = vault.resolveSecret(dataAddress.getKeyName());
         var token = typeManager.readValue(secret, AzureSasToken.class);
+        var folderName = dataAddress.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME);
+        var blobName = dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
 
         return AzureStorageDataSink.Builder.newInstance()
                 .accountName(dataAddress.getStringProperty(ACCOUNT_NAME))
                 .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
-                .folderName(dataAddress.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME))
-                .blobName(dataAddress.getStringProperty(AzureBlobStoreSchema.BLOB_NAME))
-                .blobPrefix(dataSourceAddress.getStringProperty(BLOB_PREFIX))
+                .destinationBlobName(destinationBlobName)
                 .sharedAccessSignature(token.getSas())
                 .requestId(requestId)
                 .partitionSize(partitionSize)

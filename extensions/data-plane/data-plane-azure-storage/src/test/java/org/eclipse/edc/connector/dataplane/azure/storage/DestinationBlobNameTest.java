@@ -28,7 +28,7 @@ public class DestinationBlobNameTest {
         var blobName = "blobName";
         var folderName = "";
         var expected = "blobName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -39,7 +39,7 @@ public class DestinationBlobNameTest {
         var blobName = "blobName";
         var folderName = "";
         var expected = "partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
@@ -50,7 +50,7 @@ public class DestinationBlobNameTest {
         var blobName = "";
         var folderName = "folderName";
         var expected = "folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -62,7 +62,7 @@ public class DestinationBlobNameTest {
         var blobName = "";
         var folderName = "folderName/";
         var expected = "folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -73,7 +73,7 @@ public class DestinationBlobNameTest {
         var blobName = "";
         var folderName = "";
         var expected = "partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -84,7 +84,7 @@ public class DestinationBlobNameTest {
         var blobName = "blobName";
         var folderName = "folderName";
         var expected = "folderName/blobName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -95,7 +95,7 @@ public class DestinationBlobNameTest {
         var blobName = "blobName";
         var folderName = "folderName/";
         var expected = "folderName/blobName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 1)).isEqualTo(expected);
     }
 
@@ -106,7 +106,7 @@ public class DestinationBlobNameTest {
         var blobName = "blobName";
         var folderName = "folderName";
         var expected = "folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
@@ -117,7 +117,7 @@ public class DestinationBlobNameTest {
         var blobName = "blobName";
         var folderName = "folderName";
         var expected = "folderName/partName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThat(destinationBlobName.resolve(partName, 2)).isEqualTo(expected);
     }
 
@@ -127,7 +127,7 @@ public class DestinationBlobNameTest {
         var partName = "";
         var blobName = "";
         var folderName = "folderName";
-        DestinationBlobName destinationBlobName = new DestinationBlobName(blobName, folderName);
+        var destinationBlobName = new DestinationBlobName(blobName, folderName);
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> destinationBlobName.resolve(partName, 1));
     }

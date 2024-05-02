@@ -19,10 +19,12 @@ import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures;
+import org.eclipse.edc.connector.dataplane.azure.storage.DestinationBlobName;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -61,6 +63,12 @@ class AzureDataSourceToDataSinkTest {
     private final String sinkAccountName = AzureStorageTestFixtures.createAccountName();
     private final String sinkContainerName = AzureStorageTestFixtures.createContainerName();
     private final String sinkSharedAccessSignature = AzureStorageTestFixtures.createSharedAccessSignature();
+    private final DestinationBlobName destinationBlobName = mock(DestinationBlobName.class);
+
+    @BeforeEach
+    void setUp() {
+        when(destinationBlobName.resolve(fakeSource.name, 1)).thenReturn(fakeSource.name);
+    }
 
     /**
      * Verifies a sink is able to pull data from the source without exceptions if both endpoints are functioning.
@@ -115,6 +123,7 @@ class AzureDataSourceToDataSinkTest {
                 .monitor(monitor)
                 .request(request)
                 .metadataProvider(metadataProvider)
+                .destinationBlobName(destinationBlobName)
                 .build();
 
         assertThat(dataSink.transfer(dataSource)).succeedsWithin(500, TimeUnit.MILLISECONDS)
@@ -174,6 +183,7 @@ class AzureDataSourceToDataSinkTest {
                 .blobStoreApi(fakeSinkFactory)
                 .executorService(executor)
                 .metadataProvider(metadataProvider)
+                .destinationBlobName(destinationBlobName)
                 .request(request)
                 .monitor(monitor)
                 .build();
@@ -229,6 +239,7 @@ class AzureDataSourceToDataSinkTest {
                 .blobStoreApi(blobApi)
                 .executorService(executor)
                 .metadataProvider(metadataProvider)
+                .destinationBlobName(destinationBlobName)
                 .request(request)
                 .monitor(monitor)
                 .build();

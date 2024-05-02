@@ -39,6 +39,7 @@ import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.c
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createContainerName;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createSharedKey;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,6 +80,16 @@ class AzureStorageDataSourceTest {
             .blobStoreApi(blobStoreApi)
             .monitor(monitor)
             .build();
+
+    AzureStorageDataSource dataSourceFolderWithoutSharedKey = AzureStorageDataSource.Builder.newInstance()
+            .accountName(accountName)
+            .containerName(containerName)
+            .blobPrefix(blobPrefix)
+            .requestId(request.build().getId())
+            .retryPolicy(RetryPolicy.ofDefaults())
+            .blobStoreApi(blobStoreApi)
+            .monitor(monitor)
+            .build();
     BlobAdapter destination = mock();
     BlobItem blobItem = mock();
     ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes(UTF_8));
@@ -91,6 +102,11 @@ class AzureStorageDataSourceTest {
                 containerName,
                 blobName,
                 sharedKey))
+                .thenReturn(destination);
+        when(blobStoreApi.getBlobAdapter(
+                accountName,
+                containerName,
+                blobName))
                 .thenReturn(destination);
     }
 
@@ -105,11 +121,26 @@ class AzureStorageDataSourceTest {
         when(blobStoreApi.listContainerFolder(
                 accountName,
                 containerName,
-                blobPrefix))
+                blobPrefix,
+                sharedKey))
                 .thenReturn(List.of(blobItem));
         when(blobItem.getName()).thenReturn(blobName);
 
         var result = dataSourceFolder.openPartStream().getContent();
+        assertThat(result).map(DataSource.Part::openStream).containsExactly(input);
+    }
+
+    @Test
+    void openPartStreamBlobsWithoutSharedKey_succeeds() {
+        when(blobStoreApi.listContainerFolder(
+                accountName,
+                containerName,
+                blobPrefix,
+                null))
+                .thenReturn(List.of(blobItem));
+        when(blobItem.getName()).thenReturn(blobName);
+
+        var result = dataSourceFolderWithoutSharedKey.openPartStream().getContent();
         assertThat(result).map(DataSource.Part::openStream).containsExactly(input);
     }
 
@@ -126,5 +157,20 @@ class AzureStorageDataSourceTest {
                 .isThrownBy(() -> dataSource.openPartStream())
                 .withCause(exception);
         verify(monitor).severe(format("Error accessing blob %s on account %s", blobName, accountName), exception);
+    }
+
+    @Test
+    void openPartStream_whenEmptyFolderBlobs_fails() {
+        when(blobStoreApi.listContainerFolder(
+                accountName,
+                containerName,
+                blobPrefix,
+                sharedKey))
+                .thenReturn(List.of());
+        when(blobItem.getName()).thenReturn(blobName);
+
+        var result = dataSourceFolderWithoutSharedKey.openPartStream();
+        assertTrue(result.failed());
+        verify(monitor).severe(format("Error listing blobs in the container %s with prefix %s", containerName, blobPrefix));
     }
 }

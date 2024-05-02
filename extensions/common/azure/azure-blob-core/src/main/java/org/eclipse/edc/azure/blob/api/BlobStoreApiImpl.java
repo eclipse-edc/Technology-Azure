@@ -31,6 +31,7 @@ import com.azure.storage.common.sas.AccountSasSignatureValues;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.adapter.DefaultBlobAdapter;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.util.string.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -77,9 +78,9 @@ public class BlobStoreApiImpl implements BlobStoreApi {
     }
 
     @Override
-    public List<BlobItem> listContainerFolder(String accountName, String containerName, String directory) {
+    public List<BlobItem> listContainerFolder(String accountName, String containerName, String directory, String accountKey) {
         var options = new ListBlobsOptions().setPrefix(directory);
-        return getBlobServiceClient(accountName).getBlobContainerClient(containerName).listBlobs(options, null).stream().toList();
+        return getBlobServiceClient(accountName, accountKey).getBlobContainerClient(containerName).listBlobs(options, null).stream().toList();
     }
 
     @Override
@@ -105,25 +106,25 @@ public class BlobStoreApiImpl implements BlobStoreApi {
     }
 
     private BlobServiceClient getBlobServiceClient(String accountName) {
-        Objects.requireNonNull(accountName, "accountName");
-
-        if (cache.containsKey(accountName)) {
+        if (isAccountInCache(accountName)) {
             return cache.get(accountName);
         }
 
         var accountKey = vault.resolveSecret(accountName + "-key1");
-        var endpoint = createEndpoint(accountName);
 
-        var blobServiceClient = accountKey == null ?
-                new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build())
-                        .endpoint(endpoint)
-                        .buildClient() :
-                new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
-                        .endpoint(endpoint)
-                        .buildClient();
+        return saveAccount(accountName, accountKey);
+    }
 
-        cache.put(accountName, blobServiceClient);
-        return blobServiceClient;
+    private BlobServiceClient getBlobServiceClient(String accountName, String accountKey) {
+        if (StringUtils.isNullOrBlank(accountKey)) {
+            return getBlobServiceClient(accountName);
+        }
+
+        if (isAccountInCache(accountName)) {
+            return cache.get(accountName);
+        }
+
+        return saveAccount(accountName, accountKey);
     }
 
     private StorageSharedKeyCredential createCredential(String accountKey, String accountName) {
@@ -163,5 +164,25 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     private String createEndpoint(String accountName) {
         return String.format(blobstoreEndpointTemplate, accountName);
+    }
+
+    private boolean isAccountInCache(String accountName) {
+        Objects.requireNonNull(accountName, "accountName");
+        return cache.containsKey(accountName);
+    }
+
+    private BlobServiceClient saveAccount(String accountName, String accountKey) {
+        var endpoint = createEndpoint(accountName);
+
+        var blobServiceClient = accountKey == null ?
+                new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build())
+                        .endpoint(endpoint)
+                        .buildClient() :
+                new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
+                        .endpoint(endpoint)
+                        .buildClient();
+
+        cache.put(accountName, blobServiceClient);
+        return blobServiceClient;
     }
 }

@@ -41,9 +41,10 @@ public interface BlobStoreApi {
      * @param accountName The name of the storage account
      * @param containerName The name of the container within the storage account
      * @param directory The name of the folder within the container of the storage account
+     * @param accountKey The key of the storage account
      * @return Lazy loaded list of blobs from folder specified by the input parameters
      */
-    List<BlobItem> listContainerFolder(String accountName, String containerName, String directory);
+    List<BlobItem> listContainerFolder(String accountName, String containerName, String directory, String accountKey);
 
     void putBlob(String accountName, String containerName, String blobName, byte[] data);
 

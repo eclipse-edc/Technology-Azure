@@ -18,29 +18,21 @@ import com.azure.storage.blob.BlobServiceClient;
 
 public interface AccountCache {
 
-    /**
-     * Retrieve a cached account.
-     *
-     * @param accountName The name of the storage account
-     * @return The blob service client corresponding to the client to a storage account.
-     */
-    BlobServiceClient getAccount(String accountName);
 
     /**
-     * Confirms if account is stored in cache.
+     * Initially, confirms if account is stored in cache and, if so, returns it. If not, saves the account in cache and retrieves it.
      *
      * @param accountName The name of the storage account.
-     * @return true if account is saved, false otherwise.
-     */
-    boolean isAccountInCache(String accountName);
-
-    /**
-     * Saves the account in cache and retrieve.
-     *
-     * @param endpointTemplate endpoint base template for the store.
-     * @param accountName      The name of the storage account.
-     * @param accountKey       The key of the storage account
+     * @param accountKey  The key of the storage account
      * @return The blob service client corresponding to the client to a storage account.
      */
-    BlobServiceClient saveAccount(String endpointTemplate, String accountName, String accountKey);
+    BlobServiceClient getBlobServiceClient(String accountName, String accountKey);
+
+    /**
+     * Initially, confirms if account is stored in cache and, if so, returns it. If not, resolved the account key and saves the account in cache and retrieves it.
+     *
+     * @param accountName The name of the storage account.
+     * @return The blob service client corresponding to the client to a storage account.
+     */
+    BlobServiceClient getBlobServiceClient(String accountName);
 }

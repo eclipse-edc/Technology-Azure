@@ -14,15 +14,9 @@
 
 package org.eclipse.edc.azure.blob.utils;
 
-import com.azure.storage.common.StorageSharedKeyCredential;
-
 public class BlobStoreUtils {
 
     public static String createEndpoint(String endpointTemplate, String accountName) {
         return String.format(endpointTemplate, accountName);
-    }
-
-    public static StorageSharedKeyCredential createCredential(String accountKey, String accountName) {
-        return new StorageSharedKeyCredential(accountName, accountKey);
     }
 }

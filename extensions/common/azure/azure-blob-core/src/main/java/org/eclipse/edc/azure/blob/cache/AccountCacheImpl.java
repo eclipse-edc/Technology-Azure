@@ -17,39 +17,70 @@ package org.eclipse.edc.azure.blob.cache;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.util.string.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.eclipse.edc.azure.blob.utils.BlobStoreUtils.createCredential;
 import static org.eclipse.edc.azure.blob.utils.BlobStoreUtils.createEndpoint;
 
 public class AccountCacheImpl implements AccountCache {
 
-    private final Map<String, BlobServiceClient> cache = new HashMap<>();
+    private final Vault vault;
+    private final Map<String, BlobServiceClient> accountCache = new HashMap<>();
+    private final String endpointTemplate;
 
-    public BlobServiceClient getAccount(String accountName) {
-        return cache.get(accountName);
+    public AccountCacheImpl(Vault vault, String endpointTemplate) {
+        this.vault = vault;
+        this.endpointTemplate = endpointTemplate;
     }
 
-    public boolean isAccountInCache(String accountName) {
+    public BlobServiceClient getBlobServiceClient(String accountName) {
+        if (isAccountInCache(accountName)) {
+            return getAccount(accountName);
+        }
+
+        var accountKey = vault.resolveSecret(accountName + "-key1");
+
+        return saveAccount(accountName, accountKey);
+    }
+
+    public BlobServiceClient getBlobServiceClient(String accountName, String accountKey) {
+        if (StringUtils.isNullOrBlank(accountKey)) {
+            return getBlobServiceClient(accountName);
+        }
+
+        if (isAccountInCache(accountName)) {
+            return getAccount(accountName);
+        }
+
+        return saveAccount(accountName, accountKey);
+    }
+
+    private BlobServiceClient getAccount(String accountName) {
+        return accountCache.get(accountName);
+    }
+
+    private boolean isAccountInCache(String accountName) {
         Objects.requireNonNull(accountName, "accountName");
-        return cache.containsKey(accountName);
+        return accountCache.containsKey(accountName);
     }
 
-    public BlobServiceClient saveAccount(String endpointTemplate, String accountName, String accountKey) {
+    private BlobServiceClient saveAccount(String accountName, String accountKey) {
         var endpoint = createEndpoint(endpointTemplate, accountName);
 
         var blobServiceClient = accountKey == null ?
                 new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build())
                         .endpoint(endpoint)
                         .buildClient() :
-                new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
+                new BlobServiceClientBuilder().credential(new StorageSharedKeyCredential(accountKey, accountName))
                         .endpoint(endpoint)
                         .buildClient();
 
-        cache.put(accountName, blobServiceClient);
+        accountCache.put(accountName, blobServiceClient);
         return blobServiceClient;
     }
 }

@@ -14,13 +14,13 @@
 
 package org.eclipse.edc.azure.blob.cache;
 
-import com.azure.storage.blob.BlobServiceClient;
+import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.azure.blob.utils.BlobStoreUtils.createEndpoint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class AccountCacheImplTest {
 
@@ -28,32 +28,19 @@ class AccountCacheImplTest {
     private static final String ACCOUNT_NAME = "test_account";
     private static final String ACCOUNT_KEY = "test_key";
 
-    private final AccountCache accountCache = new AccountCacheImpl();
+    private final AccountCache accountCache = new AccountCacheImpl(mock(Vault.class), ENDPOINT_TEMPLATE);
 
     @Test
-    void isAccountInCache_succeeds() {
-        var resultNotInCache = accountCache.isAccountInCache(ACCOUNT_NAME);
-        assertFalse(resultNotInCache);
-        addAccount();
-        var resultInCache = accountCache.isAccountInCache(ACCOUNT_NAME);
-        assertTrue(resultInCache);
-    }
-
-    @Test
-    void saveAccount_succeeds() {
-        var result = addAccount();
-        assertEquals(result.getAccountName(), ACCOUNT_NAME);
+    void getAccount_withKey_succeeds() {
+        var result = accountCache.getBlobServiceClient(ACCOUNT_NAME, ACCOUNT_KEY);
+        assertThat(result.getAccountName()).isEqualTo(ACCOUNT_NAME);
         assertEquals(result.getAccountUrl(), createEndpoint(ENDPOINT_TEMPLATE, ACCOUNT_NAME));
     }
 
     @Test
     void getAccount_succeeds() {
-        addAccount();
-        var result = accountCache.getAccount(ACCOUNT_NAME);
-        assertEquals(result.getAccountName(), ACCOUNT_NAME);
-    }
-
-    private BlobServiceClient addAccount() {
-        return accountCache.saveAccount(ENDPOINT_TEMPLATE, ACCOUNT_NAME, ACCOUNT_KEY);
+        var result = accountCache.getBlobServiceClient(ACCOUNT_NAME);
+        assertThat(result.getAccountName()).isEqualTo(ACCOUNT_NAME);
+        assertEquals(result.getAccountUrl(), createEndpoint(ENDPOINT_TEMPLATE, ACCOUNT_NAME));
     }
 }

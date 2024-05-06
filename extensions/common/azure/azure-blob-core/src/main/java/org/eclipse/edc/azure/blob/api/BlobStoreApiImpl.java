@@ -30,24 +30,26 @@ import com.azure.storage.common.sas.AccountSasService;
 import com.azure.storage.common.sas.AccountSasSignatureValues;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.adapter.DefaultBlobAdapter;
+import org.eclipse.edc.azure.blob.cache.AccountCache;
+import org.eclipse.edc.azure.blob.cache.AccountCacheImpl;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.util.string.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
+import static org.eclipse.edc.azure.blob.utils.BlobStoreUtils.createEndpoint;
 
 public class BlobStoreApiImpl implements BlobStoreApi {
 
     private final Vault vault;
     private final String blobstoreEndpointTemplate;
-    private final Map<String, BlobServiceClient> cache = new HashMap<>();
+    private final AccountCache accountCache;
 
     public BlobStoreApiImpl(Vault vault, String blobstoreEndpointTemplate) {
         this.vault = vault;
         this.blobstoreEndpointTemplate = blobstoreEndpointTemplate;
+        this.accountCache = new AccountCacheImpl();
     }
 
     @Override
@@ -106,13 +108,13 @@ public class BlobStoreApiImpl implements BlobStoreApi {
     }
 
     private BlobServiceClient getBlobServiceClient(String accountName) {
-        if (isAccountInCache(accountName)) {
-            return cache.get(accountName);
+        if (this.accountCache.isAccountInCache(accountName)) {
+            return this.accountCache.getAccount(accountName);
         }
 
         var accountKey = vault.resolveSecret(accountName + "-key1");
 
-        return saveAccount(accountName, accountKey);
+        return this.accountCache.saveAccount(blobstoreEndpointTemplate, accountName, accountKey);
     }
 
     private BlobServiceClient getBlobServiceClient(String accountName, String accountKey) {
@@ -120,15 +122,11 @@ public class BlobStoreApiImpl implements BlobStoreApi {
             return getBlobServiceClient(accountName);
         }
 
-        if (isAccountInCache(accountName)) {
-            return cache.get(accountName);
+        if (this.accountCache.isAccountInCache(accountName)) {
+            return this.accountCache.getAccount(accountName);
         }
 
-        return saveAccount(accountName, accountKey);
-    }
-
-    private StorageSharedKeyCredential createCredential(String accountKey, String accountName) {
-        return new StorageSharedKeyCredential(accountName, accountKey);
+        return this.accountCache.saveAccount(blobstoreEndpointTemplate, accountName, accountKey);
     }
 
     @Override
@@ -151,7 +149,7 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     private BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, BlobServiceClientBuilder builder) {
         var blobServiceClient = builder
-                .endpoint(createEndpoint(accountName))
+                .endpoint(createEndpoint(blobstoreEndpointTemplate, accountName))
                 .buildClient();
 
         var blockBlobClient = blobServiceClient
@@ -160,29 +158,5 @@ public class BlobStoreApiImpl implements BlobStoreApi {
                 .getBlockBlobClient();
 
         return new DefaultBlobAdapter(blockBlobClient);
-    }
-
-    private String createEndpoint(String accountName) {
-        return String.format(blobstoreEndpointTemplate, accountName);
-    }
-
-    private boolean isAccountInCache(String accountName) {
-        Objects.requireNonNull(accountName, "accountName");
-        return cache.containsKey(accountName);
-    }
-
-    private BlobServiceClient saveAccount(String accountName, String accountKey) {
-        var endpoint = createEndpoint(accountName);
-
-        var blobServiceClient = accountKey == null ?
-                new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build())
-                        .endpoint(endpoint)
-                        .buildClient() :
-                new BlobServiceClientBuilder().credential(createCredential(accountKey, accountName))
-                        .endpoint(endpoint)
-                        .buildClient();
-
-        cache.put(accountName, blobServiceClient);
-        return blobServiceClient;
     }
 }

@@ -78,7 +78,7 @@ public class AccountCacheImpl implements AccountCache {
                 new BlobServiceClientBuilder().credential(new DefaultAzureCredentialBuilder().build())
                         .endpoint(endpoint)
                         .buildClient() :
-                new BlobServiceClientBuilder().credential(new StorageSharedKeyCredential(accountKey, accountName))
+                new BlobServiceClientBuilder().credential(new StorageSharedKeyCredential(accountName, accountKey))
                         .endpoint(endpoint)
                         .buildClient();
 

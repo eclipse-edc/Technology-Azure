@@ -56,7 +56,7 @@ public class AzureStorageDataSource implements DataSource {
     public StreamResult<Stream<Part>> openPartStream() {
 
         if (!StringUtils.isNullOrBlank(blobPrefix)) {
-            var folderBlobs = blobStoreApi.listContainerFolder(accountName, containerName, blobPrefix);
+            var folderBlobs = blobStoreApi.listContainerFolder(accountName, containerName, blobPrefix, sharedKey);
             if (folderBlobs.isEmpty()) {
                 monitor.severe(format("Error listing blobs in the container %s with prefix %s", containerName, blobPrefix));
                 return failure(new StreamFailure(List.of(format("Error listing blobs in the container %s with prefix %s", containerName, blobPrefix)), GENERAL_ERROR));

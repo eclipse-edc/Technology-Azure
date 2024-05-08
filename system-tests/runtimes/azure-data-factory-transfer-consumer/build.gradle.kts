@@ -35,8 +35,6 @@ dependencies {
     implementation(project(":extensions:control-plane:provision:provision-blob"))
     implementation(project(":extensions:common:vault:vault-azure"))
     implementation(libs.edc.lib.util)
-
-    api(libs.jakarta.rsApi)
 }
 
 application {

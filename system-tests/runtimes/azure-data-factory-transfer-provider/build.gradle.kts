@@ -40,7 +40,6 @@ dependencies {
     implementation(project(":extensions:common:vault:vault-azure"))
     implementation(libs.edc.dsp)
 
-    implementation(libs.jakarta.rsApi)
     implementation(libs.azure.identity)
     implementation(libs.azure.resourcemanager.datafactory)
     implementation(libs.azure.resourcemanager.storage)

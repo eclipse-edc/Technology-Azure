@@ -37,9 +37,6 @@ dependencies {
 
     implementation(libs.edc.lib.util)
     implementation(libs.edc.core.controlplane.apiclient)
-
-
-    api(libs.jakarta.rsApi)
 }
 
 application {

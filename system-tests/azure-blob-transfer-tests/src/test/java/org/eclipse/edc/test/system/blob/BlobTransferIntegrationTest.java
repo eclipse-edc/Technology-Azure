@@ -86,6 +86,8 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
                     Map.entry("web.http.management.path", ConsumerConstants.MANAGEMENT_PATH),
                     Map.entry("web.http.protocol.port", valueOf(ConsumerConstants.PROTOCOL_PORT)),
                     Map.entry("web.http.protocol.path", ConsumerConstants.PROTOCOL_PATH),
+                    Map.entry("web.http.control.port", valueOf(ConsumerConstants.CONTROL_URL.getPort())),
+                    Map.entry("web.http.control.path", ConsumerConstants.CONTROL_URL.getPath()),
                     Map.entry(PARTICIPANT_ID, ConsumerConstants.PARTICIPANT_ID),
                     Map.entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
                     Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())

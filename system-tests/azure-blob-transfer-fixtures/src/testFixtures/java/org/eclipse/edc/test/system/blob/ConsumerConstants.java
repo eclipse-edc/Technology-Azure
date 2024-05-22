@@ -15,6 +15,8 @@
 package org.eclipse.edc.test.system.blob;
 
 
+import java.net.URI;
+
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public interface ConsumerConstants {
@@ -29,4 +31,6 @@ public interface ConsumerConstants {
     int PROTOCOL_PORT = getFreePort();
     String PROTOCOL_PATH = "/protocol";
     String PROTOCOL_URL = "http://localhost:" + PROTOCOL_PORT + PROTOCOL_PATH;
+    URI CONTROL_URL = URI.create("http://localhost:" + getFreePort() + "/control");
+
 }

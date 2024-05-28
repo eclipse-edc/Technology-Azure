@@ -94,7 +94,7 @@ maven/mavencentral/com.google.crypto.tink/tink/1.13.0, Apache-2.0, approved, #14
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.22.0, Apache-2.0, approved, #10661
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.26.1, Apache-2.0, approved, #13657
 maven/mavencentral/com.google.guava/failureaccess/1.0.2, Apache-2.0, approved, CQ22654
-maven/mavencentral/com.google.guava/guava/33.1.0-jre, Apache-2.0 AND CC0-1.0, approved, #13675
+maven/mavencentral/com.google.guava/guava/33.2.0-jre, Apache-2.0 AND CC0-1.0 AND (Apache-2.0 AND CC-PDDC), approved, #14607
 maven/mavencentral/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava, Apache-2.0, approved, CQ22657
 maven/mavencentral/com.google.protobuf/protobuf-java/3.25.1, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.microsoft.azure/msal4j-persistence-extension/1.2.0, MIT, approved, clearlydefined
@@ -107,7 +107,7 @@ maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.30.2, Apache-2.0, approved, cl
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.32, Apache-2.0, approved, #10561
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.39.1, Apache-2.0, approved, #14830
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/10.7.1, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.16.0, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #14689
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.17.0, , restricted, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #11156
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
@@ -122,7 +122,7 @@ maven/mavencentral/commons-collections/commons-collections/3.2.2, Apache-2.0, ap
 maven/mavencentral/commons-logging/commons-logging/1.2, Apache-2.0, approved, CQ10162
 maven/mavencentral/dev.failsafe/failsafe-okhttp/3.3.2, Apache-2.0, approved, #9178
 maven/mavencentral/dev.failsafe/failsafe/3.3.2, Apache-2.0, approved, #9268
-maven/mavencentral/info.picocli/picocli/4.7.5, Apache-2.0, approved, #4365
+maven/mavencentral/info.picocli/picocli/4.7.6, Apache-2.0, approved, #4365
 maven/mavencentral/io.github.classgraph/classgraph/4.8.138, MIT, approved, CQ22530
 maven/mavencentral/io.github.classgraph/classgraph/4.8.165, MIT, approved, CQ22530
 maven/mavencentral/io.netty/netty-buffer/4.1.101.Final, Apache-2.0, approved, CQ21842
@@ -225,6 +225,7 @@ maven/mavencentral/net.bytebuddy/byte-buddy-agent/1.14.15, Apache-2.0, approved,
 maven/mavencentral/net.bytebuddy/byte-buddy/1.14.1, Apache-2.0 AND BSD-3-Clause, approved, #7163
 maven/mavencentral/net.bytebuddy/byte-buddy/1.14.11, Apache-2.0 AND BSD-3-Clause, approved, #7163
 maven/mavencentral/net.bytebuddy/byte-buddy/1.14.15, Apache-2.0 AND BSD-3-Clause, approved, #7163
+maven/mavencentral/net.bytebuddy/byte-buddy/1.14.16, Apache-2.0 AND BSD-3-Clause, approved, #7163
 maven/mavencentral/net.java.dev.jna/jna-platform/5.13.0, Apache-2.0 OR LGPL-2.1-or-later, approved, #6707
 maven/mavencentral/net.java.dev.jna/jna-platform/5.6.0, Apache-2.0 OR LGPL-2.1-or-later, approved, CQ22390
 maven/mavencentral/net.java.dev.jna/jna/5.13.0, Apache-2.0 AND LGPL-2.1-or-later, approved, #6709
@@ -262,7 +263,7 @@ maven/mavencentral/org.apache.xbean/xbean-reflect/3.7, Apache-2.0, approved, cle
 maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.assertj/assertj-core/3.24.2, Apache-2.0, approved, #6161
 maven/mavencentral/org.assertj/assertj-core/3.25.1, Apache-2.0, approved, #12585
-maven/mavencentral/org.assertj/assertj-core/3.25.3, Apache-2.0, approved, #12585
+maven/mavencentral/org.assertj/assertj-core/3.26.0, Apache-2.0, approved, #14886
 maven/mavencentral/org.awaitility/awaitility/4.2.0, Apache-2.0, approved, #14178
 maven/mavencentral/org.awaitility/awaitility/4.2.1, Apache-2.0, approved, #14178
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.78.1, MIT, approved, #14434
@@ -271,6 +272,7 @@ maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.78.1, MIT AND CC0-1.0, appr
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.78.1, MIT, approved, #14435
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.42.0, MIT, approved, clearlydefined
+maven/mavencentral/org.checkerframework/checker-qual/3.43.0, MIT, approved, clearlydefined
 maven/mavencentral/org.codehaus.plexus/plexus-classworlds/2.6.0, Apache-2.0 AND Plexus, approved, CQ22821
 maven/mavencentral/org.codehaus.plexus/plexus-component-annotations/2.1.0, Apache-2.0, approved, #809
 maven/mavencentral/org.codehaus.plexus/plexus-container-default/2.1.0, Apache-2.0, approved, clearlydefined

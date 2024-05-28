@@ -58,7 +58,7 @@ public class AzureVaultExtension implements ServiceExtension {
     @Provider
     public Vault createVault(ServiceExtensionContext context) {
         var config = context.getConfig();
-        var override = config.getString(VAULT_URL_OVERRIDE);
+        var override = config.getString(VAULT_URL_OVERRIDE, null);
 
         if (override != null && !override.isEmpty()) {
             return createCustomVault(config, new SecretClientBuilder());
@@ -80,9 +80,9 @@ public class AzureVaultExtension implements ServiceExtension {
     }
 
     @NotNull
-    public Vault createCustomVault(Config config, SecretClientBuilder builder) {
+    public Vault createCustomVault(Config config,  SecretClientBuilder builder) {
+        var useUnsafe = config.getBoolean(VAULT_URL_OVERRIDE_UNSAFE, false);
         var override = config.getString(VAULT_URL_OVERRIDE);
-        var useUnsafe = config.getBoolean(VAULT_URL_OVERRIDE_UNSAFE);
         var credentials = new DefaultAzureCredentialBuilder().build();
 
         try {

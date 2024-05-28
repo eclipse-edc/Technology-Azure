@@ -21,11 +21,14 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -38,8 +41,8 @@ public class AzureVaultExtensionTest {
 
     private static final String VAULT_NAME = "aVault";
     private static final String VAULT_NAME_SETTING = "edc.vault.name";
-    private static final String VAULT_NAME_OVERRIDE_SETTING = "edc.vault.url.override";
-    private static final String VAULT_NAME_OVERRIDE_UNSAFE_SETTING = "edc.vault.url.override.unsafe";
+    private static final String VAULT_URL_OVERRIDE_SETTING = "edc.vault.url.override";
+    private static final String VAULT_URL_OVERRIDE_UNSAFE_SETTING = "edc.vault.url.override.unsafe";
 
 
     @Test
@@ -57,20 +60,23 @@ public class AzureVaultExtensionTest {
     @Test
     void createVault_whenConfiguredWithInvalidUrl_shouldRefuseInvalidUrls(AzureVaultExtension extension, ServiceExtensionContext context) {
         Config cfg = mock();
-        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com/ ^> not an RFC 2396 compliant URL <^");
+        when(cfg.getString(eq(VAULT_URL_OVERRIDE_SETTING), isNull())).thenReturn("http://example.com/ ^> not an RFC 2396 compliant URL <^");
         when(context.getConfig()).thenReturn(cfg);
 
-        Assertions.assertThrows(EdcException.class, () -> extension.createVault(context));
+        assertThrows(EdcException.class, () -> extension.createVault(context));
     }
 
     @Test
     void createCustomVault_whenConfiguredWithOverride_shouldNotBeUnsafeByDefault(AzureVaultExtension extension, ServiceExtensionContext context) {
         var builder = spy(new SecretClientBuilder());
         Config cfg = mockConfiguration(context);
-        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(false);
+        when(cfg.getBoolean(VAULT_URL_OVERRIDE_UNSAFE_SETTING)).thenReturn(false);
 
         extension.createCustomVault(cfg, builder);
-        assertConfigUsageForCustomVault(context, cfg);
+        verify(context, atLeastOnce()).getConfig();
+        verify(cfg).getBoolean(eq(VAULT_URL_OVERRIDE_UNSAFE_SETTING), eq(false));
+        verify(cfg).getString(eq(VAULT_URL_OVERRIDE_SETTING));
+        verify(cfg, never()).getString(VAULT_NAME);
         verify(builder, never()).disableChallengeResourceVerification();
     }
 
@@ -78,25 +84,22 @@ public class AzureVaultExtensionTest {
     void createCustomVault_whenConfiguredWithUnsafeOverride_shouldUseAnyValue(AzureVaultExtension extension, ServiceExtensionContext context) {
         var builder = spy(new SecretClientBuilder());
         var cfg = mockConfiguration(context);
-        when(cfg.getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING)).thenReturn(true);
+        when(cfg.getBoolean(eq(VAULT_URL_OVERRIDE_UNSAFE_SETTING), anyBoolean())).thenReturn(true);
 
         extension.createCustomVault(cfg, builder);
-        assertConfigUsageForCustomVault(context, cfg);
+        verify(context, atLeastOnce()).getConfig();
+        verify(cfg).getBoolean(eq(VAULT_URL_OVERRIDE_UNSAFE_SETTING), eq(false));
+        verify(cfg).getString(eq(VAULT_URL_OVERRIDE_SETTING));
+        verify(cfg, never()).getString(VAULT_NAME);
         verify(builder).disableChallengeResourceVerification();
     }
 
     @NotNull
     private static Config mockConfiguration(ServiceExtensionContext context) {
         Config cfg = mock();
-        when(cfg.getString(VAULT_NAME_OVERRIDE_SETTING)).thenReturn("http://example.com");
+        when(cfg.getString(VAULT_URL_OVERRIDE_SETTING)).thenReturn("http://example.com");
         when(context.getConfig()).thenReturn(cfg);
         return cfg;
     }
 
-    private static void assertConfigUsageForCustomVault(ServiceExtensionContext context, Config cfg) {
-        verify(context, atLeastOnce()).getConfig();
-        verify(cfg, atLeastOnce()).getString(VAULT_NAME_OVERRIDE_SETTING);
-        verify(cfg, atLeastOnce()).getBoolean(VAULT_NAME_OVERRIDE_UNSAFE_SETTING);
-        verify(cfg, never()).getString(VAULT_NAME);
-    }
 }

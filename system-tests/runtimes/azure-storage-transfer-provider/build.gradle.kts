@@ -35,6 +35,7 @@ dependencies {
     implementation(libs.edc.spi.dataplane)
 
     implementation(libs.edc.api.observability)
+    implementation(libs.edc.api.control.config)
 
     implementation(libs.edc.config.filesystem)
     implementation(libs.edc.iam.mock)

@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.edc.iam.mock)
 
     implementation(libs.edc.api.management)
+    implementation(libs.edc.api.control.config)
 
     implementation(libs.edc.dsp)
 

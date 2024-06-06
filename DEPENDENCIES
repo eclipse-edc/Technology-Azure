@@ -495,6 +495,7 @@ maven/mavencentral/org.ow2.asm/asm/9.3, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/org.ow2.asm/asm/9.5, BSD-3-Clause, approved, #7554
 maven/mavencentral/org.ow2.asm/asm/9.7, BSD-3-Clause, approved, #14076
 maven/mavencentral/org.postgresql/postgresql/42.7.2, BSD-2-Clause AND Apache-2.0, approved, #11681
+maven/mavencentral/org.postgresql/postgresql/42.7.3, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.reflections/reflections/0.10.2, Apache-2.0 AND WTFPL, approved, clearlydefined
 maven/mavencentral/org.rnorth.duct-tape/duct-tape/1.0.8, MIT, approved, clearlydefined
@@ -504,7 +505,10 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.35, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
+maven/mavencentral/org.testcontainers/database-commons/1.19.8, Apache-2.0, approved, #10345
+maven/mavencentral/org.testcontainers/jdbc/1.19.8, Apache-2.0, approved, #10348
 maven/mavencentral/org.testcontainers/junit-jupiter/1.19.8, MIT, approved, #10344
+maven/mavencentral/org.testcontainers/postgresql/1.19.8, MIT, approved, #10350
 maven/mavencentral/org.testcontainers/testcontainers/1.19.8, Apache-2.0 AND MIT, approved, #10347
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.yaml/snakeyaml/2.2, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #10232

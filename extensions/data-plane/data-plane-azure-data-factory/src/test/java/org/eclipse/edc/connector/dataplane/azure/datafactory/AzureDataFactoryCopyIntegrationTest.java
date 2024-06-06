@@ -29,6 +29,7 @@ import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.extensions.EdcExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -98,7 +99,7 @@ class AzureDataFactoryCopyIntegrationTest {
 
     @Test
     void transfer_success(
-            EdcExtension edc,
+            EmbeddedRuntime edc,
             AzureResourceManager azure,
             DataPlaneManager dataPlaneManager,
             DataPlaneStore store) {
@@ -184,7 +185,7 @@ class AzureDataFactoryCopyIntegrationTest {
         private final BlobServiceClient client;
         private final String containerName = "test-container-" + UUID.randomUUID();
 
-        Account(AzureResourceManager azure, EdcExtension edc, String setting) {
+        Account(AzureResourceManager azure, EmbeddedRuntime edc, String setting) {
             String accountId = Objects.requireNonNull(edc.getContext().getConfig().getString(setting), setting);
             var account = azure.storageAccounts().getById(accountId);
             name = account.name();

@@ -106,7 +106,7 @@ postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 
 # Azure dependencies
-azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.22.1" }
+azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.22.2" }
 azure-identity = { group = "com.azure", name = "azure-identity", version = "1.12.1" }
 azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.7.3" }
 azure-mgmt-resources = { module = "com.microsoft.azure:azure-mgmt-resources", version = "1.41.4" }

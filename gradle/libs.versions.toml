@@ -2,7 +2,7 @@
 format.version = "1.1"
 
 [versions]
-edc = "0.6.5-SNAPSHOT"
+edc = "0.7.1-SNAPSHOT"
 # we need to pin the version of IH, because this is the last version to contain the DWN implementation
 # current snapshot builds of IH don't have feature parity yet.
 # todo: remove this once IH supports credential presentation and issuance
@@ -11,7 +11,7 @@ identityhub = "0.3.1"
 registrationservice = "0.4.1"
 
 awaitility = "4.2.0"
-azure-rm = "2.33.0"
+azure-rm = "2.39.0"
 bouncyCastle-jdk18on = "1.78"
 failsafe = "3.3.2"
 junit = "5.10.1"
@@ -22,12 +22,13 @@ testcontainers = "1.19.8"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-assertj = { module = "org.assertj:assertj-core", version = "3.25.1" }
+assertj = { module = "org.assertj:assertj-core", version = "3.26.0" }
 bouncyCastle-bcpkixJdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 bouncyCastle-bcprovJdk18on = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }
+edc-api-control-config = { module = "org.eclipse.edc:control-api-configuration", version.ref = "edc" }
 edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-config-filesystem = { module = "org.eclipse.edc:configuration-filesystem", version.ref = "edc" }
 edc-vault-filesystem = { module = "org.eclipse.edc:vault-filesystem", version.ref = "edc" }
@@ -106,7 +107,7 @@ testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.re
 
 # Azure dependencies
 azure-eventgrid = { group = "com.azure", name = "azure-messaging-eventgrid", version = "4.22.1" }
-azure-identity = { group = "com.azure", name = "azure-identity", version = "1.11.2" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.12.1" }
 azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.7.3" }
 azure-mgmt-resources = { module = "com.microsoft.azure:azure-mgmt-resources", version = "1.41.4" }
 azure-resourcemanager = { group = "com.azure.resourcemanager", name = "azure-resourcemanager", version.ref = "azure-rm" }
@@ -114,7 +115,7 @@ azure-resourcemanager-authorization = { group = "com.azure.resourcemanager", nam
 azure-resourcemanager-datafactory = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-datafactory", version = "1.0.0-beta.24" }
 azure-resourcemanager-keyvault = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-keyvault", version.ref = "azure-rm" }
 azure-resourcemanager-storage = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-storage", version.ref = "azure-rm" }
-azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.25.2" }
+azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.26.0" }
 
 [bundles]
 

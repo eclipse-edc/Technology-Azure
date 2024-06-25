@@ -24,6 +24,5 @@ dependencies {
     testImplementation(libs.edc.sql.core)
     testImplementation(libs.edc.sql.identityhub.store)
     testImplementation(testFixtures(libs.edc.ih.spi.store))
-    testImplementation(testFixtures(libs.edc.ext.azure.test))
 
 }

@@ -70,6 +70,8 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
                     Map.entry("web.http.control.path", ProviderConstants.CONTROL_URL.getPath()),
                     Map.entry(PARTICIPANT_ID, ProviderConstants.PARTICIPANT_ID),
                     Map.entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
+                    Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
+                    Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
                     Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
             )
     );
@@ -90,6 +92,8 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
                     Map.entry("web.http.control.path", ConsumerConstants.CONTROL_URL.getPath()),
                     Map.entry(PARTICIPANT_ID, ConsumerConstants.PARTICIPANT_ID),
                     Map.entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
+                    Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
+                    Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
                     Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
             )
     );

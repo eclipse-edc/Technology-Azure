@@ -23,7 +23,9 @@ import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTes
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -54,8 +56,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
     private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
 
     @RegisterExtension
-    protected static EdcRuntimeExtension provider = new EdcRuntimeExtension(
-            ":system-tests:runtimes:azure-storage-transfer-provider",
+    protected static RuntimeExtension provider = new RuntimePerClassExtension(new EmbeddedRuntime(
             "provider",
             Map.ofEntries(
                     Map.entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s"),
@@ -70,13 +71,15 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
                     Map.entry("web.http.control.path", ProviderConstants.CONTROL_URL.getPath()),
                     Map.entry(PARTICIPANT_ID, ProviderConstants.PARTICIPANT_ID),
                     Map.entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
+                    Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
+                    Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
                     Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
-            )
-    );
+            ),
+            ":system-tests:runtimes:azure-storage-transfer-provider"
+    ));
 
     @RegisterExtension
-    protected static EdcRuntimeExtension consumer = new EdcRuntimeExtension(
-            ":system-tests:runtimes:azure-storage-transfer-consumer",
+    protected static RuntimeExtension consumer = new RuntimePerClassExtension(new EmbeddedRuntime(
             "consumer",
             Map.ofEntries(
                     Map.entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s"),
@@ -90,9 +93,12 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
                     Map.entry("web.http.control.path", ConsumerConstants.CONTROL_URL.getPath()),
                     Map.entry(PARTICIPANT_ID, ConsumerConstants.PARTICIPANT_ID),
                     Map.entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
+                    Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
+                    Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
                     Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
-            )
-    );
+            ),
+            ":system-tests:runtimes:azure-storage-transfer-consumer"
+    ));
 
     private final BlobTransferParticipant consumerClient = BlobTransferParticipant.Builder.newInstance()
             .id(ConsumerConstants.PARTICIPANT_ID)

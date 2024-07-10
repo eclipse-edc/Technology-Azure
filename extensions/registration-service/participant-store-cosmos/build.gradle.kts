@@ -23,7 +23,5 @@ dependencies {
     testImplementation(libs.edc.sql.core)
     testImplementation(libs.edc.sql.participant.store)
     testImplementation(testFixtures(libs.edc.rs.spi.store))
-    testImplementation(testFixtures(libs.edc.ext.azure.test))
-
 }
 

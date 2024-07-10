@@ -38,6 +38,7 @@ dependencies {
 
     implementation(libs.edc.lib.util)
     implementation(libs.edc.core.controlplane.apiclient)
+    implementation(libs.edc.transaction.local)
 }
 
 application {

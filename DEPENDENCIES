@@ -13,6 +13,7 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinst
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.39.0, MIT, approved, #15096
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.39.0, MIT, approved, #15101
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.39.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-datafactory/1.0.0-beta.24, MIT, approved, #10875
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.39.0, MIT, approved, #15097
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.39.0, MIT, approved, #15083
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.39.0, MIT, approved, #15091

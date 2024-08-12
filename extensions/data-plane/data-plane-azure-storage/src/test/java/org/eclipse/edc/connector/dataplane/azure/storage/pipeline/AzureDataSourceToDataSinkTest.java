@@ -108,7 +108,7 @@ class AzureDataSourceToDataSinkTest {
                 sharedAccessSignatureMatcher(sinkSharedAccessSignature)
         )).thenReturn(fakeCompletionMarker);
 
-        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getComponentId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
@@ -170,7 +170,7 @@ class AzureDataSourceToDataSinkTest {
                 sharedAccessSignatureMatcher(sinkSharedAccessSignature)
         )).thenReturn(fakeSink);
 
-        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getComponentId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
@@ -226,7 +226,7 @@ class AzureDataSourceToDataSinkTest {
         when(blobApi.getBlobAdapter(anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(blobAdapter);
 
-        when(context.getConnectorId()).thenReturn("connectorId");
+        when(context.getComponentId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);

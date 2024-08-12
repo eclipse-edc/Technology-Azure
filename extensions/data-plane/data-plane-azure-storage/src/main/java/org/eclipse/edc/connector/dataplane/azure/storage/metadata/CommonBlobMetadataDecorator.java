@@ -42,7 +42,7 @@ public class CommonBlobMetadataDecorator implements BlobMetadataDecorator {
         builder.put(ORIGINAL_NAME, part.name())
                 .put(REQUEST_ID, request.getId())
                 .put(PROCESS_ID, request.getProcessId())
-                .put(CONNECTOR_ID, context.getConnectorId())
+                .put(CONNECTOR_ID, context.getComponentId())
                 .put(PARTICIPANT_ID, context.getParticipantId());
 
         var dataAddress = request.getDestinationDataAddress();

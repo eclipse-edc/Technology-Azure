@@ -139,7 +139,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
         metadataProvider.registerDecorator(new CommonBlobMetadataDecorator(typeManager, context));
-        when(context.getComponentId()).thenReturn("connector-id");
+        when(context.getConnectorId()).thenReturn("connector-id");
         when(context.getParticipantId()).thenReturn("participant-id");
         var dataSinkFactory = new AzureStorageDataSinkFactory(account2ApiPatched, executor, partitionSize, monitor, vault, typeManager, metadataProvider);
         var dataSink = dataSinkFactory.createSink(request);

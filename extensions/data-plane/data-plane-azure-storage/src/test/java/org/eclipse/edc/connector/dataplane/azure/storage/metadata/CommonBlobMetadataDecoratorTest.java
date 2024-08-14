@@ -66,7 +66,7 @@ public class CommonBlobMetadataDecoratorTest {
             }
         };
 
-        when(context.getComponentId()).thenReturn(TEST_CONNECTOR_ID);
+        when(context.getConnectorId()).thenReturn(TEST_CONNECTOR_ID);
         when(context.getParticipantId()).thenReturn(TEST_PARTICIPANT_ID);
 
         var decorator = new CommonBlobMetadataDecorator(typeManager, context);

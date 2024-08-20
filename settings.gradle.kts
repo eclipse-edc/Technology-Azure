@@ -64,9 +64,6 @@ include(":extensions:data-plane-selector:data-plane-instance-store-cosmos")
 // identity hub
 include(":extensions:identity-hub:identity-hub-store-cosmos")
 
-// registration service
-include(":extensions:registration-service:participant-store-cosmos")
-
 // system test modules
 include(":system-tests:azure-blob-transfer-tests")
 include(":system-tests:azure-data-factory-tests")

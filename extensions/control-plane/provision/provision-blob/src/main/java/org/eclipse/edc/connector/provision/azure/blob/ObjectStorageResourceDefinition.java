@@ -24,6 +24,7 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
 
     private String containerName;
     private String accountName;
+    private String folderName;
 
     public String getContainerName() {
         return containerName;
@@ -37,7 +38,12 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
     public Builder toBuilder() {
         return initializeBuilder(new Builder())
                 .containerName(containerName)
+                .folderName(folderName)
                 .accountName(accountName);
+    }
+
+    public String getFolderName() {
+        return folderName;
     }
 
     public static class Builder extends ResourceDefinition.Builder<ObjectStorageResourceDefinition, Builder> {
@@ -57,6 +63,11 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
 
         public Builder accountName(String accountName) {
             resourceDefinition.accountName = accountName;
+            return this;
+        }
+
+        public Builder folderName(String folderName) {
+            resourceDefinition.folderName = folderName;
             return this;
         }
 

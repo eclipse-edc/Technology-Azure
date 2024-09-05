@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.FOLDER_NAME;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -77,6 +79,28 @@ class ObjectStorageProvisionerTest {
     }
 
     @Test
+    void provision_withFolder_success() {
+        var resourceDef = createResourceDefinitionBuilder().transferProcessId("tpId").folderName("test-folder").build();
+        String accountName = resourceDef.getAccountName();
+        String containerName = resourceDef.getContainerName();
+        when(blobStoreApiMock.exists(anyString(), anyString())).thenReturn(false);
+        when(blobStoreApiMock.createContainerSasToken(eq(accountName), eq(containerName), eq("w"), any())).thenReturn("some-sas");
+
+        var response = provisioner.provision(resourceDef, policy).join().getContent();
+
+        assertThat(response.getResource()).isInstanceOfSatisfying(ObjectContainerProvisionedResource.class, resource -> {
+            assertThat(resource.getTransferProcessId()).isEqualTo("tpId");
+            assertThat(resource.getDataAddress().getStringProperty(EDC_NAMESPACE + FOLDER_NAME)).isEqualTo("test-folder");
+        });
+        assertThat(response.getSecretToken()).isInstanceOfSatisfying(AzureSasToken.class, secretToken -> {
+            assertThat(secretToken.getSas()).isEqualTo("?some-sas");
+        });
+
+        verify(blobStoreApiMock).exists(anyString(), anyString());
+        verify(blobStoreApiMock).createContainer(accountName, containerName);
+    }
+
+    @Test
     void provision_success() {
         var resourceDef = createResourceDefinitionBuilder().transferProcessId("tpId").build();
         String accountName = resourceDef.getAccountName();
@@ -88,10 +112,12 @@ class ObjectStorageProvisionerTest {
 
         assertThat(response.getResource()).isInstanceOfSatisfying(ObjectContainerProvisionedResource.class, resource -> {
             assertThat(resource.getTransferProcessId()).isEqualTo("tpId");
+            assertThat(resource.getDataAddress().getStringProperty(EDC_NAMESPACE + FOLDER_NAME)).isNull();
         });
         assertThat(response.getSecretToken()).isInstanceOfSatisfying(AzureSasToken.class, secretToken -> {
             assertThat(secretToken.getSas()).isEqualTo("?some-sas");
         });
+
         verify(blobStoreApiMock).exists(anyString(), anyString());
         verify(blobStoreApiMock).createContainer(accountName, containerName);
     }

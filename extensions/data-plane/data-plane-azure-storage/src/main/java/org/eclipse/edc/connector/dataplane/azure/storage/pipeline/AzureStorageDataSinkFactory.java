@@ -27,7 +27,6 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.util.string.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
@@ -113,8 +112,8 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
             validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
             validateKeyName(dataAddress.getKeyName());
             if (dataSourceAddress.hasProperty(BLOB_PREFIX)) {
-                if (!StringUtils.isNullOrBlank(BLOB_NAME)) {
-                    monitor.warning(String.format("Folder transfer, ignoring property %s", BLOB_NAME));
+                if (dataSourceAddress.hasProperty(BLOB_NAME)) {
+                    monitor.warning("Folder transfer (property '%s' is present), will ignore the blob name (property '%s')".formatted(BLOB_PREFIX, BLOB_NAME));
                 }
             }
         } catch (IllegalArgumentException e) {

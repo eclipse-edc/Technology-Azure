@@ -50,6 +50,28 @@ class ObjectStorageConsumerResourceDefinitionGeneratorTest {
         assertThat(objectDef.getAccountName()).isEqualTo("test-account");
         assertThat(objectDef.getContainerName()).isEqualTo("test-container");
         assertThat(objectDef.getId()).satisfies(UUID::fromString);
+        assertThat(objectDef.getFolderName()).isNull();
+    }
+
+    @Test
+    void generate_withContainerName_andFolder() {
+        var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
+                .property(AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
+                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
+                .property(AzureBlobStoreSchema.FOLDER_NAME, "test-folder")
+                .build();
+        var asset = Asset.Builder.newInstance().build();
+        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+        var policy = Policy.Builder.newInstance().build();
+
+        var definition = generator.generate(transferProcess, policy);
+
+        assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
+        var objectDef = (ObjectStorageResourceDefinition) definition;
+        assertThat(objectDef.getAccountName()).isEqualTo("test-account");
+        assertThat(objectDef.getContainerName()).isEqualTo("test-container");
+        assertThat(objectDef.getId()).satisfies(UUID::fromString);
+        assertThat(objectDef.getFolderName()).isEqualTo("test-folder");
     }
 
     @Test

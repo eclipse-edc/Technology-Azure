@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedData
 
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.FOLDER_NAME;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 @JsonDeserialize(builder = ObjectContainerProvisionedResource.Builder.class)
@@ -70,5 +71,11 @@ public class ObjectContainerProvisionedResource extends ProvisionedDataDestinati
             return this;
         }
 
+        public Builder folderName(String folderName) {
+            if (folderName != null) {
+                dataAddressBuilder.property(EDC_NAMESPACE + FOLDER_NAME, folderName);
+            }
+            return this;
+        }
     }
 }

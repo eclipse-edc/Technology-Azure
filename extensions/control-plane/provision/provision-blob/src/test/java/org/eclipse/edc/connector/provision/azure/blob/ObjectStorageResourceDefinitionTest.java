@@ -14,19 +14,24 @@
 
 package org.eclipse.edc.connector.provision.azure.blob;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ObjectStorageResourceDefinitionTest {
 
-    @Test
-    void toBuilder_verifyEqualResourceDefinition() {
+    @ParameterizedTest
+    @ValueSource(strings = { "test-folder" })
+    @NullAndEmptySource
+    void toBuilder_verifyEqualResourceDefinition(String folder) {
         var definition = ObjectStorageResourceDefinition.Builder.newInstance()
                 .id("id")
                 .transferProcessId("tp-id")
                 .accountName("account")
                 .containerName("container")
+                .folderName(folder)
                 .build();
         var builder = definition.toBuilder();
         var rebuiltDefinition = builder.build();

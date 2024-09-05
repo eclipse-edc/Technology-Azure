@@ -57,6 +57,7 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
     public CompletableFuture<StatusResult<ProvisionResponse>> provision(ObjectStorageResourceDefinition resourceDefinition, Policy policy) {
         String containerName = resourceDefinition.getContainerName();
         String accountName = resourceDefinition.getAccountName();
+        String folderName = resourceDefinition.getFolderName();
 
         monitor.debug("Azure Storage Container request submitted: " + containerName);
 
@@ -78,6 +79,7 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
                             .id(containerName)
                             .accountName(accountName)
                             .containerName(containerName)
+                            .folderName(folderName)
                             .resourceDefinitionId(resourceDefinition.getId())
                             .transferProcessId(resourceDefinition.getTransferProcessId())
                             .resourceName(resourceName)

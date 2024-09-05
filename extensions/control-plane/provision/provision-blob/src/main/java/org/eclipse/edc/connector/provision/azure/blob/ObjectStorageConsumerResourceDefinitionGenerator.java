@@ -33,11 +33,17 @@ public class ObjectStorageConsumerResourceDefinitionGenerator implements Consume
         var id = randomUUID().toString();
         var account = destination.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
         var container = destination.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME);
+        var folderName = destination.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME);
 
         if (container == null) {
             container = randomUUID().toString();
         }
-        return ObjectStorageResourceDefinition.Builder.newInstance().id(id).accountName(account).containerName(container).build();
+        return ObjectStorageResourceDefinition.Builder.newInstance()
+                .id(id)
+                .accountName(account)
+                .containerName(container)
+                .folderName(folderName)
+                .build();
     }
 
     @Override

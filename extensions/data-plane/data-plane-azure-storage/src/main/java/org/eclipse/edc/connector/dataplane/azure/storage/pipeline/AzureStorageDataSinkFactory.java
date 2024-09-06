@@ -83,7 +83,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
 
         var secret = vault.resolveSecret(dataAddress.getKeyName());
 
-        if(secret == null){
+        if (secret == null) {
             throw new EdcException("SAS token for the Azure Blob DataSink not found in Vault (alias = '%s')".formatted(dataAddress.getKeyName()));
         }
 

@@ -17,6 +17,7 @@ package org.eclipse.edc.connector.provision.azure;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.controlplane.transfer.spi.flow.TransferTypeParser;
 import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ProvisionManager;
 import org.eclipse.edc.connector.controlplane.transfer.spi.provision.Provisioner;
 import org.eclipse.edc.connector.controlplane.transfer.spi.provision.ResourceManifestGenerator;
@@ -46,6 +47,12 @@ public class AzureProvisionExtension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
 
+    @Inject
+    private TransferTypeParser transferTypeParser;
+
+    @Inject
+    private ProvisionManager provisionManager;
+
     @Override
     public String name() {
         return "Azure Provision";
@@ -53,14 +60,8 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-
-        var monitor = context.getMonitor();
-        var provisionManager = context.getService(ProvisionManager.class);
-
-        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, monitor, blobStoreApi));
-
-        // register the generator
-        manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator());
+        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi));
+        manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 
         registerTypes(typeManager);
     }

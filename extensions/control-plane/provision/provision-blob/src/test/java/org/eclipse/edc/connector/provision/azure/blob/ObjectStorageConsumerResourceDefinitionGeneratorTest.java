@@ -18,112 +18,157 @@ package org.eclipse.edc.connector.provision.azure.blob;
 
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.connector.controlplane.transfer.spi.flow.TransferTypeParser;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.transfer.FlowType;
+import org.eclipse.edc.spi.types.domain.transfer.TransferType;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ObjectStorageConsumerResourceDefinitionGeneratorTest {
 
+    private final TransferTypeParser transferTypeParser = mock();
     private final ObjectStorageConsumerResourceDefinitionGenerator generator =
-            new ObjectStorageConsumerResourceDefinitionGenerator();
+            new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser);
 
-    @Test
-    void generate_withContainerName() {
-        var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
-                .property(AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
-                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
-                .build();
-        var asset = Asset.Builder.newInstance().build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var policy = Policy.Builder.newInstance().build();
+    @Nested
+    class Generate {
 
-        var definition = generator.generate(transferProcess, policy);
+        @Test
+        void generate_withContainerName() {
+            var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
+                    .property(AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
+                    .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
+                    .build();
+            var asset = Asset.Builder.newInstance().build();
+            var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId())
+                    .build();
 
-        assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
-        var objectDef = (ObjectStorageResourceDefinition) definition;
-        assertThat(objectDef.getAccountName()).isEqualTo("test-account");
-        assertThat(objectDef.getContainerName()).isEqualTo("test-container");
-        assertThat(objectDef.getId()).satisfies(UUID::fromString);
-        assertThat(objectDef.getFolderName()).isNull();
+            var definition = generator.generate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
+            var objectDef = (ObjectStorageResourceDefinition) definition;
+            assertThat(objectDef.getAccountName()).isEqualTo("test-account");
+            assertThat(objectDef.getContainerName()).isEqualTo("test-container");
+            assertThat(objectDef.getId()).satisfies(UUID::fromString);
+            assertThat(objectDef.getFolderName()).isNull();
+        }
+
+        @Test
+        void generate_withContainerName_andFolder() {
+            var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
+                    .property(AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
+                    .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
+                    .property(AzureBlobStoreSchema.FOLDER_NAME, "test-folder")
+                    .build();
+            var asset = Asset.Builder.newInstance().build();
+            var transferProcess = TransferProcess.Builder.newInstance()
+                    .transferType("%s-%s".formatted(AzureBlobStoreSchema.TYPE, FlowType.PUSH))
+                    .dataDestination(destination)
+                    .assetId(asset.getId())
+                    .build();
+
+            var definition = generator.generate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isNotNull().isInstanceOf(ObjectStorageResourceDefinition.class);
+            var objectDef = (ObjectStorageResourceDefinition) definition;
+            assertThat(objectDef.getAccountName()).isEqualTo("test-account");
+            assertThat(objectDef.getContainerName()).isEqualTo("test-container");
+            assertThat(objectDef.getId()).satisfies(UUID::fromString);
+            assertThat(objectDef.getFolderName()).isEqualTo("test-folder");
+        }
+
+        @Test
+        void generate_withoutContainerName() {
+            var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
+                    .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
+                    .build();
+            var asset = Asset.Builder.newInstance().build();
+            var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
+
+            var definition = generator.generate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
+            var objectDef = (ObjectStorageResourceDefinition) definition;
+            assertThat(objectDef.getAccountName()).isEqualTo("test-account");
+            assertThat(objectDef.getContainerName()).satisfies(UUID::fromString);
+            assertThat(objectDef.getId()).satisfies(UUID::fromString);
+        }
+
+        @Test
+        void shouldCreateEmptyDefinition_whenDestinationIsNull() {
+            var transferProcess = TransferProcess.Builder.newInstance()
+                    .dataDestination(null)
+                    .assetId(UUID.randomUUID().toString())
+                    .build();
+
+            var definition = generator.generate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isInstanceOfSatisfying(ObjectStorageResourceDefinition.class, def -> {
+                assertThat(def.getAccountName()).satisfies(UUID::fromString);
+                assertThat(def.getContainerName()).satisfies(UUID::fromString);
+                assertThat(def.getId()).satisfies(UUID::fromString);
+            });
+
+        }
     }
 
-    @Test
-    void generate_withContainerName_andFolder() {
-        var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
-                .property(AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
-                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
-                .property(AzureBlobStoreSchema.FOLDER_NAME, "test-folder")
-                .build();
-        var asset = Asset.Builder.newInstance().build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var policy = Policy.Builder.newInstance().build();
+    @Nested
+    class CanGenerate {
 
-        var definition = generator.generate(transferProcess, policy);
+        @Test
+        void shouldReturnTrue_whenDestinationTypeIsTheExpectedOne() {
+            when(transferTypeParser.parse(any())).thenReturn(Result.success(new TransferType(AzureBlobStoreSchema.TYPE, FlowType.PULL)));
+            var transferProcess = TransferProcess.Builder.newInstance()
+                    .transferType("valid transfer type")
+                    .assetId(UUID.randomUUID().toString())
+                    .build();
 
-        assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
-        var objectDef = (ObjectStorageResourceDefinition) definition;
-        assertThat(objectDef.getAccountName()).isEqualTo("test-account");
-        assertThat(objectDef.getContainerName()).isEqualTo("test-container");
-        assertThat(objectDef.getId()).satisfies(UUID::fromString);
-        assertThat(objectDef.getFolderName()).isEqualTo("test-folder");
+            var definition = generator.canGenerate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalse_whenDestinationTypeIsNotTheExpectedOne() {
+            when(transferTypeParser.parse(any())).thenReturn(Result.success(new TransferType("another type", FlowType.PULL)));
+            var transferProcess = TransferProcess.Builder.newInstance()
+                    .transferType("another transfer type")
+                    .assetId(UUID.randomUUID().toString())
+                    .build();
+
+            var definition = generator.canGenerate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalse_whenTransferTypeCannotBeParsedCorrectly() {
+            when(transferTypeParser.parse(any())).thenReturn(Result.failure("transfer type cannot be parsed"));
+            var transferProcess = TransferProcess.Builder.newInstance()
+                    .transferType("another transfer type")
+                    .assetId(UUID.randomUUID().toString())
+                    .build();
+
+            var definition = generator.canGenerate(transferProcess, emptyPolicy());
+
+            assertThat(definition).isFalse();
+        }
+
     }
 
-    @Test
-    void generate_noDataRequestAsParameter() {
-        var policy = Policy.Builder.newInstance().build();
-        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> generator.generate(null, policy));
-    }
-
-    @Test
-    void generate_withoutContainerName() {
-        var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
-                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
-                .build();
-        var asset = Asset.Builder.newInstance().build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var policy = Policy.Builder.newInstance().build();
-
-        var definition = generator.generate(transferProcess, policy);
-
-        assertThat(definition).isInstanceOf(ObjectStorageResourceDefinition.class);
-        var objectDef = (ObjectStorageResourceDefinition) definition;
-        assertThat(objectDef.getAccountName()).isEqualTo("test-account");
-        assertThat(objectDef.getContainerName()).satisfies(UUID::fromString);
-        assertThat(objectDef.getId()).satisfies(UUID::fromString);
-    }
-
-    @Test
-    void canGenerate() {
-        var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
-                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
-                .build();
-        var asset = Asset.Builder.newInstance().build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var policy = Policy.Builder.newInstance().build();
-
-        var definition = generator.canGenerate(transferProcess, policy);
-
-        assertThat(definition).isTrue();
-    }
-
-    @Test
-    void canGenerate_isNotTypeAzureBlobStoreSchema() {
-        var destination = DataAddress.Builder.newInstance().type("aNonGoogleCloudStorage")
-                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
-                .build();
-        var asset = Asset.Builder.newInstance().build();
-        var transferProcess = TransferProcess.Builder.newInstance().dataDestination(destination).assetId(asset.getId()).build();
-        var policy = Policy.Builder.newInstance().build();
-
-        var definition = generator.canGenerate(transferProcess, policy);
-
-        assertThat(definition).isFalse();
+    private Policy emptyPolicy() {
+        return Policy.Builder.newInstance().build();
     }
 
 }

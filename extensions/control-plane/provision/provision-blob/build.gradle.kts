@@ -18,10 +18,9 @@ plugins {
 
 dependencies {
     api(libs.edc.spi.core)
-    api(project(":extensions:common:azure:azure-blob-core"))
 
+    implementation(project(":extensions:common:azure:azure-blob-core"))
     implementation(libs.azure.storageblob)
-    implementation(libs.failsafe.core)
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
 }

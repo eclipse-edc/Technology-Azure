@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.dpf.selector.core)
     implementation(libs.edc.core.dataplane)
+    implementation(libs.edc.core.edrstore)
 
     implementation(libs.edc.transfer.data.plane.signaling)
     implementation(libs.edc.data.plane.signaling.client)

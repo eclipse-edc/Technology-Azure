@@ -21,6 +21,7 @@ plugins {
 
 dependencies {
     implementation(libs.edc.core.connector)
+    implementation(libs.edc.core.edrstore)
     implementation(libs.edc.core.controlplane)
     implementation(libs.edc.dpf.selector.core)
     implementation(libs.edc.http)

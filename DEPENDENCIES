@@ -24,7 +24,6 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.43.0, ,
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.43.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.43.0, , restricted, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.43.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core-http-netty/1.15.3, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.4, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.5, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-core-management/1.15.0, MIT, approved, clearlydefined
@@ -33,7 +32,7 @@ maven/mavencentral/com.azure/azure-core/1.49.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.51.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.52.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.53.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-identity/1.13.2, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-identity/1.14.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.3.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.26.0, , restricted, clearlydefined
@@ -93,14 +92,14 @@ maven/mavencentral/com.google.j2objc/j2objc-annotations/3.0.0, Apache-2.0, appro
 maven/mavencentral/com.google.protobuf/protobuf-java/3.25.3, BSD-3-Clause, approved, clearlydefined
 maven/mavencentral/com.microsoft.azure/msal4j-persistence-extension/1.3.0, MIT, approved, #14411
 maven/mavencentral/com.microsoft.azure/msal4j/1.15.0, MIT, approved, clearlydefined
-maven/mavencentral/com.microsoft.azure/msal4j/1.16.2, MIT, approved, clearlydefined
+maven/mavencentral/com.microsoft.azure/msal4j/1.17.2, , restricted, clearlydefined
 maven/mavencentral/com.nimbusds/content-type/2.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.25, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.32, Apache-2.0, approved, #10561
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.37.3, Apache-2.0, approved, #11701
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.40, Apache-2.0, approved, #15156
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.41.2, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.9.1, Apache-2.0, approved, #12667
+maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.18, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.puppycrawl.tools/checkstyle/10.18.2, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #16060
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #15227
@@ -197,8 +196,9 @@ maven/mavencentral/net.bytebuddy/byte-buddy/1.15.3, Apache-2.0 AND BSD-3-Clause,
 maven/mavencentral/net.java.dev.jna/jna-platform/5.13.0, Apache-2.0 OR LGPL-2.1-or-later, approved, #6707
 maven/mavencentral/net.java.dev.jna/jna-platform/5.6.0, Apache-2.0 OR LGPL-2.1-or-later, approved, CQ22390
 maven/mavencentral/net.java.dev.jna/jna/5.13.0, Apache-2.0 AND LGPL-2.1-or-later, approved, #15196
-maven/mavencentral/net.minidev/accessors-smart/2.5.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/net.minidev/accessors-smart/2.5.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/net.minidev/json-smart/2.5.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/net.minidev/json-smart/2.5.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/net.sf.saxon/Saxon-HE/12.5, W3C-19980720 AND MPL-2.0 AND MPL-1.0, approved, #16061
 maven/mavencentral/org.antlr/antlr4-runtime/4.13.2, BSD-3-Clause, approved, #10767
 maven/mavencentral/org.apache.commons/commons-compress/1.24.0, Apache-2.0 AND BSD-3-Clause AND bzip2-1.0.6 AND LicenseRef-Public-Domain, approved, #10368
@@ -420,14 +420,12 @@ maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.9.10, Apache-2.0, approv
 maven/mavencentral/org.jetbrains/annotations/13.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/17.0.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/24.0.1, Apache-2.0, approved, #7417
-maven/mavencentral/org.jetbrains/annotations/25.0.0, Apache-2.0, approved, #16624
 maven/mavencentral/org.jetbrains/annotations/26.0.0, Apache-2.0, approved, #16629
+maven/mavencentral/org.jetbrains/annotations/26.0.1, Apache-2.0, approved, #16629
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.0, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.1, EPL-2.0, approved, #15935
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.2, EPL-2.0, approved, #15935
-maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.1, EPL-2.0, approved, #15939
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.2, EPL-2.0, approved, #15939
-maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.1, EPL-2.0, approved, #15940
 maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.11.2, EPL-2.0, approved, #15940
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.1, EPL-2.0, approved, #15936
 maven/mavencentral/org.junit.platform/junit-platform-commons/1.11.2, EPL-2.0, approved, #15936
@@ -441,7 +439,7 @@ maven/mavencentral/org.objenesis/objenesis/3.3, Apache-2.0, approved, clearlydef
 maven/mavencentral/org.opentest4j/opentest4j/1.3.0, Apache-2.0, approved, #9713
 maven/mavencentral/org.ow2.asm/asm-commons/9.7, BSD-3-Clause, approved, #16465
 maven/mavencentral/org.ow2.asm/asm-tree/9.7, BSD-3-Clause, approved, #16466
-maven/mavencentral/org.ow2.asm/asm/9.3, BSD-3-Clause, approved, clearlydefined
+maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
 maven/mavencentral/org.ow2.asm/asm/9.7, BSD-3-Clause, approved, #16464
 maven/mavencentral/org.postgresql/postgresql/42.7.2, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.postgresql/postgresql/42.7.4, BSD-2-Clause AND Apache-2.0, approved, #11681

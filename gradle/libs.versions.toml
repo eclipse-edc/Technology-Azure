@@ -10,7 +10,7 @@ identityhub = "0.3.1"
 
 awaitility = "4.2.2"
 azure-rm = "2.44.0"
-bouncyCastle-jdk18on = "1.78"
+bouncyCastle-jdk18on = "1.79"
 failsafe = "3.3.2"
 junit = "5.11.3"
 postgres = "42.7.2"

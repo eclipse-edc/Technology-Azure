@@ -67,11 +67,6 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     }
 
     @Override
-    public boolean canHandle(DataFlowStartMessage request) {
-        return AzureBlobStoreSchema.TYPE.equals(request.getDestinationDataAddress().getType());
-    }
-
-    @Override
     public DataSink createSink(DataFlowStartMessage request) {
         var validate = validateRequest(request);
         if (validate.failed()) {

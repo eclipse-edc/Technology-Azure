@@ -57,11 +57,6 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public boolean canHandle(DataFlowStartMessage request) {
-        return AzureBlobStoreSchema.TYPE.equals(request.getSourceDataAddress().getType());
-    }
-
-    @Override
     public DataSource createSource(DataFlowStartMessage request) {
         validateRequest(request).orElseThrow(f -> new EdcException(f.getFailureDetail()));
 

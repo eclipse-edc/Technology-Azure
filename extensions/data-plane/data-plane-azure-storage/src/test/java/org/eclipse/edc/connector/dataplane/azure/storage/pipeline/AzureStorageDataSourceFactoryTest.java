@@ -38,7 +38,6 @@ class AzureStorageDataSourceFactoryTest {
     private final Vault vault = mock();
     private final AzureStorageDataSourceFactory factory = new AzureStorageDataSourceFactory(blobStoreApi, RetryPolicy.ofDefaults(), mock(Monitor.class), vault);
     private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
-    private final DataFlowStartMessage.Builder invalidRequest = createRequest("test-type");
     private final DataAddress.Builder dataAddress = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
 
     private final String accountName = createAccountName();
@@ -46,16 +45,6 @@ class AzureStorageDataSourceFactoryTest {
     private final String blobName = createBlobName();
     private final String blobPrefix = createBlobPrefix();
     private final String sharedKey = createSharedKey();
-
-    @Test
-    void canHandle_whenBlobRequest_returnsTrue() {
-        assertThat(factory.canHandle(request.build())).isTrue();
-    }
-
-    @Test
-    void canHandle_whenNotBlobRequest_returnsFalse() {
-        assertThat(factory.canHandle(invalidRequest.build())).isFalse();
-    }
 
     @Test
     void validate_whenBlobRequestValid_succeeds() {

@@ -61,16 +61,6 @@ class AzureStorageDataSinkFactoryTest {
     private final AzureSasToken token = new AzureSasToken("test-writeonly-sas", new Random().nextLong());
 
     @Test
-    void canHandle_whenBlobRequest_returnsTrue() {
-        assertThat(factory.canHandle(request.build())).isTrue();
-    }
-
-    @Test
-    void canHandle_whenNotBlobRequest_returnsFalse() {
-        assertThat(factory.canHandle(invalidRequest.build())).isFalse();
-    }
-
-    @Test
     void validate_whenRequestValid_succeeds() {
         assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)

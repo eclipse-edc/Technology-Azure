@@ -60,4 +60,9 @@ public class AzureDataFactoryTransferService implements TransferService {
     public StreamResult<Void> terminate(DataFlow dataFlow) {
         return StreamResult.success();
     }
+
+    @Override
+    public void closeAll() {
+
+    }
 }

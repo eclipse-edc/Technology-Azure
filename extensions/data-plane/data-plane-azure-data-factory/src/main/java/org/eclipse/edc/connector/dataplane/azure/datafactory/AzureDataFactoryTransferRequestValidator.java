@@ -28,7 +28,7 @@ import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validat
 /**
  * Validator for {@link AzureDataFactoryTransferService}.
  */
-class AzureDataFactoryTransferRequestValidator {
+public class AzureDataFactoryTransferRequestValidator {
 
     /**
      * Returns true if this service can transfer the request.

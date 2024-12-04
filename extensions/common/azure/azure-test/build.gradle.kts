@@ -25,7 +25,7 @@ dependencies {
     testFixturesApi(libs.testcontainers.junit)
     testFixturesApi(libs.edc.lib.util)
     testFixturesApi(libs.edc.junit)
-    testFixturesApi(libs.edc.sql.core)
+    testFixturesApi(libs.edc.sql.lib)
     testFixturesApi(libs.azure.storageblob)
     testFixturesApi(libs.junit.jupiter.api)
 }

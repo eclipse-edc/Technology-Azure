@@ -24,10 +24,10 @@ dependencies {
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(libs.awaitility)
-
-    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.lease)
+    testImplementation(testFixtures(libs.edc.sql.test.fixtures))
+    testImplementation(libs.edc.sql.lib)
     testImplementation(libs.edc.sql.contractnegotiation)
-    testImplementation(testFixtures(libs.edc.sql.lease))
     testImplementation(testFixtures(libs.edc.spi.contract))
 
 }

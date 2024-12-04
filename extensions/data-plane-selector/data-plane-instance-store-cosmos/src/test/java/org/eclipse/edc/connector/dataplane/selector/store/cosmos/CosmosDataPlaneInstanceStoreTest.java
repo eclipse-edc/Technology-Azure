@@ -25,7 +25,7 @@ import org.eclipse.edc.connector.dataplane.selector.store.sql.schema.postgres.Po
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.sql.QueryExecutor;
-import org.eclipse.edc.sql.lease.testfixtures.LeaseUtil;
+import org.eclipse.edc.sql.testfixtures.LeaseUtil;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
@@ -78,7 +78,6 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
         store = new SqlDataPlaneInstanceStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, typeManager.getMapper(), queryExecutor, clock, CONNECTOR_NAME);
         helper.truncateTable(STATEMENTS.getDataPlaneInstanceTable());
     }
-
 
     @Override
     protected DataPlaneInstanceStore getStore() {

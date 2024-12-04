@@ -23,7 +23,7 @@ dependencies {
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(testFixtures(libs.edc.spi.asset))
-    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.lib)
     testImplementation(libs.edc.sql.assetindex)
 
 }

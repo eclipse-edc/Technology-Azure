@@ -21,7 +21,7 @@ dependencies {
 
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))
     testImplementation(project(":extensions:common:azure:azure-test"))
-    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.lib)
     testImplementation(libs.edc.sql.identityhub.store)
     testImplementation(testFixtures(libs.edc.ih.spi.store))
 

@@ -22,7 +22,7 @@ dependencies {
 
     implementation(libs.failsafe.core)
 
-    testImplementation(libs.edc.sql.core)
+    testImplementation(libs.edc.sql.lib)
     testImplementation(libs.edc.sql.contractdefinition)
     testImplementation(testFixtures(libs.edc.spi.contract))
     testImplementation(testFixtures(project(":extensions:common:azure:azure-test")))

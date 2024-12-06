@@ -351,6 +351,8 @@ maven/mavencentral/org.eclipse.edc/dsp-transfer-process-transform/0.11.0-SNAPSHO
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-validation-lib/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-version-http-api/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-version-http-dispatcher/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-version/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-cache-api/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/edr-store-core/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -386,6 +388,8 @@ maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.11.0-SNAPSHOT, Apache-2.0
 maven/mavencentral/org.eclipse.edc/policy-evaluator-lib/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/protocol-version-api/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/protocol-version-spi/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/query-lib/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/request-policy-context-spi/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/runtime-metamodel/0.11.0-SNAPSHOT, Apache-2.0, approved, technology.edc

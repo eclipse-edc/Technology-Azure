@@ -47,7 +47,7 @@ class ObjectStorageProvisionerTest {
     @BeforeEach
     void setup() {
         RetryPolicy<Object> retryPolicy = RetryPolicy.builder().withMaxRetries(0).build();
-        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock);
+        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, 1L);
         policy = Policy.Builder.newInstance().build();
     }
 

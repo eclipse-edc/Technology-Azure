@@ -36,11 +36,13 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
     private final RetryPolicy<Object> retryPolicy;
     private final Monitor monitor;
     private final BlobStoreApi blobStoreApi;
+    private final Long expiryTokenTimeConfig;
 
-    public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi) {
+    public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi, Long expiryTokenTimeConfig) {
         this.retryPolicy = retryPolicy;
         this.monitor = monitor;
         this.blobStoreApi = blobStoreApi;
+        this.expiryTokenTimeConfig = expiryTokenTimeConfig;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
 
         monitor.debug("Azure Storage Container request submitted: " + containerName);
 
-        OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(1);
+        OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(expiryTokenTimeConfig);
 
         return with(retryPolicy).getAsync(() -> blobStoreApi.exists(accountName, containerName))
                 .thenCompose(exists -> {

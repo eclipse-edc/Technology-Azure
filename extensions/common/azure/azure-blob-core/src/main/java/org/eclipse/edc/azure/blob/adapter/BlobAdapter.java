@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.azure.blob.adapter;
 
+import com.azure.core.util.ProgressListener;
 import com.azure.storage.blob.specialized.BlockBlobClient;
 
 import java.io.InputStream;
@@ -25,6 +26,8 @@ import java.util.Map;
  */
 public interface BlobAdapter {
     OutputStream getOutputStream();
+
+    OutputStream getOutputStream(ProgressListener progressListener);
 
     InputStream openInputStream();
 

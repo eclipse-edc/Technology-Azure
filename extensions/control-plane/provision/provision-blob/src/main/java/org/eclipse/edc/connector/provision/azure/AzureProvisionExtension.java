@@ -60,7 +60,8 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi));
+        var expiryTokenTimeConfig = context.getConfig().getLong("edc.azure.token.expiry.time");
+        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, expiryTokenTimeConfig));
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 
         registerTypes(typeManager);

@@ -36,9 +36,9 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
     private final RetryPolicy<Object> retryPolicy;
     private final Monitor monitor;
     private final BlobStoreApi blobStoreApi;
-    private final Long expiryTokenTimeConfig;
+    private final long expiryTokenTimeConfig;
 
-    public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi, Long expiryTokenTimeConfig) {
+    public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi, long expiryTokenTimeConfig) {
         this.retryPolicy = retryPolicy;
         this.monitor = monitor;
         this.blobStoreApi = blobStoreApi;

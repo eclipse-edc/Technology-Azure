@@ -28,9 +28,16 @@ import java.util.Map;
  * Implementation of {@link BlobAdapter} using a {@link BlockBlobClient}.
  */
 public class DefaultBlobAdapter implements BlobAdapter {
+    private final long blockSizeInMb;
+    private final int maxConcurrency;
+    private final long maxSingleUploadSizeInMb;
     private final BlockBlobClient client;
 
-    public DefaultBlobAdapter(BlockBlobClient client) {
+    public DefaultBlobAdapter(
+            BlockBlobClient client, Long blockSizeInMb, Integer maxConcurrency, Long maxSingleUploadSizeInMb) {
+        this.blockSizeInMb = blockSizeInMb;
+        this.maxConcurrency = maxConcurrency;
+        this.maxSingleUploadSizeInMb = maxSingleUploadSizeInMb;
         this.client = client;
     }
 
@@ -42,9 +49,9 @@ public class DefaultBlobAdapter implements BlobAdapter {
     @Override
     public OutputStream getOutputStream(ProgressListener progressListener) {
         var parallelTransferOptions = new ParallelTransferOptions()
-                .setBlockSizeLong(100L * Constants.MB)
-                .setMaxConcurrency(10)
-                .setMaxSingleUploadSizeLong(100L * Constants.MB)
+                .setBlockSizeLong(blockSizeInMb * Constants.MB)
+                .setMaxConcurrency(maxConcurrency)
+                .setMaxSingleUploadSizeLong(maxSingleUploadSizeInMb * Constants.MB)
                 .setProgressListener(progressListener);
 
         return client.getBlobOutputStream(new BlockBlobOutputStreamOptions().setParallelTransferOptions(parallelTransferOptions));

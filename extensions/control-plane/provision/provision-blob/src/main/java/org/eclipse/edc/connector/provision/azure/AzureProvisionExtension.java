@@ -26,6 +26,7 @@ import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageConsumerResou
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageProvisioner;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageResourceDefinition;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -34,6 +35,10 @@ import org.eclipse.edc.spi.types.TypeManager;
  * Provides data transfer {@link Provisioner}s backed by Azure services.
  */
 public class AzureProvisionExtension implements ServiceExtension {
+
+    @Setting
+    public static final String EDC_AZURE_TOKEN_EXPIRY_TIME = "edc.azure.token.expiry.time";
+    public static final long EDC_AZURE_TOKEN_EXPIRY_TIME_DEFAULT = 1L;
 
     @Inject
     private BlobStoreApi blobStoreApi;
@@ -60,7 +65,7 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var expiryTokenTimeConfig = context.getConfig().getLong("edc.azure.token.expiry.time");
+        var expiryTokenTimeConfig = context.getConfig().getLong(EDC_AZURE_TOKEN_EXPIRY_TIME, EDC_AZURE_TOKEN_EXPIRY_TIME_DEFAULT);
         provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, expiryTokenTimeConfig));
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 

@@ -26,7 +26,11 @@ class BlobStoreApiImplTest {
 
     @Test
     void getBlobAdapter_succeeds() {
-        var service = new BlobStoreApiImpl(null, "https://%s.blob.core.windows.net");
+        var blockSizeInMb = 4L;
+        var maxConcurrency = 2;
+        var maxSingleUploadSizeInMb = 4L;
+        var service = new BlobStoreApiImpl(null, "https://%s.blob.core.windows.net",
+                blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb);
         assertThatNoException()
                 .isThrownBy(() -> service.getBlobAdapter(
                         createAccountName(),

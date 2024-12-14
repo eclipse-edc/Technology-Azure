@@ -72,9 +72,14 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Monitor monitor = mock();
     private final Vault vault = mock();
+    private final long blockSizeInMb = 4L;
+    private final int maxConcurrency = 2;
+    private final long maxSingleUploadSizeInMb = 4L;
 
-    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, PROVIDER_STORAGE_ACCOUNT_NAME));
-    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME));
+    private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(
+            AZURITE_PORT, PROVIDER_STORAGE_ACCOUNT_NAME), blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb);
+    private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, "http://127.0.0.1:%s/%s".formatted(
+            AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME), blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb);
 
     @BeforeEach
     void setUp() {
@@ -128,12 +133,13 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
         var partitionSize = 5;
 
-        var account2ApiPatched = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(CONSUMER_STORAGE_ACCOUNT_NAME)) {
+        var account2ApiPatched = new BlobStoreApiImpl(vault, TestFunctions.getBlobServiceTestEndpoint(CONSUMER_STORAGE_ACCOUNT_NAME),
+                blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb) {
             @Override
             public BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, AzureSasCredential credential) {
                 var blobClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY)
                         .getBlobContainerClient(containerName).getBlobClient(blobName).getBlockBlobClient();
-                return new DefaultBlobAdapter(blobClient);
+                return new DefaultBlobAdapter(blobClient, blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb);
             }
         };
 

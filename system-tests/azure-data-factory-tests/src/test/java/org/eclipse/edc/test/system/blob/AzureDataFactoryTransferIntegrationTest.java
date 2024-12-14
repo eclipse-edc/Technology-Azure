@@ -133,7 +133,11 @@ class AzureDataFactoryTransferIntegrationTest {
                 .buildClient();
         var vault = new AzureVault(new ConsoleMonitor(), secretClient);
         var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME)));
-        var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_ENDPOINT_TEMPLATE);
+        var blockSizeInMb = 4L;
+        var maxConcurrency = 2;
+        var maxSingleUploadSizeInMb = 4L;
+        var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_ENDPOINT_TEMPLATE,
+                blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb);
 
         // Upload a blob with test data on provider blob container
         blobStoreApi.createContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);

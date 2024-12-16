@@ -14,6 +14,3 @@ The configuration values of this extension are listed below:
 
 For detailed information,
 check [the official documentation](https://learn.microsoft.com/en-us/java/api/com.azure.storage.blob.models.paralleltransferoptions?view=azure-java-stable).
-
-The default block size is 4MB which limits the maximum transfer file size to ~200GB, so, if there is a need to upload
-files with larger sizes, the default value cannot be used.

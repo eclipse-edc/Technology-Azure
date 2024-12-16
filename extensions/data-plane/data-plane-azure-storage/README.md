@@ -86,3 +86,17 @@ An example destination address:
 The `folderName` and the `blobName` are optional properties in destination address.
 
 
+
+### AzureStorage Transfer Configuration
+
+The existing implementation takes under consideration transfer of files up to 200GB and that can be accomplished within the space of one hour. If your usage surpasses these limits or any other kind of additional tuning is needed, please [check this documentation](../../common/azure/azure-blob-core/README.md) containing the transfer configurations.
+
+#### File larger than 200GB
+
+To ease transfer of a large file, it is divided in several blocks. The default block size is 4MB which limits the maximum transfer file size to ~200GB, so, if there is a need to upload
+files with larger sizes, the `edc.azure.block.size.mb` property must be updated.
+
+#### Token expires before transfer is completed
+
+The default value of the SAS Token expiration if one hour after its creation. For larger files and/or due to network limitation the transfer can take longer than one hour.
+In this situation please update the `edc.azure.token.expiry.time` to a higher value.

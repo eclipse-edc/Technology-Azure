@@ -19,8 +19,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Settings;
 
 @Settings
 public record BlobStoreCoreExtensionConfig(
-        @Setting(key = "edc.azure.block.size.mb", description = "The block size, in mb, to parallel blob upload.", defaultValue = "4") long blockSize,
-        @Setting(key = "edc.azure.max.concurrency", description = "Maximum number of parallel requests in a transfer.", defaultValue = "2") int maxConcurrency,
-        @Setting(key = "edc.azure.max.single.upload.size.mb", description = "Maximum size, in mb, for a single upload.", defaultValue = "60") long maxSingleUploadSize,
-        @Setting(key = "edc.blobstore.endpoint.template", description = "Template for the blob service endpoint.", defaultValue = "https://%s.blob.core.windows.net") String blobstoreEndpointTemplate) {
+        @Setting(key = "edc.azure.block.size.mb", description = "The block size, in mb, to parallel blob upload.", defaultValue = "4", required = false) long blockSize,
+        @Setting(key = "edc.azure.max.concurrency", description = "Maximum number of parallel requests in a transfer.", defaultValue = "2", required = false) int maxConcurrency,
+        @Setting(key = "edc.azure.max.single.upload.size.mb", description = "Maximum size, in mb, for a single upload.", defaultValue = "60", required = false) long maxSingleUploadSize,
+        @Setting(key = "edc.blobstore.endpoint.template", description = "Template for the blob service endpoint.", defaultValue = "https://%s.blob.core.windows.net", required = false) String blobstoreEndpointTemplate) {
 }

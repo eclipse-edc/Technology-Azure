@@ -36,7 +36,7 @@ import org.eclipse.edc.spi.types.TypeManager;
  */
 public class AzureProvisionExtension implements ServiceExtension {
 
-    @Setting(description = "Expiration time, in hours, for the SAS token.", defaultValue = "1")
+    @Setting(description = "Expiration time, in hours, for the SAS token.", defaultValue = "1", required = false)
     public static final String EDC_AZURE_TOKEN_EXPIRY_TIME = "edc.azure.token.expiry.time";
 
     @Inject

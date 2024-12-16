@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 
-import com.azure.core.util.ProgressListener;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
@@ -257,11 +256,6 @@ class AzureDataSourceToDataSinkTest {
         @Override
         public OutputStream getOutputStream() {
             return out;
-        }
-
-        @Override
-        public OutputStream getOutputStream(ProgressListener progressListener) {
-            return null;
         }
 
         @Override

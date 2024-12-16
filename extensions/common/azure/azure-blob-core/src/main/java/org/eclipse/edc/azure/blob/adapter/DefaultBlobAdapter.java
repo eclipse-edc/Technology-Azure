@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.azure.blob.adapter;
 
-import com.azure.core.util.ProgressListener;
 import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.BlockBlobClient;
@@ -43,16 +42,10 @@ public class DefaultBlobAdapter implements BlobAdapter {
 
     @Override
     public OutputStream getOutputStream() {
-        return getOutputStream(null);
-    }
-
-    @Override
-    public OutputStream getOutputStream(ProgressListener progressListener) {
         var parallelTransferOptions = new ParallelTransferOptions()
                 .setBlockSizeLong(blockSizeInMb * Constants.MB)
                 .setMaxConcurrency(maxConcurrency)
-                .setMaxSingleUploadSizeLong(maxSingleUploadSizeInMb * Constants.MB)
-                .setProgressListener(progressListener);
+                .setMaxSingleUploadSizeLong(maxSingleUploadSizeInMb * Constants.MB);
 
         return client.getBlobOutputStream(new BlockBlobOutputStreamOptions().setParallelTransferOptions(parallelTransferOptions));
     }

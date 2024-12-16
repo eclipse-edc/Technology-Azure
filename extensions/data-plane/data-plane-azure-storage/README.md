@@ -93,7 +93,7 @@ The existing implementation takes under consideration transfer of files up to 20
 
 #### File larger than 200GB
 
-To ease transfer of a large file, it is divided in several blocks. The default block size is 4MB which limits the maximum transfer file size to ~200GB, so, if there is a need to upload
+To ease transfer of a large file, it is divided in several blocks. The default block size is 4MB which limits the maximum transfer file size to 200GB. This is due to Azure SDK limiting the maximum number of blocks in a transfer to 50000, resulting in aforementioned maximum of 200GB. So, if there is a need to upload
 files with larger sizes, the `edc.azure.block.size.mb` property must be updated.
 
 #### Token expires before transfer is completed

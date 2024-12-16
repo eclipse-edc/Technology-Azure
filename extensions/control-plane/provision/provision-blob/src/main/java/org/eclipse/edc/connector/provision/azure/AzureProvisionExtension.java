@@ -36,9 +36,8 @@ import org.eclipse.edc.spi.types.TypeManager;
  */
 public class AzureProvisionExtension implements ServiceExtension {
 
-    @Setting
+    @Setting(description = "Expiration time, in hours, for the SAS token.", defaultValue = "1")
     public static final String EDC_AZURE_TOKEN_EXPIRY_TIME = "edc.azure.token.expiry.time";
-    public static final long EDC_AZURE_TOKEN_EXPIRY_TIME_DEFAULT = 1L;
 
     @Inject
     private BlobStoreApi blobStoreApi;
@@ -65,7 +64,7 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var expiryTokenTimeConfig = context.getConfig().getLong(EDC_AZURE_TOKEN_EXPIRY_TIME, EDC_AZURE_TOKEN_EXPIRY_TIME_DEFAULT);
+        var expiryTokenTimeConfig = context.getConfig().getLong(EDC_AZURE_TOKEN_EXPIRY_TIME);
         provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, expiryTokenTimeConfig));
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 

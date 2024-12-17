@@ -22,6 +22,7 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.DeprovisionedRe
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionResponse;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedResource;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.provision.azure.AzureProvisionConfiguration;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -36,13 +37,13 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
     private final RetryPolicy<Object> retryPolicy;
     private final Monitor monitor;
     private final BlobStoreApi blobStoreApi;
-    private final long expiryTokenTimeConfig;
+    private final AzureProvisionConfiguration azureProvisionConfiguration;
 
-    public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi, long expiryTokenTimeConfig) {
+    public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi, AzureProvisionConfiguration azureProvisionConfiguration) {
         this.retryPolicy = retryPolicy;
         this.monitor = monitor;
         this.blobStoreApi = blobStoreApi;
-        this.expiryTokenTimeConfig = expiryTokenTimeConfig;
+        this.azureProvisionConfiguration = azureProvisionConfiguration;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
 
         monitor.debug("Azure Storage Container request submitted: " + containerName);
 
-        OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(expiryTokenTimeConfig);
+        OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(this.azureProvisionConfiguration.tokenExpiryTime());
 
         return with(retryPolicy).getAsync(() -> blobStoreApi.exists(accountName, containerName))
                 .thenCompose(exists -> {

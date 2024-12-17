@@ -25,8 +25,8 @@ import org.eclipse.edc.connector.provision.azure.blob.ObjectContainerProvisioned
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageConsumerResourceDefinitionGenerator;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageProvisioner;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageResourceDefinition;
+import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -36,8 +36,8 @@ import org.eclipse.edc.spi.types.TypeManager;
  */
 public class AzureProvisionExtension implements ServiceExtension {
 
-    @Setting(description = "Expiration time, in hours, for the SAS token.", defaultValue = "1", required = false)
-    public static final String EDC_AZURE_TOKEN_EXPIRY_TIME = "edc.azure.token.expiry.time";
+    @Configuration
+    private AzureProvisionConfiguration azureProvisionConfiguration;
 
     @Inject
     private BlobStoreApi blobStoreApi;
@@ -64,8 +64,7 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var expiryTokenTimeConfig = context.getConfig().getLong(EDC_AZURE_TOKEN_EXPIRY_TIME);
-        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, expiryTokenTimeConfig));
+        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, azureProvisionConfiguration));
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 
         registerTypes(typeManager);

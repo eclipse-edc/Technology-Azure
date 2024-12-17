@@ -29,7 +29,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 public class BlobStoreCoreExtension implements ServiceExtension {
 
     @Configuration
-    private BlobStoreCoreExtensionConfig blobStoreCoreExtensionConfig;
+    private BlobStorageConfiguration blobStorageConfiguration;
 
     public static final String NAME = "Azure BlobStore Core";
 
@@ -43,11 +43,7 @@ public class BlobStoreCoreExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var blobStoreApi = new BlobStoreApiImpl(vault,
-                blobStoreCoreExtensionConfig.blobstoreEndpointTemplate(),
-                blobStoreCoreExtensionConfig.blockSize(),
-                blobStoreCoreExtensionConfig.maxConcurrency(),
-                blobStoreCoreExtensionConfig.maxSingleUploadSize());
+        var blobStoreApi = new BlobStoreApiImpl(vault, blobStorageConfiguration);
         context.registerService(BlobStoreApi.class, blobStoreApi);
     }
 }

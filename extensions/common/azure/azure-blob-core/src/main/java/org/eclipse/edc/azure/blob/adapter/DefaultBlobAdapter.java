@@ -18,6 +18,7 @@ import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.azure.storage.common.implementation.Constants;
+import org.eclipse.edc.azure.blob.BlobStorageConfiguration;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,25 +28,20 @@ import java.util.Map;
  * Implementation of {@link BlobAdapter} using a {@link BlockBlobClient}.
  */
 public class DefaultBlobAdapter implements BlobAdapter {
-    private final long blockSizeInMb;
-    private final int maxConcurrency;
-    private final long maxSingleUploadSizeInMb;
+    private final BlobStorageConfiguration blobStorageConfiguration;
     private final BlockBlobClient client;
 
-    public DefaultBlobAdapter(
-            BlockBlobClient client, Long blockSizeInMb, Integer maxConcurrency, Long maxSingleUploadSizeInMb) {
-        this.blockSizeInMb = blockSizeInMb;
-        this.maxConcurrency = maxConcurrency;
-        this.maxSingleUploadSizeInMb = maxSingleUploadSizeInMb;
+    public DefaultBlobAdapter(BlockBlobClient client, BlobStorageConfiguration blobStorageConfiguration) {
         this.client = client;
+        this.blobStorageConfiguration = blobStorageConfiguration;
     }
 
     @Override
     public OutputStream getOutputStream() {
         var parallelTransferOptions = new ParallelTransferOptions()
-                .setBlockSizeLong(blockSizeInMb * Constants.MB)
-                .setMaxConcurrency(maxConcurrency)
-                .setMaxSingleUploadSizeLong(maxSingleUploadSizeInMb * Constants.MB);
+                .setBlockSizeLong(this.blobStorageConfiguration.blockSize() * Constants.MB)
+                .setMaxConcurrency(this.blobStorageConfiguration.maxConcurrency())
+                .setMaxSingleUploadSizeLong(this.blobStorageConfiguration.maxSingleUploadSize() * Constants.MB);
 
         return client.getBlobOutputStream(new BlockBlobOutputStreamOptions().setParallelTransferOptions(parallelTransferOptions));
     }

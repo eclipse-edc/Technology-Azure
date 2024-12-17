@@ -27,6 +27,7 @@ import com.azure.storage.common.sas.AccountSasPermission;
 import com.azure.storage.common.sas.AccountSasResourceType;
 import com.azure.storage.common.sas.AccountSasService;
 import com.azure.storage.common.sas.AccountSasSignatureValues;
+import org.eclipse.edc.azure.blob.BlobStorageConfiguration;
 import org.eclipse.edc.azure.blob.adapter.BlobAdapter;
 import org.eclipse.edc.azure.blob.adapter.DefaultBlobAdapter;
 import org.eclipse.edc.azure.blob.cache.AccountCache;
@@ -40,19 +41,12 @@ import static org.eclipse.edc.azure.blob.utils.BlobStoreUtils.createEndpoint;
 
 public class BlobStoreApiImpl implements BlobStoreApi {
 
-    private final long blockSizeInMb;
-    private final int maxConcurrency;
-    private final long maxSingleUploadSizeInMb;
-    private final String blobstoreEndpointTemplate;
+    private final BlobStorageConfiguration blobStorageConfiguration;
     private final AccountCache accountCache;
 
-    public BlobStoreApiImpl(Vault vault, String blobstoreEndpointTemplate,
-                            long blockSizeInMb, int maxConcurrency, long maxSingleUploadSizeInMb) {
-        this.blockSizeInMb = blockSizeInMb;
-        this.maxConcurrency = maxConcurrency;
-        this.maxSingleUploadSizeInMb = maxSingleUploadSizeInMb;
-        this.blobstoreEndpointTemplate = blobstoreEndpointTemplate;
-        this.accountCache = new AccountCacheImpl(vault, blobstoreEndpointTemplate);
+    public BlobStoreApiImpl(Vault vault, BlobStorageConfiguration blobStorageConfiguration) {
+        this.blobStorageConfiguration = blobStorageConfiguration;
+        this.accountCache = new AccountCacheImpl(vault, this.blobStorageConfiguration.blobstoreEndpointTemplate());
     }
 
     @Override
@@ -130,7 +124,7 @@ public class BlobStoreApiImpl implements BlobStoreApi {
 
     private BlobAdapter getBlobAdapter(String accountName, String containerName, String blobName, BlobServiceClientBuilder builder) {
         var blobServiceClient = builder
-                .endpoint(createEndpoint(blobstoreEndpointTemplate, accountName))
+                .endpoint(createEndpoint(this.blobStorageConfiguration.blobstoreEndpointTemplate(), accountName))
                 .buildClient();
 
         var blockBlobClient = blobServiceClient
@@ -138,6 +132,6 @@ public class BlobStoreApiImpl implements BlobStoreApi {
                 .getBlobClient(blobName)
                 .getBlockBlobClient();
 
-        return new DefaultBlobAdapter(blockBlobClient, blockSizeInMb, maxConcurrency, maxSingleUploadSizeInMb);
+        return new DefaultBlobAdapter(blockBlobClient, blobStorageConfiguration);
     }
 }

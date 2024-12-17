@@ -20,6 +20,7 @@ import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ProvisionedResource;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
+import org.eclipse.edc.connector.provision.azure.AzureProvisionConfiguration;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,13 +42,14 @@ import static org.mockito.Mockito.when;
 class ObjectStorageProvisionerTest {
 
     private final BlobStoreApi blobStoreApiMock = mock(BlobStoreApi.class);
+    private final AzureProvisionConfiguration azureProvisionConfiguration = mock(AzureProvisionConfiguration.class);
     private ObjectStorageProvisioner provisioner;
     private Policy policy;
 
     @BeforeEach
     void setup() {
         RetryPolicy<Object> retryPolicy = RetryPolicy.builder().withMaxRetries(0).build();
-        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, 1L);
+        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, azureProvisionConfiguration);
         policy = Policy.Builder.newInstance().build();
     }
 

@@ -39,9 +39,9 @@ public class DefaultBlobAdapter implements BlobAdapter {
     @Override
     public OutputStream getOutputStream() {
         var parallelTransferOptions = new ParallelTransferOptions()
-                .setBlockSizeLong(this.blobStorageConfiguration.blockSize() * Constants.MB)
-                .setMaxConcurrency(this.blobStorageConfiguration.maxConcurrency())
-                .setMaxSingleUploadSizeLong(this.blobStorageConfiguration.maxSingleUploadSize() * Constants.MB);
+                .setBlockSizeLong(blobStorageConfiguration.blockSize() * Constants.MB)
+                .setMaxConcurrency(blobStorageConfiguration.maxConcurrency())
+                .setMaxSingleUploadSizeLong(blobStorageConfiguration.maxSingleUploadSize() * Constants.MB);
 
         return client.getBlobOutputStream(new BlockBlobOutputStreamOptions().setParallelTransferOptions(parallelTransferOptions));
     }

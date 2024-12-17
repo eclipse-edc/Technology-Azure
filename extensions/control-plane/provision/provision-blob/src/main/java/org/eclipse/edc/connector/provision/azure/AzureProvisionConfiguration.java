@@ -19,5 +19,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Settings;
 
 @Settings
 public record AzureProvisionConfiguration(
-        @Setting(key = "edc.azure.token.expiry.time", description = "Expiration time, in hours, for the SAS token.", defaultValue = "1") long tokenExpiryTime) {
+        @Setting(key = "edc.azure.token.expiry.time", description = "Expiration time, in hours, for the SAS token.", defaultValue = "1")
+        long tokenExpiryTime) {
 }

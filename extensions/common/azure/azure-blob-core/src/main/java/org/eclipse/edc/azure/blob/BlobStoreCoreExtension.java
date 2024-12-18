@@ -16,10 +16,10 @@ package org.eclipse.edc.azure.blob;
 
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
+import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
-import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -28,8 +28,9 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 @Extension(value = BlobStoreCoreExtension.NAME)
 public class BlobStoreCoreExtension implements ServiceExtension {
 
-    @Setting
-    public static final String EDC_BLOBSTORE_ENDPOINT_TEMPLATE = "edc.blobstore.endpoint.template";
+    @Configuration
+    private BlobStorageConfiguration blobStorageConfiguration;
+
     public static final String NAME = "Azure BlobStore Core";
 
     @Inject
@@ -42,10 +43,7 @@ public class BlobStoreCoreExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var blobstoreEndpointTemplate = context
-                .getSetting(EDC_BLOBSTORE_ENDPOINT_TEMPLATE, "https://%s.blob.core.windows.net");
-
-        var blobStoreApi = new BlobStoreApiImpl(vault, blobstoreEndpointTemplate);
+        var blobStoreApi = new BlobStoreApiImpl(vault, blobStorageConfiguration);
         context.registerService(BlobStoreApi.class, blobStoreApi);
     }
 }

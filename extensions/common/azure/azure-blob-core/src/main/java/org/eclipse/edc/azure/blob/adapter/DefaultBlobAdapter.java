@@ -14,7 +14,11 @@
 
 package org.eclipse.edc.azure.blob.adapter;
 
+import com.azure.storage.blob.models.ParallelTransferOptions;
+import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.BlockBlobClient;
+import com.azure.storage.common.implementation.Constants;
+import org.eclipse.edc.azure.blob.BlobStorageConfiguration;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,15 +28,22 @@ import java.util.Map;
  * Implementation of {@link BlobAdapter} using a {@link BlockBlobClient}.
  */
 public class DefaultBlobAdapter implements BlobAdapter {
+    private final BlobStorageConfiguration blobStorageConfiguration;
     private final BlockBlobClient client;
 
-    public DefaultBlobAdapter(BlockBlobClient client) {
+    public DefaultBlobAdapter(BlockBlobClient client, BlobStorageConfiguration blobStorageConfiguration) {
         this.client = client;
+        this.blobStorageConfiguration = blobStorageConfiguration;
     }
 
     @Override
     public OutputStream getOutputStream() {
-        return client.getBlobOutputStream(/* overwrite = */ true);
+        var parallelTransferOptions = new ParallelTransferOptions()
+                .setBlockSizeLong(blobStorageConfiguration.blockSize() * Constants.MB)
+                .setMaxConcurrency(blobStorageConfiguration.maxConcurrency())
+                .setMaxSingleUploadSizeLong(blobStorageConfiguration.maxSingleUploadSize() * Constants.MB);
+
+        return client.getBlobOutputStream(new BlockBlobOutputStreamOptions().setParallelTransferOptions(parallelTransferOptions));
     }
 
     @Override

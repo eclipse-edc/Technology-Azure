@@ -16,6 +16,7 @@ package org.eclipse.edc.test.system.blob;
 
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
+import org.eclipse.edc.azure.blob.BlobStorageConfiguration;
 import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AzureSettings;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
@@ -63,6 +64,9 @@ class AzureDataFactoryTransferIntegrationTest {
     private static final String AZURE_TENANT_ID = getenv(PROPERTY_AZURE_TENANT_ID);
     private static final String AZURE_CLIENT_ID = getenv(PROPERTY_AZURE_CLIENT_ID);
     private static final String AZURE_CLIENT_SECRET = getenv(PROPERTY_AZURE_CLIENT_SECRET);
+    private static final long BLOCK_SIZE_IN_MB = 4L;
+    private static final int MAX_CONCURRENCY = 2;
+    private static final long MAX_SINGLE_UPLOAD_SIZE_IN_MB = 4L;
 
     @RegisterExtension
     public static final EdcRuntimeExtension CONSUMER = new EdcRuntimeExtension(
@@ -112,6 +116,9 @@ class AzureDataFactoryTransferIntegrationTest {
             .protocolEndpoint(new Participant.Endpoint(URI.create(ConsumerConstants.PROTOCOL_URL)))
             .build();
 
+    private static final BlobStorageConfiguration BLOB_STORE_CORE_EXTENSION_CONFIG =
+            new BlobStorageConfiguration(BLOCK_SIZE_IN_MB, MAX_CONCURRENCY, MAX_SINGLE_UPLOAD_SIZE_IN_MB, BLOB_STORE_ENDPOINT_TEMPLATE);
+
     private final BlobTransferParticipant providerClient = BlobTransferParticipant.Builder.newInstance()
             .id(ProviderConstants.PARTICIPANT_ID)
             .name(ProviderConstants.PARTICIPANT_NAME)
@@ -133,7 +140,7 @@ class AzureDataFactoryTransferIntegrationTest {
                 .buildClient();
         var vault = new AzureVault(new ConsoleMonitor(), secretClient);
         var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME)));
-        var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_ENDPOINT_TEMPLATE);
+        var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_CORE_EXTENSION_CONFIG);
 
         // Upload a blob with test data on provider blob container
         blobStoreApi.createContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);

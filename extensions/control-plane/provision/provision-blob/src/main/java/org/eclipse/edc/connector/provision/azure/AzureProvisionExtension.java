@@ -25,6 +25,7 @@ import org.eclipse.edc.connector.provision.azure.blob.ObjectContainerProvisioned
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageConsumerResourceDefinitionGenerator;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageProvisioner;
 import org.eclipse.edc.connector.provision.azure.blob.ObjectStorageResourceDefinition;
+import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -34,6 +35,9 @@ import org.eclipse.edc.spi.types.TypeManager;
  * Provides data transfer {@link Provisioner}s backed by Azure services.
  */
 public class AzureProvisionExtension implements ServiceExtension {
+
+    @Configuration
+    private AzureProvisionConfiguration azureProvisionConfiguration;
 
     @Inject
     private BlobStoreApi blobStoreApi;
@@ -60,7 +64,7 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi));
+        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, azureProvisionConfiguration));
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 
         registerTypes(typeManager);

@@ -14,6 +14,7 @@
 
 package org.eclipse.edc.azure.blob.api;
 
+import org.eclipse.edc.azure.blob.BlobStorageConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -26,7 +27,9 @@ class BlobStoreApiImplTest {
 
     @Test
     void getBlobAdapter_succeeds() {
-        var service = new BlobStoreApiImpl(null, "https://%s.blob.core.windows.net");
+        var blobStoreCoreExtensionConfig =
+                new BlobStorageConfiguration(4L, 2, 4L, "https://%s.blob.core.windows.net");
+        var service = new BlobStoreApiImpl(null, blobStoreCoreExtensionConfig);
         assertThatNoException()
                 .isThrownBy(() -> service.getBlobAdapter(
                         createAccountName(),

@@ -1,10 +1,11 @@
 name: Run Cosmos Tests
 on:
-  schedule:
-    # run daily at midnight
-    - cron: 0 0 * * *
+  # disabling scheduled runs for now
+  # schedule:
+  # run daily at midnight
+  #  - cron: 0 0 * * *
   workflow_dispatch:
-    
+
 
 jobs:
   Check-Actions-Secrets:

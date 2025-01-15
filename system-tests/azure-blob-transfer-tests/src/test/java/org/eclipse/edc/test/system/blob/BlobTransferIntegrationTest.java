@@ -18,9 +18,9 @@ package org.eclipse.edc.test.system.blob;
 
 import com.azure.core.util.BinaryData;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
+import org.eclipse.edc.azure.testfixtures.AzuriteExtension;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
-import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
@@ -35,15 +35,11 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.net.URI;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
@@ -53,108 +49,75 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @Testcontainers
 @AzureStorageIntegrationTest
 public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
-    private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
 
-    @RegisterExtension
-    protected static RuntimeExtension provider = new RuntimePerClassExtension(new EmbeddedRuntime(
-            "provider",
-            Map.ofEntries(
-                    Map.entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s"),
-                    Map.entry("edc.test.asset.container.name", PROVIDER_CONTAINER_NAME),
-                    Map.entry("web.http.port", valueOf(ProviderConstants.CONNECTOR_PORT)),
-                    Map.entry("web.http.path", ProviderConstants.CONNECTOR_PATH),
-                    Map.entry("web.http.management.port", valueOf(ProviderConstants.MANAGEMENT_PORT)),
-                    Map.entry("web.http.management.path", ProviderConstants.MANAGEMENT_PATH),
-                    Map.entry("web.http.protocol.port", valueOf(ProviderConstants.PROTOCOL_PORT)),
-                    Map.entry("web.http.protocol.path", ProviderConstants.PROTOCOL_PATH),
-                    Map.entry("web.http.control.port", valueOf(ProviderConstants.CONTROL_URL.getPort())),
-                    Map.entry("web.http.control.path", ProviderConstants.CONTROL_URL.getPath()),
-                    Map.entry(PARTICIPANT_ID, ProviderConstants.PARTICIPANT_ID),
-                    Map.entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
-                    Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
-                    Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
-                    Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
-            ),
-            ":system-tests:runtimes:azure-storage-transfer-provider"
-    ));
-
-    @RegisterExtension
-    protected static RuntimeExtension consumer = new RuntimePerClassExtension(new EmbeddedRuntime(
-            "consumer",
-            Map.ofEntries(
-                    Map.entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + AZURITE_PORT + "/%s"),
-                    Map.entry("web.http.port", valueOf(ConsumerConstants.CONNECTOR_PORT)),
-                    Map.entry("web.http.path", ConsumerConstants.CONNECTOR_PATH),
-                    Map.entry("web.http.management.port", valueOf(ConsumerConstants.MANAGEMENT_PORT)),
-                    Map.entry("web.http.management.path", ConsumerConstants.MANAGEMENT_PATH),
-                    Map.entry("web.http.protocol.port", valueOf(ConsumerConstants.PROTOCOL_PORT)),
-                    Map.entry("web.http.protocol.path", ConsumerConstants.PROTOCOL_PATH),
-                    Map.entry("web.http.control.port", valueOf(ConsumerConstants.CONTROL_URL.getPort())),
-                    Map.entry("web.http.control.path", ConsumerConstants.CONTROL_URL.getPath()),
-                    Map.entry(PARTICIPANT_ID, ConsumerConstants.PARTICIPANT_ID),
-                    Map.entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
-                    Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
-                    Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
-                    Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
-            ),
-            ":system-tests:runtimes:azure-storage-transfer-consumer"
-    ));
-
-    private final BlobTransferParticipant consumerClient = BlobTransferParticipant.Builder.newInstance()
+    private static final BlobTransferParticipant CONSUMER = BlobTransferParticipant.Builder.newInstance()
             .id(ConsumerConstants.PARTICIPANT_ID)
             .name(ConsumerConstants.PARTICIPANT_NAME)
-            .managementEndpoint(new Participant.Endpoint(URI.create(ConsumerConstants.MANAGEMENT_URL)))
-            .protocolEndpoint(new Participant.Endpoint(URI.create(ConsumerConstants.PROTOCOL_URL)))
             .build();
 
-    private final BlobTransferParticipant providerClient = BlobTransferParticipant.Builder.newInstance()
+    private static final BlobTransferParticipant PROVIDER = BlobTransferParticipant.Builder.newInstance()
             .id(ProviderConstants.PARTICIPANT_ID)
             .name(ProviderConstants.PARTICIPANT_NAME)
-            .managementEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.MANAGEMENT_URL)))
-            .protocolEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.PROTOCOL_URL)))
             .build();
+
+    @RegisterExtension
+    private static final AzuriteExtension AZURITE = new AzuriteExtension(AZURITE_PORT,
+            new AzuriteExtension.Account(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_KEY),
+            new AzuriteExtension.Account(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY)
+    );
+
+    @RegisterExtension
+    private static final RuntimeExtension PROVIDER_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
+            "provider",
+            ":system-tests:runtimes:azure-storage-transfer-provider"
+    ).configurationProvider(() -> PROVIDER.createConfig(AZURITE_PORT)));
+
+    @RegisterExtension
+    private static final RuntimeExtension CONSUMER_RUNTIME = new RuntimePerClassExtension(new EmbeddedRuntime(
+            "consumer",
+            ":system-tests:runtimes:azure-storage-transfer-consumer"
+    ).configurationProvider(() -> CONSUMER.createConfig(AZURITE_PORT)));
 
     @ParameterizedTest
     @ArgumentsSource(BlobNamesToTransferProvider.class)
     void transferBlob_success(String assetName, String[] blobsToTransfer) {
-        // Arrange
         // Upload a blob with test data on provider blob container (in account1).
-        createContainer(providerBlobServiceClient, PROVIDER_CONTAINER_NAME);
+        createContainer(providerBlobServiceClient, PROVIDER.getContainerName());
 
-        for (String blobToTransfer : blobsToTransfer) {
-            providerBlobServiceClient.getBlobContainerClient(PROVIDER_CONTAINER_NAME)
+        for (var blobToTransfer : blobsToTransfer) {
+            providerBlobServiceClient.getBlobContainerClient(PROVIDER.getContainerName())
                     .getBlobClient(blobToTransfer)
                     .upload(BinaryData.fromString(BLOB_CONTENT));
         }
 
         // Seed data to provider
-        var assetId = blobsToTransfer.length > 1 ? providerClient.createBlobInFolderAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName)
-                : providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, assetName);
-        var policyId = providerClient.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
-        providerClient.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+        var assetId = blobsToTransfer.length > 1 ? PROVIDER.createBlobInFolderAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER.getContainerName(), assetName)
+                : PROVIDER.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER.getContainerName(), assetName);
+        var policyId = PROVIDER.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
+        PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
         // Write Key to vault
-        consumer.getService(Vault.class).storeSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME), CONSUMER_STORAGE_ACCOUNT_KEY);
-        provider.getService(Vault.class).storeSecret(format("%s-key1", PROVIDER_STORAGE_ACCOUNT_NAME), PROVIDER_STORAGE_ACCOUNT_KEY);
+        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME), CONSUMER_STORAGE_ACCOUNT_KEY);
+        PROVIDER_RUNTIME.getService(Vault.class).storeSecret(format("%s-key1", PROVIDER_STORAGE_ACCOUNT_NAME), PROVIDER_STORAGE_ACCOUNT_KEY);
 
-        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
+        var transferProcessId = CONSUMER.requestAssetAndTransferToBlob(PROVIDER, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
         await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {
-            var state = consumerClient.getTransferProcessState(transferProcessId);
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
             // should be STARTED or some state after that to make it more robust.
             assertThat(TransferProcessStates.valueOf(state).code()).isGreaterThanOrEqualTo(COMPLETED.code());
         });
 
         var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY, "http://127.0.0.1:%s/%s".formatted(AZURITE_PORT, CONSUMER_STORAGE_ACCOUNT_NAME));
 
-        var dataDestination = consumerClient.getDataDestination(transferProcessId);
-        for (String blobToTransfer : blobsToTransfer) {
+        var dataDestination = CONSUMER.getDataDestination(transferProcessId);
+        for (var blobToTransfer : blobsToTransfer) {
             assertThat(dataDestination).satisfies(new BlobTransferValidator(blobServiceClient, BLOB_CONTENT, blobToTransfer));
         }
     }
 
     private static class BlobNamesToTransferProvider implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                     Arguments.of(ProviderConstants.ASSET_PREFIX, new String[]{
                             ProviderConstants.ASSET_PREFIX + 1 + ProviderConstants.ASSET_FILE,

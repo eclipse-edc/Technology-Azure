@@ -28,8 +28,8 @@ import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.json.JacksonTypeManager;
-import org.eclipse.edc.junit.extensions.EdcExtension;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimePerMethodExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -66,7 +66,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * accounts using Azure Data Factory.
  */
 @AzureDataFactoryIntegrationTest
-@ExtendWith(EdcExtension.class)
+@ExtendWith(RuntimePerMethodExtension.class)
 class AzureDataFactoryCopyIntegrationTest {
 
     private static final String RUNTIME_SETTINGS_PATH = "resources/azure/testing/runtime_settings.properties";
@@ -103,7 +103,6 @@ class AzureDataFactoryCopyIntegrationTest {
             AzureResourceManager azure,
             DataPlaneManager dataPlaneManager,
             DataPlaneStore store) {
-        // Arrange
         var providerStorage = new Account(azure, edc, PROVIDER_STORAGE_RESOURCE_ID);
         var consumerStorage = new Account(azure, edc, CONSUMER_STORAGE_RESOURCE_ID);
         var randomBytes = new byte[1024];
@@ -144,10 +143,8 @@ class AzureDataFactoryCopyIntegrationTest {
                 .getById(Objects.requireNonNull(edc.getContext().getConfig().getString(KEY_VAULT_RESOURCE_ID), KEY_VAULT_RESOURCE_ID));
         setSecret(consumerStorage, vault, destSecretKeyName);
 
-        // Act
         dataPlaneManager.start(request);
 
-        // Assert
         var destinationBlob = consumerStorage.client
                 .getBlobContainerClient(consumerStorage.containerName)
                 .getBlobClient(blobName);

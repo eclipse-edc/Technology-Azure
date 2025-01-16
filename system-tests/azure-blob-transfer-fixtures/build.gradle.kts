@@ -20,8 +20,9 @@ plugins {
 dependencies {
     testFixturesApi(project(":extensions:common:azure:azure-blob-core"))
     testFixturesApi(libs.edc.jsonld)
-    testFixturesApi(testFixtures(libs.edc.management.api.test.fixtures))
     testFixturesApi(libs.edc.lib.util)
+    testFixturesApi(libs.edc.spi.core)
+    testFixturesApi(testFixtures(libs.edc.management.api.test.fixtures))
     testFixturesImplementation(libs.restAssured)
     testFixturesImplementation(libs.azure.storageblob)
     testFixturesImplementation(libs.edc.junit)

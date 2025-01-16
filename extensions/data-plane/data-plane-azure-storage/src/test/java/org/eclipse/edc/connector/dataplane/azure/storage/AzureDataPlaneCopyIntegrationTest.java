@@ -24,6 +24,7 @@ import org.eclipse.edc.azure.blob.adapter.DefaultBlobAdapter;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
+import org.eclipse.edc.azure.testfixtures.AzuriteExtension;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
@@ -40,6 +41,7 @@ import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.OffsetDateTime;
@@ -85,6 +87,12 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
     private final BlobStoreApi account1Api = new BlobStoreApiImpl(vault, blobStoreCoreExtensionProviderConfig);
     private final BlobStoreApi account2Api = new BlobStoreApiImpl(vault, blobStoreCoreExtensionConsumerConfig);
+
+    @RegisterExtension
+    private static AzuriteExtension azurite = new AzuriteExtension(AZURITE_PORT,
+            new AzuriteExtension.Account(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_KEY),
+            new AzuriteExtension.Account(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY)
+    );
 
     @BeforeEach
     void setUp() {

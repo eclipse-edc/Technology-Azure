@@ -17,9 +17,6 @@ package org.eclipse.edc.azure.testfixtures;
 import com.azure.storage.blob.BlobServiceClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +29,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractAzureBlobTest {
 
-
     protected static final String PROVIDER_STORAGE_ACCOUNT_NAME = "account1";
     protected static final String PROVIDER_STORAGE_ACCOUNT_KEY = "key1";
     protected static final String CONSUMER_STORAGE_ACCOUNT_NAME = "account2";
     protected static final String CONSUMER_STORAGE_ACCOUNT_KEY = "key2";
     protected static final int AZURITE_PORT = getFreePort();
-    @Container
-    protected static final GenericContainer<?> AZURITE_CONTAINER = new FixedHostPortGenericContainer<>("mcr.microsoft.com/azure-storage/azurite")
-            .withFixedExposedPort(AZURITE_PORT, 10000)
-            .withEnv("AZURITE_ACCOUNTS", "%s:%s;%s:%s".formatted(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_KEY, CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY));
     protected BlobServiceClient providerBlobServiceClient;
     protected BlobServiceClient consumerBlobServiceClient;
     protected String providerContainerName;

@@ -273,6 +273,7 @@ maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.79, MIT AND CC0-1.0, approv
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.80, MIT AND CC0-1.0, approved, #18694
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.79, MIT, approved, #16965
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
+maven/mavencentral/org.checkerframework/checker-qual/3.42.0, MIT, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.48.3, MIT, approved, #17162
 maven/mavencentral/org.codehaus.plexus/plexus-classworlds/2.6.0, Apache-2.0 AND Plexus, approved, CQ22821
 maven/mavencentral/org.codehaus.plexus/plexus-component-annotations/2.1.0, Apache-2.0, approved, #809
@@ -488,8 +489,8 @@ maven/mavencentral/org.ow2.asm/asm-commons/9.7, BSD-3-Clause, approved, #16465
 maven/mavencentral/org.ow2.asm/asm-tree/9.7, BSD-3-Clause, approved, #16466
 maven/mavencentral/org.ow2.asm/asm/9.6, BSD-3-Clause, approved, #10776
 maven/mavencentral/org.ow2.asm/asm/9.7, BSD-3-Clause, approved, #16464
+maven/mavencentral/org.postgresql/postgresql/42.7.2, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.postgresql/postgresql/42.7.4, BSD-2-Clause AND Apache-2.0, approved, #11681
-maven/mavencentral/org.postgresql/postgresql/42.7.5, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.reflections/reflections/0.10.2, Apache-2.0 AND WTFPL, approved, clearlydefined
 maven/mavencentral/org.rnorth.duct-tape/duct-tape/1.0.8, MIT, approved, clearlydefined

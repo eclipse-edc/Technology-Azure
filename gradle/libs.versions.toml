@@ -20,7 +20,7 @@ testcontainers = "1.20.3"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-assertj = { module = "org.assertj:assertj-core", version = "3.27.2" }
+assertj = { module = "org.assertj:assertj-core", version = "3.27.3" }
 bouncyCastle-bcprovJdk18on = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle-jdk18on" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }

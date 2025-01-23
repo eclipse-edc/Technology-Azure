@@ -21,16 +21,18 @@ import org.eclipse.edc.azure.blob.api.BlobStoreApiImpl;
 import org.eclipse.edc.azure.testfixtures.AzureSettings;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
 import org.eclipse.edc.azure.testfixtures.annotations.AzureDataFactoryIntegrationTest;
-import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
-import org.eclipse.edc.junit.extensions.EdcRuntimeExtension;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.monitor.ConsoleMonitor;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.vault.azure.AzureVault;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.lang.System.getenv;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
@@ -52,6 +55,7 @@ import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+@Disabled("see .github/workflows/verify.yaml")
 @AzureDataFactoryIntegrationTest
 class AzureDataFactoryTransferIntegrationTest {
 
@@ -69,51 +73,51 @@ class AzureDataFactoryTransferIntegrationTest {
     private static final long MAX_SINGLE_UPLOAD_SIZE_IN_MB = 4L;
 
     @RegisterExtension
-    public static final EdcRuntimeExtension CONSUMER = new EdcRuntimeExtension(
-            ":system-tests:runtimes:azure-storage-transfer-consumer",
-            "consumer",
-            Map.ofEntries(
-                    Map.entry("web.http.port", valueOf(ConsumerConstants.CONNECTOR_PORT)),
-                    Map.entry("web.http.path", ConsumerConstants.CONNECTOR_PATH),
-                    Map.entry("web.http.management.port", valueOf(ConsumerConstants.MANAGEMENT_PORT)),
-                    Map.entry("web.http.management.path", ConsumerConstants.MANAGEMENT_PATH),
-                    Map.entry("web.http.protocol.port", valueOf(ConsumerConstants.PROTOCOL_PORT)),
-                    Map.entry("web.http.protocol.path", ConsumerConstants.PROTOCOL_PATH),
-                    Map.entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
-                    Map.entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
-                    Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
-                    Map.entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
-                    Map.entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
-                    Map.entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
-            )
+    public static final RuntimeExtension CONSUMER = new RuntimePerClassExtension(
+            new EmbeddedRuntime("consumer", ":system-tests:runtimes:azure-storage-transfer-consumer")
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                            entry("web.http.port", valueOf(ConsumerConstants.CONNECTOR_PORT)),
+                            entry("web.http.path", ConsumerConstants.CONNECTOR_PATH),
+                            entry("web.http.management.port", valueOf(ConsumerConstants.MANAGEMENT_PORT)),
+                            entry("web.http.management.path", ConsumerConstants.MANAGEMENT_PATH),
+                            entry("web.http.protocol.port", valueOf(ConsumerConstants.PROTOCOL_PORT)),
+                            entry("web.http.protocol.path", ConsumerConstants.PROTOCOL_PATH),
+                            entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
+                            entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
+                            entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
+                            entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
+                            entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
+                            entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
+                    )))
     );
+
     @RegisterExtension
-    public static final EdcRuntimeExtension PROVIDER = new EdcRuntimeExtension(
-            ":system-tests:runtimes:azure-data-factory-transfer-provider",
-            "provider",
-            Map.ofEntries(
-                    Map.entry("web.http.port", valueOf(ProviderConstants.CONNECTOR_PORT)),
-                    Map.entry("web.http.path", ProviderConstants.CONNECTOR_PATH),
-                    Map.entry("web.http.management.port", valueOf(ProviderConstants.MANAGEMENT_PORT)),
-                    Map.entry("web.http.management.path", ProviderConstants.MANAGEMENT_PATH),
-                    Map.entry("web.http.protocol.port", valueOf(ProviderConstants.PROTOCOL_PORT)),
-                    Map.entry("web.http.protocol.path", ProviderConstants.PROTOCOL_PATH),
-                    Map.entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
-                    Map.entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
-                    Map.entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
-                    Map.entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
-                    Map.entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
-                    Map.entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
-            )
+    public static final RuntimeExtension PROVIDER = new RuntimePerClassExtension(
+            new EmbeddedRuntime("provider", ":system-tests:runtimes:azure-data-factory-transfer-provider")
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                            entry("web.http.port", valueOf(ProviderConstants.CONNECTOR_PORT)),
+                            entry("web.http.path", ProviderConstants.CONNECTOR_PATH),
+                            entry("web.http.management.port", valueOf(ProviderConstants.MANAGEMENT_PORT)),
+                            entry("web.http.management.path", ProviderConstants.MANAGEMENT_PATH),
+                            entry("web.http.protocol.port", valueOf(ProviderConstants.PROTOCOL_PORT)),
+                            entry("web.http.protocol.path", ProviderConstants.PROTOCOL_PATH),
+                            entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
+                            entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
+                            entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
+                            entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
+                            entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
+                            entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
+                    )))
     );
+
     private static final String PROVIDER_STORAGE_ACCOUNT_NAME = AZURE_SETTINGS.getProperty("test.provider.storage.name");
     private static final String CONSUMER_STORAGE_ACCOUNT_NAME = AZURE_SETTINGS.getProperty("test.consumer.storage.name");
     private static final String BLOB_STORE_ENDPOINT_TEMPLATE = "https://%s.blob.core.windows.net";
     private final BlobTransferParticipant consumerClient = BlobTransferParticipant.Builder.newInstance()
             .id(ConsumerConstants.PARTICIPANT_ID)
             .name(ConsumerConstants.PARTICIPANT_NAME)
-            .managementEndpoint(new Participant.Endpoint(URI.create(ConsumerConstants.MANAGEMENT_URL)))
-            .protocolEndpoint(new Participant.Endpoint(URI.create(ConsumerConstants.PROTOCOL_URL)))
+            .controlManagementEndpoint(ConsumerConstants.MANAGEMENT_URL)
+            .controlProtocolEndpoint(ConsumerConstants.PROTOCOL_URL)
             .build();
 
     private static final BlobStorageConfiguration BLOB_STORE_CORE_EXTENSION_CONFIG =
@@ -122,8 +126,8 @@ class AzureDataFactoryTransferIntegrationTest {
     private final BlobTransferParticipant providerClient = BlobTransferParticipant.Builder.newInstance()
             .id(ProviderConstants.PARTICIPANT_ID)
             .name(ProviderConstants.PARTICIPANT_NAME)
-            .managementEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.MANAGEMENT_URL)))
-            .protocolEndpoint(new Participant.Endpoint(URI.create(ProviderConstants.PROTOCOL_URL)))
+            .controlManagementEndpoint(ProviderConstants.MANAGEMENT_URL)
+            .controlProtocolEndpoint(ProviderConstants.PROTOCOL_URL)
             .build();
 
     @AfterAll

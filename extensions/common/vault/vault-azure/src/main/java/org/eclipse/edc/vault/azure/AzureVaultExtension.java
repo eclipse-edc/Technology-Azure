@@ -38,13 +38,13 @@ public class AzureVaultExtension implements ServiceExtension {
 
     public static final String NAME = "Azure Vault";
 
-    @Setting("Name of the Azure Vault")
+    @Setting(description = "Name of the Azure Vault")
     private static final String VAULT_NAME = "edc.vault.name";
 
-    @Setting("If valid, ignore " + VAULT_NAME + " and use this URL as an Azure vault.")
+    @Setting(description = "If valid, ignore " + VAULT_NAME + " and use this URL as an Azure vault.")
     private static final String VAULT_URL_OVERRIDE = "edc.vault.url.override";
 
-    @Setting(value = "If true, allow the usage of non-azure domains for the vault.", type = "boolean", defaultValue = "false")
+    @Setting(description = "If true, allow the usage of non-azure domains for the vault.", type = "boolean", defaultValue = "false")
     private static final String VAULT_URL_OVERRIDE_UNSAFE = "edc.vault.url.override.unsafe";
 
     @Inject

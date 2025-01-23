@@ -17,16 +17,19 @@ package org.eclipse.edc.test.system.blob;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
 import static jakarta.json.Json.createObjectBuilder;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
+import static java.util.Map.entry;
 import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
@@ -36,21 +39,21 @@ public class BlobTransferParticipant extends Participant {
 
     public Config createConfig(int blobStoragePort) {
         return ConfigFactory.fromMap(Map.ofEntries(
-                Map.entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + blobStoragePort + "/%s"),
-                Map.entry("edc.test.asset.container.name", containerName),
-                Map.entry("web.http.port", String.valueOf(getFreePort())),
-                Map.entry("web.http.path", "/"),
-                Map.entry("web.http.management.port", valueOf(controlPlaneManagement.get().getPort())),
-                Map.entry("web.http.management.path", controlPlaneManagement.get().getPath()),
-                Map.entry("web.http.protocol.port", valueOf(controlPlaneProtocol.get().getPort())),
-                Map.entry("web.http.protocol.path", controlPlaneProtocol.get().getPath()),
-                Map.entry("web.http.control.port", valueOf(getFreePort())),
-                Map.entry("web.http.control.path", "/control"),
-                Map.entry(PARTICIPANT_ID, id),
-                Map.entry("edc.dsp.callback.address", controlPlaneProtocol.get().toString()),
-                Map.entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
-                Map.entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
-                Map.entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
+                entry(PARTICIPANT_ID, id),
+                entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + blobStoragePort + "/%s"),
+                entry("edc.test.asset.container.name", containerName),
+                entry("web.http.port", String.valueOf(getFreePort())),
+                entry("web.http.path", "/"),
+                entry("web.http.management.port", valueOf(controlPlaneManagement.get().getPort())),
+                entry("web.http.management.path", controlPlaneManagement.get().getPath()),
+                entry("web.http.protocol.port", valueOf(controlPlaneProtocol.get().getPort())),
+                entry("web.http.protocol.path", controlPlaneProtocol.get().getPath()),
+                entry("web.http.control.port", valueOf(getFreePort())),
+                entry("web.http.control.path", "/control"),
+                entry("edc.dsp.callback.address", controlPlaneProtocol.get().toString()),
+                entry("edc.transfer.proxy.token.verifier.publickey.alias", "test-alias"),
+                entry("edc.transfer.proxy.token.signer.privatekey.alias", "test-private-alias"),
+                entry("edc.jsonld.http.enabled", Boolean.TRUE.toString())
         ));
     }
 
@@ -133,5 +136,14 @@ public class BlobTransferParticipant extends Participant {
             return new Builder();
         }
 
+        public Builder controlManagementEndpoint(String managementUrl) {
+            participant.controlPlaneManagement = new LazySupplier<>(() -> URI.create(managementUrl));
+            return this;
+        }
+
+        public Builder controlProtocolEndpoint(String protocolUrl) {
+            participant.controlPlaneProtocol = new LazySupplier<>(() -> URI.create(protocolUrl));
+            return this;
+        }
     }
 }

@@ -1,29 +1,29 @@
 maven/mavencentral/com.apicatalog/titanium-json-ld/1.4.1, Apache-2.0, approved, #15200
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.46.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cosmos/2.47.0, , restricted, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-datafactory/1.0.0, MIT, approved, #10875
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.46.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.46.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-dns/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-eventhubs/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-keyvault/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-monitor/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-msi/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-network/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-privatedns/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-redis/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-resources/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-search/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-servicebus/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.47.0, , restricted, clearlydefined
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.47.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.5, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.6, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.7, MIT AND Apache-2.0, approved, #16697
@@ -98,14 +98,14 @@ maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.25, Apache-2.0, approved, clea
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.32, Apache-2.0, approved, #10561
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.40, Apache-2.0, approved, #15156
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.18, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.21.1, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #17938
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.21.2, LGPL-2.1-or-later AND (Apache-2.0 AND LGPL-2.1-or-later) AND Apache-2.0, approved, #17938
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #15227
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
 maven/mavencentral/com.squareup.okio/okio-jvm/3.6.0, Apache-2.0, approved, #11158
 maven/mavencentral/com.squareup.okio/okio/3.6.0, Apache-2.0, approved, #11155
 maven/mavencentral/com.sun.activation/jakarta.activation/2.0.0, EPL-2.0 OR BSD-3-Clause OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.jaf
-maven/mavencentral/commons-beanutils/commons-beanutils/1.9.4, Apache-2.0, approved, CQ12654
+maven/mavencentral/commons-beanutils/commons-beanutils/1.10.0, Apache-2.0, approved, #18350
 maven/mavencentral/commons-codec/commons-codec/1.11, Apache-2.0 AND BSD-3-Clause, approved, CQ15971
 maven/mavencentral/commons-codec/commons-codec/1.15, Apache-2.0 AND BSD-3-Clause AND LicenseRef-Public-Domain, approved, CQ22641
 maven/mavencentral/commons-collections/commons-collections/3.2.2, Apache-2.0, approved, #15185
@@ -267,12 +267,11 @@ maven/mavencentral/org.apiguardian/apiguardian-api/1.1.2, Apache-2.0, approved, 
 maven/mavencentral/org.assertj/assertj-core/3.24.2, Apache-2.0, approved, #6161
 maven/mavencentral/org.assertj/assertj-core/3.27.3, Apache-2.0, approved, #17980
 maven/mavencentral/org.awaitility/awaitility/4.2.2, Apache-2.0, approved, #14178
-maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.79, MIT, approved, #16962
-maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.79, MIT AND CC0-1.0, approved, #16964
+maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.80, MIT, approved, #18697
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.80, MIT AND CC0-1.0, approved, #18694
-maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.79, MIT, approved, #16965
 maven/mavencentral/org.ccil.cowan.tagsoup/tagsoup/1.2.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.checkerframework/checker-qual/3.48.3, MIT, approved, #17162
+maven/mavencentral/org.checkerframework/checker-qual/3.48.4, MIT, approved, #17162
 maven/mavencentral/org.codehaus.plexus/plexus-classworlds/2.6.0, Apache-2.0 AND Plexus, approved, CQ22821
 maven/mavencentral/org.codehaus.plexus/plexus-component-annotations/2.1.0, Apache-2.0, approved, #809
 maven/mavencentral/org.codehaus.plexus/plexus-container-default/2.1.0, Apache-2.0, approved, clearlydefined
@@ -470,7 +469,7 @@ maven/mavencentral/org.jetbrains.kotlin/kotlin-stdlib/1.9.10, Apache-2.0, approv
 maven/mavencentral/org.jetbrains/annotations/13.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/17.0.0, Apache-2.0, approved, clearlydefined
 maven/mavencentral/org.jetbrains/annotations/24.0.1, Apache-2.0, approved, #7417
-maven/mavencentral/org.jetbrains/annotations/26.0.1, Apache-2.0, approved, #16629
+maven/mavencentral/org.jetbrains/annotations/26.0.2, Apache-2.0, approved, #16629
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.0, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.11.3, EPL-2.0, approved, #15935
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.11.3, EPL-2.0, approved, #15939

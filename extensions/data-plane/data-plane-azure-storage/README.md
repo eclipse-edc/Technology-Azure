@@ -27,13 +27,11 @@ An example source address:
 ```json
 {
   "dataAddress": {
-    "properties": {
-      "type": "AzureStorage",
-      "container": "containerName",
-      "account": "accountName",
-      "blobName": "test/blob.bin",
-      "keyName": "(see above)"
-    }
+    "type": "AzureStorage",
+    "container": "containerName",
+    "account": "accountName",
+    "blobName": "test/blob.bin",
+    "keyName": "(see above)"
   }
 }
 ```
@@ -41,13 +39,11 @@ An example source address:
 ```json
 {
   "dataAddress": {
-    "properties": {
-      "type": "AzureStorage",
-      "container": "containerName",
-      "account": "accountName",
-      "blobPrefix": "test/",
-      "keyName": "(see above)"
-    }
+    "type": "AzureStorage",
+    "container": "containerName",
+    "account": "accountName",
+    "blobPrefix": "test/",
+    "keyName": "(see above)"
   }
 }
 ```
@@ -57,14 +53,12 @@ An example destination address:
 ```json
 {
     "dataDestination": {
-        "properties": {
-            "type": "AzureStorage",
-            "container": "containerName",
-            "account": "accountName",
-            "folderName": "destinationFolder/",
-            "blobName": "new-name",
-            "keyName": "(see above)"
-        }
+      "type": "AzureStorage",
+      "container": "containerName",
+      "account": "accountName",
+      "folderName": "destinationFolder/",
+      "blobName": "new-name",
+      "keyName": "(see above)"
     }
 }
 ```
@@ -73,18 +67,15 @@ An example destination address:
 ```json
 {
     "dataDestination": {
-        "properties": {
-            "type": "AzureStorage",
-            "container": "containerName",
-            "account": "accountName",
-            "folderName": "destinationFolder/",
-            "keyName": "(see above)"
-        }
+      "type": "AzureStorage",
+      "container": "containerName",
+      "account": "accountName",
+      "folderName": "destinationFolder/",
+      "keyName": "(see above)"
     }
 }
 ```
 The `folderName` and the `blobName` are optional properties in destination address.
-
 
 
 ### AzureStorage Transfer Configuration

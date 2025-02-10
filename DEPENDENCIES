@@ -3,7 +3,7 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appplatform/2
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-appservice/2.47.0, MIT, approved, #19275
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-authorization/2.47.0, MIT, approved, #19274
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-cdn/2.47.0, MIT, approved, #19252
-maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.47.0, MIT AND (LicenseRef-scancode-proprietary-license AND MIT), restricted, #19262
+maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-compute/2.47.0, MIT, approved, #19262
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerinstance/2.47.0, MIT, approved, #19267
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerregistry/2.47.0, MIT, approved, #19272
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-containerservice/2.47.0, MIT, approved, #19257

@@ -8,7 +8,7 @@ edc = "0.12.0-SNAPSHOT"
 # todo: remove this once IH supports credential presentation and issuance
 identityhub = "0.3.1"
 
-awaitility = "4.2.2"
+awaitility = "4.3.0"
 azure-rm = "2.47.0"
 bouncyCastle-jdk18on = "1.80"
 failsafe = "3.3.2"

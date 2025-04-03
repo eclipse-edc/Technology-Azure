@@ -28,7 +28,6 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.47.
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.47.0, MIT, approved, #19273
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.47.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.11, MIT AND Apache-2.0, approved, #16697
-maven/mavencentral/com.azure/azure-core-http-netty/1.15.6, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.7, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-management/1.15.6, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.54.0, MIT, approved, clearlydefined
@@ -41,10 +40,11 @@ maven/mavencentral/com.azure/azure-messaging-eventgrid/4.28.0, MIT, approved, #1
 maven/mavencentral/com.azure/azure-security-keyvault-keys/4.9.1, MIT, approved, #16934
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.9.1, MIT, approved, #16850
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.9.2, MIT, approved, #16850
-maven/mavencentral/com.azure/azure-storage-blob/12.29.0, MIT, approved, #17273
+maven/mavencentral/com.azure/azure-storage-blob/12.30.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-storage-common/12.28.0, MIT, approved, #17275
+maven/mavencentral/com.azure/azure-storage-common/12.29.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-storage-file-share/12.25.1, MIT, approved, #18353
-maven/mavencentral/com.azure/azure-storage-internal-avro/12.14.0, MIT, approved, #17274
+maven/mavencentral/com.azure/azure-storage-internal-avro/12.15.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-xml/1.1.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-xml/1.2.0, MIT, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.10.3, Apache-2.0, approved, CQ21280
@@ -133,7 +133,6 @@ maven/mavencentral/io.netty/netty-codec-http/4.1.118.Final, Apache-2.0 AND BSD-3
 maven/mavencentral/io.netty/netty-codec-http2/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.115.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-http2/4.1.118.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-codec-socks/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.115.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec-socks/4.1.118.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-codec/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
@@ -154,22 +153,17 @@ maven/mavencentral/io.netty/netty-resolver-dns/4.1.112.Final, Apache-2.0 AND BSD
 maven/mavencentral/io.netty/netty-resolver/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.115.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-resolver/4.1.118.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.65.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.69.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
 maven/mavencentral/io.netty/netty-tcnative-boringssl-static/2.0.70.Final, Apache-2.0 OR LicenseRef-Public-Domain OR BSD-2-Clause OR MIT, approved, CQ15280
-maven/mavencentral/io.netty/netty-tcnative-classes/2.0.65.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.netty/netty-tcnative-classes/2.0.69.Final, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.netty/netty-tcnative-classes/2.0.70.Final, Apache-2.0, approved, clearlydefined
-maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.112.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.115.Final, Apache-2.0, approved, #6366
 maven/mavencentral/io.netty/netty-transport-classes-epoll/4.1.118.Final, Apache-2.0, approved, #6366
-maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.112.Final, Apache-2.0, approved, #4107
 maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.115.Final, Apache-2.0, approved, #4107
 maven/mavencentral/io.netty/netty-transport-classes-kqueue/4.1.118.Final, Apache-2.0, approved, #4107
 maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.115.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-epoll/4.1.118.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
-maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.115.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-kqueue/4.1.118.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.netty/netty-transport-native-unix-common/4.1.112.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926

@@ -16,10 +16,13 @@
 package org.eclipse.edc.connector.provision.azure.blob;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.ResourceDefinition;
 
 import java.util.Objects;
 
+@JsonDeserialize(builder = ObjectStorageResourceDefinition.Builder.class)
 public class ObjectStorageResourceDefinition extends ResourceDefinition {
 
     private String containerName;
@@ -46,6 +49,7 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
         return folderName;
     }
 
+    @JsonPOJOBuilder(withPrefix = "")
     public static class Builder extends ResourceDefinition.Builder<ObjectStorageResourceDefinition, Builder> {
 
         private Builder() {

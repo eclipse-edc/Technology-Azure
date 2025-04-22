@@ -61,6 +61,7 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
         String containerName = resourceDefinition.getContainerName();
         String accountName = resourceDefinition.getAccountName();
         String folderName = resourceDefinition.getFolderName();
+        String blobName = resourceDefinition.getBlobName();
 
         monitor.debug("Azure Storage Container request submitted: " + containerName);
 
@@ -83,6 +84,7 @@ public class ObjectStorageProvisioner implements Provisioner<ObjectStorageResour
                             .accountName(accountName)
                             .containerName(containerName)
                             .folderName(folderName)
+                            .blobName(blobName)
                             .resourceDefinitionId(resourceDefinition.getId())
                             .transferProcessId(resourceDefinition.getTransferProcessId())
                             .resourceName(resourceName)

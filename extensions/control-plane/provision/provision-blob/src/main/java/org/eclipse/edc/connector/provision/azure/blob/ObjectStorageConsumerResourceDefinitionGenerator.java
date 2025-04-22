@@ -47,7 +47,8 @@ public class ObjectStorageConsumerResourceDefinitionGenerator implements Consume
             definitionBuilder
                     .accountName(destination.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME))
                     .containerName(destination.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME, randomUUID().toString()))
-                    .folderName(destination.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME));
+                    .folderName(destination.getStringProperty(AzureBlobStoreSchema.FOLDER_NAME))
+                    .blobName(destination.getStringProperty(AzureBlobStoreSchema.BLOB_NAME));
         }
 
         return definitionBuilder.build();

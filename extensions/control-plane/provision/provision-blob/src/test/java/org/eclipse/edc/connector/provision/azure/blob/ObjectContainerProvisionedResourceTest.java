@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.FOLDER_NAME;
 
@@ -54,17 +55,22 @@ class ObjectContainerProvisionedResourceTest {
         assertThat(dest.getStringProperty(CONTAINER_NAME)).isEqualTo("test-container");
         assertThat(dest.getStringProperty(ACCOUNT_NAME)).isEqualTo("test-account");
         assertThat(dest.getProperties()).doesNotContainKey(FOLDER_NAME);
+        assertThat(dest.getProperties()).doesNotContainKey(BLOB_NAME);
     }
 
     @Test
-    void createDataDestination_withFolder() {
-        var dest = builder.folderName("testfolder").build().getDataAddress();
+    void createDataDestination_withFolderAndBlob() {
+        var dest = builder
+                .folderName("testfolder")
+                .blobName("testblob")
+                .build().getDataAddress();
 
         assertThat(dest.getType()).isEqualTo(AzureBlobStoreSchema.TYPE);
         assertThat(dest.getKeyName()).isEqualTo("test-container");
         assertThat(dest.getStringProperty(CONTAINER_NAME)).isEqualTo("test-container");
         assertThat(dest.getStringProperty(ACCOUNT_NAME)).isEqualTo("test-account");
         assertThat(dest.getStringProperty(FOLDER_NAME)).isEqualTo("testfolder");
+        assertThat(dest.getStringProperty(BLOB_NAME)).isEqualTo("testblob");
     }
 
 
@@ -84,6 +90,8 @@ class ObjectContainerProvisionedResourceTest {
 
     @Test
     void verifyDeserialization() {
+        var enrichedBuilder = builder.blobName("test-blob").folderName("test-folder");
+
         var serialized = Map.of(
                 "id", "test-id",
                 "edctype", "dataspaceconnector:objectcontainerprovisionedresource",
@@ -91,7 +99,9 @@ class ObjectContainerProvisionedResourceTest {
                 "resourceDefinitionId", "test-resdef-id",
                 "accountName", "test-account",
                 "containerName", "test-container",
-                "resourceName", "test-container"
+                "resourceName", "test-container",
+                "folderName", "test-folder",
+                "blobName", "test-blob"
         );
 
         var res = typeManager.readValue(typeManager.writeValueAsBytes(serialized), ObjectContainerProvisionedResource.class);
@@ -99,6 +109,7 @@ class ObjectContainerProvisionedResourceTest {
         assertThat(res).isNotNull();
         assertThat(res.getContainerName()).isEqualTo("test-container");
         assertThat(res.getAccountName()).isEqualTo("test-account");
-        assertThat(res).usingRecursiveComparison().isEqualTo(builder.build());
+        assertThat(res).usingRecursiveComparison().isEqualTo(enrichedBuilder.build());
     }
+
 }

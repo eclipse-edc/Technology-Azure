@@ -81,25 +81,8 @@ class AzureStorageDataSinkTest {
             .destinationBlobName(destinationBlobName)
             .build();
 
-    private final DataFlowStartMessage preBuiltRequest = request.build();
-
-    private final AzureStorageDataSink dataSinkWithCorrelationId = AzureStorageDataSink.Builder.newInstance()
-            .accountName(accountName)
-            .containerName(containerName)
-            .sharedAccessSignature(sharedAccessSignature)
-            .requestId(request.build().getId())
-            .blobStoreApi(blobStoreApi)
-            .destinationBlobName(destinationBlobName)
-            .executorService(executor)
-            .monitor(monitor)
-            .request(preBuiltRequest)
-            .metadataProvider(metadataProvider)
-            .build();
-
     private final BlobAdapter destination = mock(BlobAdapter.class);
-    private final BlobAdapter completionMarker = mock(BlobAdapter.class);
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    private final OutputStream completionMarkerOutput = mock(OutputStream.class);
     InputStreamDataSource part = new InputStreamDataSource(blobName, new ByteArrayInputStream(content.getBytes(UTF_8)));
 
     @BeforeEach
@@ -111,14 +94,6 @@ class AzureStorageDataSinkTest {
                 eq(blobName),
                 sharedAccessSignatureMatcher(sharedAccessSignature)))
                 .thenReturn(destination);
-
-        when(completionMarker.getOutputStream()).thenReturn(completionMarkerOutput);
-        when(blobStoreApi.getBlobAdapter(
-                eq(accountName),
-                eq(containerName),
-                argThat(s -> s.endsWith(".complete")),
-                sharedAccessSignatureMatcher(sharedAccessSignature)))
-                .thenReturn(completionMarker);
 
         when(context.getComponentId()).thenReturn("connectorId");
         when(context.getParticipantId()).thenReturn("participantId");
@@ -144,11 +119,6 @@ class AzureStorageDataSinkTest {
     }
 
     @Test
-    void transferParts_whenWriteFails_fails() {
-        when(destination.getOutputStream()).thenThrow(exception);
-    }
-
-    @Test
     void transferParts_whenReadFails_fails() {
         when(destination.getOutputStream()).thenThrow(exception);
         var part = mock(Part.class);
@@ -166,19 +136,6 @@ class AzureStorageDataSinkTest {
         when(part.name()).thenReturn(blobName);
         assertThatTransferPartsFails(part, "Error transferring blob for %s on account %s", blobName, accountName);
     }
-
-    @Test
-    void complete() throws IOException {
-        dataSink.registerCompletedFile("test-case");
-        dataSink.complete();
-        verify(blobStoreApi).getBlobAdapter(
-                eq(accountName),
-                eq(containerName),
-                argThat(s -> s.endsWith(".complete")),
-                sharedAccessSignatureMatcher(sharedAccessSignature));
-        verify(completionMarkerOutput).close();
-    }
-
 
     private void assertThatTransferPartsFails(Part part, String logMessage, Object... args) {
         var message = format(logMessage, args);

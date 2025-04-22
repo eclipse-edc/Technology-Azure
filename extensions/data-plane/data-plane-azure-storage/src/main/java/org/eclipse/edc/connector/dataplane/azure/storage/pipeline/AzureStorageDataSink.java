@@ -25,7 +25,6 @@ import org.eclipse.edc.connector.dataplane.util.sink.ParallelSink;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,9 +34,6 @@ import static java.lang.String.format;
  * Writes data into an Azure storage container.
  */
 public class AzureStorageDataSink extends ParallelSink {
-    // Name of the empty blob used to indicate completion. Used by consumer-side status checker.
-    public static final String COMPLETE_BLOB_NAME = ".complete";
-    private final List<String> completedFiles = new ArrayList<>();
     private String accountName;
     private String containerName;
     private String sharedAccessSignature;
@@ -48,15 +44,6 @@ public class AzureStorageDataSink extends ParallelSink {
 
     private AzureStorageDataSink() {
     }
-
-    void registerCompletedFile(String name) {
-        completedFiles.add(name + COMPLETE_BLOB_NAME);
-    }
-
-
-    /**
-     * Writes data into an Azure storage container.
-     */
 
     @Override
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
@@ -80,24 +67,8 @@ public class AzureStorageDataSink extends ParallelSink {
             } catch (Exception e) {
                 return getTransferResult(e, "Error updating metadata for blob : %s", name);
             }
-            registerCompletedFile(name);
         }
         return StreamResult.success();
-    }
-
-
-    @Override
-    protected StreamResult<Object> complete() {
-        for (var completedFile : completedFiles) {
-            try {
-                // Write an empty blob to indicate completion
-                getAdapter(completedFile).getOutputStream().close();
-            } catch (Exception e) {
-                return getTransferResult(e, "Error creating blob %s on account %s", completedFile, accountName);
-            }
-            monitor.info(String.format("Created empty blob '%s' to indicate transfer success", completedFile));
-        }
-        return super.complete();
     }
 
     protected BlobAdapter getAdapter(String blobName) {

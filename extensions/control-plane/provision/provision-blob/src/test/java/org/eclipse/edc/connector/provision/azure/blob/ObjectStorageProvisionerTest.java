@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.FOLDER_NAME;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,8 +82,12 @@ class ObjectStorageProvisionerTest {
     }
 
     @Test
-    void provision_withFolder_success() {
-        var resourceDef = createResourceDefinitionBuilder().transferProcessId("tpId").folderName("test-folder").build();
+    void provision_withFolder_andBlob_success() {
+        var resourceDef = createResourceDefinitionBuilder()
+                .transferProcessId("tpId")
+                .folderName("test-folder")
+                .blobName("test-blob")
+                .build();
         String accountName = resourceDef.getAccountName();
         String containerName = resourceDef.getContainerName();
         when(blobStoreApiMock.exists(anyString(), anyString())).thenReturn(false);
@@ -93,6 +98,7 @@ class ObjectStorageProvisionerTest {
         assertThat(response.getResource()).isInstanceOfSatisfying(ObjectContainerProvisionedResource.class, resource -> {
             assertThat(resource.getTransferProcessId()).isEqualTo("tpId");
             assertThat(resource.getDataAddress().getStringProperty(EDC_NAMESPACE + FOLDER_NAME)).isEqualTo("test-folder");
+            assertThat(resource.getDataAddress().getStringProperty(EDC_NAMESPACE + BLOB_NAME)).isEqualTo("test-blob");
         });
         assertThat(response.getSecretToken()).isInstanceOfSatisfying(AzureSasToken.class, secretToken -> {
             assertThat(secretToken.getSas()).isEqualTo("?some-sas");

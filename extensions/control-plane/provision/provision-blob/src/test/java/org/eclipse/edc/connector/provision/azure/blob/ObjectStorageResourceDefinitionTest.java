@@ -38,6 +38,7 @@ class ObjectStorageResourceDefinitionTest {
                 .accountName("account")
                 .containerName("container")
                 .folderName(folder)
+                .blobName("blob")
                 .build();
         var builder = definition.toBuilder();
         var rebuiltDefinition = builder.build();
@@ -56,6 +57,7 @@ class ObjectStorageResourceDefinitionTest {
                 .accountName("account")
                 .containerName("container")
                 .folderName("any")
+                .blobName("blob")
                 .build();
         var manifest = ResourceManifest.Builder.newInstance().definitions(List.of(definition)).build();
 

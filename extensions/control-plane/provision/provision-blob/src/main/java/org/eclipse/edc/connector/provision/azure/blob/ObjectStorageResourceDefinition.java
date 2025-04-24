@@ -28,6 +28,7 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
     private String containerName;
     private String accountName;
     private String folderName;
+    private String blobName;
 
     public String getContainerName() {
         return containerName;
@@ -42,11 +43,16 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
         return initializeBuilder(new Builder())
                 .containerName(containerName)
                 .folderName(folderName)
+                .blobName(blobName)
                 .accountName(accountName);
     }
 
     public String getFolderName() {
         return folderName;
+    }
+
+    public String getBlobName() {
+        return blobName;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
@@ -72,6 +78,11 @@ public class ObjectStorageResourceDefinition extends ResourceDefinition {
 
         public Builder folderName(String folderName) {
             resourceDefinition.folderName = folderName;
+            return this;
+        }
+
+        public Builder blobName(String blobName) {
+            resourceDefinition.blobName = blobName;
             return this;
         }
 

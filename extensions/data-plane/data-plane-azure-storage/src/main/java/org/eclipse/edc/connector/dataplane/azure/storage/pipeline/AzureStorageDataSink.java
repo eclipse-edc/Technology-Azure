@@ -47,7 +47,7 @@ public class AzureStorageDataSink extends ParallelSink {
 
     @Override
     protected StreamResult<Object> transferParts(List<DataSource.Part> parts) {
-        for (DataSource.Part part : parts) {
+        for (var part : parts) {
             var name = destinationBlobName.resolve(part.name(), parts.size());
             try (var input = part.openStream()) {
                 try (var output = getAdapter(name).getOutputStream()) {

@@ -26,53 +26,55 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class AzureDataFactoryTransferServiceTest {
 
-    private final AzureDataFactoryTransferRequestValidator validator = mock(AzureDataFactoryTransferRequestValidator.class);
-    private final AzureDataFactoryTransferManager transferManager = mock(AzureDataFactoryTransferManager.class);
+    private final AzureDataFactoryTransferRequestValidator validator = mock();
+    private final AzureDataFactoryTransferManager transferManager = mock();
     private final AzureDataFactoryTransferService transferService = new AzureDataFactoryTransferService(
             validator,
             transferManager);
 
     private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
-    private final Result<Boolean> failure = Result.failure("Test Failure");
-    private final Result<Boolean> success = Result.success(true);
-    @SuppressWarnings("unchecked")
-    private final CompletableFuture<StreamResult<Object>> result = mock(CompletableFuture.class);
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void canHandle_onResult(boolean expected) {
-        // Arrange
         when(validator.canHandle(request.build())).thenReturn(expected);
-        // Act & Assert
+
         assertThat(transferService.canHandle(request.build())).isEqualTo(expected);
     }
 
     @Test
     void validate_onSuccess() {
-        // Arrange
+        var success = Result.success(true);
         when(validator.validate(request.build())).thenReturn(success);
-        // Act & Assert
-        assertThat(transferService.validate(request.build())).isSameAs(success);
+
+        var result = transferService.validate(request.build());
+
+        assertThat(result).isSucceeded();
     }
 
     @Test
     void validate_onFailure() {
-        // Arrange
+        var failure = Result.<Boolean>failure("Test Failure");
         when(validator.validate(request.build())).thenReturn(failure);
-        // Act & Assert
-        assertThat(transferService.validate(request.build())).isSameAs(failure);
+
+        var result = transferService.validate(request.build());
+
+        assertThat(result).isFailed().detail().isEqualTo("Test Failure");
     }
 
     @Test
     void transfer() {
-        // Arrange
-        when(transferManager.transfer(request.build())).thenReturn(result);
-        // Act & Assert
-        assertThat(transferService.transfer(request.build())).isSameAs(result);
+        var future = new CompletableFuture<StreamResult<Object>>();
+        when(transferManager.transfer(request.build())).thenReturn(future);
+
+        var result = transferService.transfer(request.build());
+
+        assertThat(result).isSameAs(future);
     }
 }

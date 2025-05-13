@@ -42,8 +42,8 @@ public class AzureDataFactoryTransferService implements TransferService {
     }
 
     @Override
-    public @NotNull Result<Boolean> validate(DataFlowStartMessage request) {
-        return validator.validate(request);
+    public @NotNull Result<Void> validate(DataFlowStartMessage request) {
+        return validator.validate(request).mapEmpty();
     }
 
     @Override

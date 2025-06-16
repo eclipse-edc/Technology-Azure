@@ -13,7 +13,7 @@ azure-rm = "2.50.0"
 bouncyCastle-jdk18on = "1.80"
 failsafe = "3.3.2"
 junit = "5.12.2"
-postgres = "42.7.5"
+postgres = "42.7.7"
 restAssured = "5.5.1"
 testcontainers = "1.21.0"
 

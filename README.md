@@ -7,7 +7,7 @@
 <br>
 [![build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/Technology-Azure/verify.yaml?branch=main&logo=GitHub&style=flat-square&label=ci)](https://github.com/eclipse-edc/Technology-Azure/actions/workflows/verify.yaml?query=branch%3Amain)
 [![snapshot build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/Technology-Azure/trigger_snapshot.yml?branch=main&logo=GitHub&style=flat-square&label=snapshot-build)](https://github.com/eclipse-edc/Technology-Azure/actions/workflows/trigger_snapshot.yml)
-[![nightly build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/Technology-Azure/nightly.yaml?branch=main&logo=GitHub&style=flat-square&label=nightly-build)](https://github.com/eclipse-edc/Technology-Azure/actions/workflows/nightly.yaml)
+[![nightly build](https://img.shields.io/github/actions/workflow/status/eclipse-edc/Technology-Azure/nightly.yml?branch=main&logo=GitHub&style=flat-square&label=nightly-build)](https://github.com/eclipse-edc/Technology-Azure/actions/workflows/nightly.yml)
 
 ---
 

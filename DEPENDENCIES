@@ -28,12 +28,15 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.50.
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.50.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.50.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.11, MIT AND Apache-2.0, approved, #16697
+maven/mavencentral/com.azure/azure-core-http-netty/1.15.12, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-http-netty/1.15.7, MIT AND Apache-2.0, approved, #16697
 maven/mavencentral/com.azure/azure-core-management/1.17.0, MIT, approved, #20595
 maven/mavencentral/com.azure/azure-core/1.54.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.55.3, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-identity/1.15.4, MIT, approved, #18662
+maven/mavencentral/com.azure/azure-core/1.55.4, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-identity/1.16.2, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.3.0, MIT, approved, clearlydefined
+maven/mavencentral/com.azure/azure-json/1.4.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-json/1.5.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.28.0, MIT, approved, #19266
 maven/mavencentral/com.azure/azure-security-keyvault-keys/4.9.4, MIT, approved, #16934
@@ -51,10 +54,11 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.14.2, Apache
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.16.2, Apache-2.0, approved, #11606
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.17.2, Apache-2.0, approved, #13672
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.0, Apache-2.0, approved, #16364
-maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.19.0, Apache-2.0, approved, #21911
+maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.18.3, Apache-2.0, approved, #16364
 maven/mavencentral/com.fasterxml.jackson.core/jackson-annotations/2.19.1, Apache-2.0, approved, #21911
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.14.2, Apache-2.0 AND MIT, approved, #4303
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.17.2, Apache-2.0 AND MIT, approved, #13665
+maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.18.3, Apache-2.0 AND MIT, approved, #16371
 maven/mavencentral/com.fasterxml.jackson.core/jackson-core/2.19.1, Apache-2.0 AND MIT, approved, #21916
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.12.1, Apache-2.0, approved, CQ22967
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.14.2, Apache-2.0, approved, #15232
@@ -62,18 +66,17 @@ maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.16.2, Apache-2.
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.17.2, Apache-2.0, approved, #13671
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.0, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.1, Apache-2.0, approved, #16372
-maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.19.0, Apache-2.0, approved, #21909
+maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.18.3, Apache-2.0, approved, #16372
 maven/mavencentral/com.fasterxml.jackson.core/jackson-databind/2.19.1, Apache-2.0, approved, #21909
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.12.1, Apache-2.0, approved, CQ23167
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.16.2, Apache-2.0, approved, #11855
 maven/mavencentral/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.19.1, Apache-2.0, approved, #21912
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.19.0, Apache-2.0, approved, #20841
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jakarta-jsonp/2.19.1, Apache-2.0, approved, #20841
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.12.1, Apache-2.0, approved, CQ23727
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.14.2, Apache-2.0, approved, #4699
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.16.2, Apache-2.0, approved, #11853
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.17.2, Apache-2.0, approved, #14160
-maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.19.0, Apache-2.0, approved, clearlydefined
+maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.18.3, Apache-2.0, approved, #16625
 maven/mavencentral/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.19.1, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-base/2.19.1, Apache-2.0, approved, #20840
 maven/mavencentral/com.fasterxml.jackson.jakarta.rs/jackson-jakarta-rs-json-provider/2.16.2, Apache-2.0, approved, #11858
@@ -87,7 +90,7 @@ maven/mavencentral/com.github.docker-java/docker-java-transport/3.4.2, Apache-2.
 maven/mavencentral/com.github.stephenc.jcip/jcip-annotations/1.0-1, Apache-2.0, approved, CQ21949
 maven/mavencentral/com.google.code.findbugs/jsr305/3.0.2, Apache-2.0 and CC-BY-2.5, approved, #15220
 maven/mavencentral/com.google.code.gson/gson/2.10.1, Apache-2.0, approved, #6159
-maven/mavencentral/com.google.crypto.tink/tink/1.17.0, Apache-2.0, approved, #20387
+maven/mavencentral/com.google.crypto.tink/tink/1.18.0, , restricted, clearlydefined
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.22.0, Apache-2.0, approved, #10661
 maven/mavencentral/com.google.errorprone/error_prone_annotations/2.36.0, Apache-2.0, approved, #18702
 maven/mavencentral/com.google.guava/failureaccess/1.0.3, Apache-2.0, approved, CQ22654
@@ -97,7 +100,7 @@ maven/mavencentral/com.google.j2objc/j2objc-annotations/3.0.0, Apache-2.0, appro
 maven/mavencentral/com.google.protobuf/protobuf-java/4.28.2, BSD-3-Clause, approved, #17196
 maven/mavencentral/com.microsoft.azure/msal4j-persistence-extension/1.3.0, MIT, approved, #14411
 maven/mavencentral/com.microsoft.azure/msal4j/1.15.0, MIT, approved, clearlydefined
-maven/mavencentral/com.microsoft.azure/msal4j/1.19.1, MIT, approved, clearlydefined
+maven/mavencentral/com.microsoft.azure/msal4j/1.21.0, MIT, approved, clearlydefined
 maven/mavencentral/com.nimbusds/content-type/2.3, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.0.1, Apache-2.0, approved, #18354
@@ -105,7 +108,7 @@ maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.3, Apache-2.0, approved, clea
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.25, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/9.32, Apache-2.0, approved, #10561
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.23, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.puppycrawl.tools/checkstyle/10.25.0, LGPL-2.1-or-later, approved, #21908
+maven/mavencentral/com.puppycrawl.tools/checkstyle/10.26.1, LGPL-2.1-or-later, approved, #22306
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/4.12.0, Apache-2.0, approved, #11159
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.12.0, Apache-2.0, approved, #15227
 maven/mavencentral/com.squareup.okhttp3/okhttp/4.9.3, Apache-2.0 AND MPL-2.0, approved, #3225
@@ -187,7 +190,7 @@ maven/mavencentral/io.rest-assured/xml-path/5.5.1, Apache-2.0, approved, #19523
 maven/mavencentral/io.rest-assured/xml-path/5.5.5, Apache-2.0, approved, #19523
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.26, Apache-2.0, approved, #5947
-maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.32, Apache-2.0, approved, #5947
+maven/mavencentral/io.swagger.core.v3/swagger-annotations-jakarta/2.2.34, Apache-2.0, approved, #5947
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
 maven/mavencentral/io.swagger.core.v3/swagger-core-jakarta/2.2.26, Apache-2.0, approved, #5929
 maven/mavencentral/io.swagger.core.v3/swagger-integration-jakarta/2.1.13, Apache-2.0, approved, clearlydefined
@@ -334,6 +337,8 @@ maven/mavencentral/org.eclipse.edc/dsp-negotiation-transform-08/0.14.0-SNAPSHOT,
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-transform-2024/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-transform-lib/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-negotiation-validation-lib/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-spi-08/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/dsp-spi-2024/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-spi/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-08/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/dsp-transfer-process-2024/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -383,6 +388,7 @@ maven/mavencentral/org.eclipse.edc/policy-engine-spi/0.14.0-SNAPSHOT, Apache-2.0
 maven/mavencentral/org.eclipse.edc/policy-evaluator-lib/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-model/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/policy-spi/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
+maven/mavencentral/org.eclipse.edc/protocol-spi/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/protocol-version-api/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/protocol-version-spi/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc/query-lib/0.14.0-SNAPSHOT, Apache-2.0, approved, technology.edc
@@ -457,13 +463,14 @@ maven/mavencentral/org.jspecify/jspecify/1.0.0, Apache-2.0, approved, #21897
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.10.0, EPL-2.0, approved, #9714
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.12.2, EPL-2.0, approved, #19509
 maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.13.1, EPL-2.0, approved, #21577
+maven/mavencentral/org.junit.jupiter/junit-jupiter-api/5.13.2, EPL-2.0, approved, #21577
 maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.12.2, EPL-2.0, approved, #19514
-maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.13.1, EPL-2.0, approved, #21699
-maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.13.1, EPL-2.0, approved, #21706
-maven/mavencentral/org.junit.platform/junit-platform-commons/1.13.1, EPL-2.0, approved, #21576
-maven/mavencentral/org.junit.platform/junit-platform-engine/1.13.1, EPL-2.0, approved, #21701
-maven/mavencentral/org.junit.platform/junit-platform-launcher/1.13.1, EPL-2.0, approved, #21708
-maven/mavencentral/org.junit/junit-bom/5.13.1, EPL-2.0, approved, #21846
+maven/mavencentral/org.junit.jupiter/junit-jupiter-engine/5.13.2, EPL-2.0, approved, #21699
+maven/mavencentral/org.junit.jupiter/junit-jupiter-params/5.13.2, EPL-2.0, approved, #21706
+maven/mavencentral/org.junit.platform/junit-platform-commons/1.13.2, EPL-2.0, approved, #21576
+maven/mavencentral/org.junit.platform/junit-platform-engine/1.13.2, EPL-2.0, approved, #21701
+maven/mavencentral/org.junit.platform/junit-platform-launcher/1.13.2, EPL-2.0, approved, #21708
+maven/mavencentral/org.junit/junit-bom/5.13.2, EPL-2.0, approved, #21846
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.mockito/mockito-core/5.18.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #21306
 maven/mavencentral/org.mockito/mockito-core/5.2.0, MIT AND (Apache-2.0 AND MIT) AND Apache-2.0, approved, #7401
@@ -482,13 +489,15 @@ maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
 maven/mavencentral/org.slf4j/slf4j-api/1.7.7, MIT, approved, CQ9827
 maven/mavencentral/org.slf4j/slf4j-api/2.0.17, MIT, approved, #5915
 maven/mavencentral/org.slf4j/slf4j-api/2.0.9, MIT, approved, #5915
-maven/mavencentral/org.testcontainers/database-commons/1.21.1, Apache-2.0, approved, #20875
-maven/mavencentral/org.testcontainers/jdbc/1.21.1, Apache-2.0, approved, #20877
+maven/mavencentral/org.testcontainers/database-commons/1.21.2, Apache-2.0, approved, #20875
+maven/mavencentral/org.testcontainers/jdbc/1.21.2, Apache-2.0, approved, #20877
 maven/mavencentral/org.testcontainers/junit-jupiter/1.21.0, MIT, approved, clearlydefined
-maven/mavencentral/org.testcontainers/junit-jupiter/1.21.1, MIT, approved, clearlydefined
-maven/mavencentral/org.testcontainers/postgresql/1.21.1, MIT, approved, #20876
+maven/mavencentral/org.testcontainers/junit-jupiter/1.21.2, MIT, approved, clearlydefined
+maven/mavencentral/org.testcontainers/junit-jupiter/1.21.3, MIT, approved, clearlydefined
+maven/mavencentral/org.testcontainers/postgresql/1.21.2, MIT, approved, #20876
 maven/mavencentral/org.testcontainers/testcontainers/1.21.0, MIT, approved, #20874
-maven/mavencentral/org.testcontainers/testcontainers/1.21.1, MIT, approved, #20874
+maven/mavencentral/org.testcontainers/testcontainers/1.21.2, MIT, approved, #20874
+maven/mavencentral/org.testcontainers/testcontainers/1.21.3, MIT, approved, #20874
 maven/mavencentral/org.xmlresolver/xmlresolver/5.2.2, Apache-2.0, approved, #19677
 maven/mavencentral/org.yaml/snakeyaml/2.3, Apache-2.0 AND (Apache-2.0 OR BSD-3-Clause OR EPL-1.0 OR GPL-2.0-or-later OR LGPL-2.1-or-later), approved, #16046
 maven/mavencentral/org.yaml/snakeyaml/2.4, Apache-2.0, approved, #19469

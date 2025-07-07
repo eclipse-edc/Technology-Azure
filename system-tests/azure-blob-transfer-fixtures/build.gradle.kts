@@ -26,7 +26,6 @@ dependencies {
     testFixturesImplementation(libs.restAssured)
     testFixturesImplementation(libs.azure.storageblob)
     testFixturesImplementation(libs.edc.junit)
-    testFixturesImplementation(libs.assertj)
 }
 
 edcBuild {

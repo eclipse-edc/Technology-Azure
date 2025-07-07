@@ -24,9 +24,6 @@ dependencies {
     implementation(libs.edc.lib.util)
 
     testFixturesApi(libs.edc.core.dataPlane.util)
-
-    testFixturesImplementation(libs.junit.jupiter.api)
-    testFixturesRuntimeOnly(libs.junit.jupiter.engine)
 }
 
 

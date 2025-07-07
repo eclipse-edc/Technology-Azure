@@ -3,10 +3,6 @@ format.version = "1.1"
 
 [versions]
 edc = "0.14.0-SNAPSHOT"
-# we need to pin the version of IH, because this is the last version to contain the DWN implementation
-# current snapshot builds of IH don't have feature parity yet.
-# todo: remove this once IH supports credential presentation and issuance
-identityhub = "0.3.1"
 
 awaitility = "4.2.2"
 azure-rm = "2.50.0"
@@ -41,7 +37,6 @@ edc-dpf-selector-core = { module = "org.eclipse.edc:data-plane-selector-core", v
 edc-dpf-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-controlplane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
-edc-ih-spi-store = { module = "org.eclipse.edc:identity-hub-store-spi", version.ref = "identityhub" }
 edc-dsp = { module = "org.eclipse.edc:dsp", version.ref = "edc" }
 edc-http = { module = "org.eclipse.edc:http", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
@@ -71,7 +66,6 @@ edc-sql-policydefinition = { module = "org.eclipse.edc:policy-definition-store-s
 edc-sql-transferprocess = { module = "org.eclipse.edc:transfer-process-store-sql", version.ref = "edc" }
 edc-sql-dataplane-instancestore = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 edc-sql-dataplane-store = { module = "org.eclipse.edc:data-plane-store-sql", version.ref = "edc" }
-edc-sql-identityhub-store = { module = "org.eclipse.edc:identity-hub-store-sql", version.ref = "identityhub" }
 
 # third-partyi deps
 failsafe-core = { module = "dev.failsafe:failsafe", version.ref = "failsafe" }

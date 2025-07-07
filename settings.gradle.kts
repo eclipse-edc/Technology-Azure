@@ -49,9 +49,6 @@ include(":extensions:data-plane:store:data-plane-store-cosmos")
 include(":extensions:data-plane:data-plane-azure-data-factory")
 include(":extensions:data-plane-selector:data-plane-instance-store-cosmos")
 
-// identity hub
-include(":extensions:identity-hub:identity-hub-store-cosmos")
-
 // system test modules
 include(":system-tests:azure-blob-transfer-tests")
 include(":system-tests:azure-data-factory-tests")

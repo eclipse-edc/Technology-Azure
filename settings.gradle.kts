@@ -19,11 +19,11 @@ rootProject.name = "technology-azure"
 
 pluginManagement {
     repositories {
+        gradlePluginPortal()
+        mavenCentral()
         maven {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
-        mavenCentral()
-        gradlePluginPortal()
     }
 }
 
@@ -57,4 +57,3 @@ include(":system-tests:runtimes:azure-data-factory-transfer-provider")
 include(":system-tests:runtimes:azure-storage-transfer-consumer")
 include(":system-tests:runtimes:azure-storage-transfer-provider")
 include(":system-tests:azure-blob-transfer-fixtures")
-include(":version-catalog")

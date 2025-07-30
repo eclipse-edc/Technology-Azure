@@ -29,6 +29,7 @@ import org.eclipse.edc.spi.monitor.ConsoleMonitor;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.vault.azure.AzureVault;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -63,8 +64,7 @@ class AzureDataFactoryTransferIntegrationTest {
     private static final String EDC_FS_CONFIG = "edc.fs.config";
     private static final String EDC_VAULT_NAME = "edc.vault.name";
     private static final String PROVIDER_CONTAINER_NAME = UUID.randomUUID().toString();
-    private static final AzureSettings AZURE_SETTINGS = new AzureSettings();
-    private static final String KEY_VAULT_NAME = AZURE_SETTINGS.getProperty("test.key.vault.name");
+    private static AzureSettings azureSettings;
     private static final String AZURE_TENANT_ID = getenv(PROPERTY_AZURE_TENANT_ID);
     private static final String AZURE_CLIENT_ID = getenv(PROPERTY_AZURE_CLIENT_ID);
     private static final String AZURE_CLIENT_SECRET = getenv(PROPERTY_AZURE_CLIENT_SECRET);
@@ -84,7 +84,7 @@ class AzureDataFactoryTransferIntegrationTest {
                             entry("web.http.protocol.path", ConsumerConstants.PROTOCOL_PATH),
                             entry("edc.dsp.callback.address", ConsumerConstants.PROTOCOL_URL),
                             entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
-                            entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
+                            entry(EDC_VAULT_NAME, azureSettings.getProperty("test.key.vault.name")),
                             entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
                             entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
                             entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
@@ -103,15 +103,13 @@ class AzureDataFactoryTransferIntegrationTest {
                             entry("web.http.protocol.path", ProviderConstants.PROTOCOL_PATH),
                             entry("edc.dsp.callback.address", ProviderConstants.PROTOCOL_URL),
                             entry(EDC_FS_CONFIG, AzureSettings.azureSettingsFileAbsolutePath()),
-                            entry(EDC_VAULT_NAME, KEY_VAULT_NAME),
+                            entry(EDC_VAULT_NAME, azureSettings.getProperty("test.key.vault.name")),
                             entry(PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID),
                             entry(PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID),
                             entry(PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET)
                     )))
     );
 
-    private static final String PROVIDER_STORAGE_ACCOUNT_NAME = AZURE_SETTINGS.getProperty("test.provider.storage.name");
-    private static final String CONSUMER_STORAGE_ACCOUNT_NAME = AZURE_SETTINGS.getProperty("test.consumer.storage.name");
     private static final String BLOB_STORE_ENDPOINT_TEMPLATE = "https://%s.blob.core.windows.net";
     private final BlobTransferParticipant consumerClient = BlobTransferParticipant.Builder.newInstance()
             .id(ConsumerConstants.PARTICIPANT_ID)
@@ -130,6 +128,11 @@ class AzureDataFactoryTransferIntegrationTest {
             .controlProtocolEndpoint(ProviderConstants.PROTOCOL_URL)
             .build();
 
+    @BeforeAll
+    static void setUp() {
+        azureSettings = new AzureSettings();
+    }
+
     @AfterAll
     static void cleanUp() {
         CONTAINER_CLEANUP.parallelStream().forEach(Runnable::run);
@@ -137,31 +140,33 @@ class AzureDataFactoryTransferIntegrationTest {
 
     @Test
     void transferBlob_success() {
-        // Arrange
+        var providerStorageAccountName = azureSettings.getProperty("test.provider.storage.name");
+        var consumerStorageAccountName = azureSettings.getProperty("test.consumer.storage.name");
+        var keyVaultName = azureSettings.getProperty("test.key.vault.name");
         var secretClient = new SecretClientBuilder()
-                .vaultUrl("https://" + KEY_VAULT_NAME + ".vault.azure.net")
+                .vaultUrl("https://" + keyVaultName + ".vault.azure.net")
                 .credential(new DefaultAzureCredentialBuilder().build())
                 .buildClient();
         var vault = new AzureVault(new ConsoleMonitor(), secretClient);
-        var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME)));
+        var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", consumerStorageAccountName)));
         var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_CORE_EXTENSION_CONFIG);
 
         // Upload a blob with test data on provider blob container
-        blobStoreApi.createContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME);
-        blobStoreApi.putBlob(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, ProviderConstants.ASSET_FILE, BLOB_CONTENT.getBytes(UTF_8));
+        blobStoreApi.createContainer(providerStorageAccountName, PROVIDER_CONTAINER_NAME);
+        blobStoreApi.putBlob(providerStorageAccountName, PROVIDER_CONTAINER_NAME, ProviderConstants.ASSET_FILE, BLOB_CONTENT.getBytes(UTF_8));
         // Add for cleanup
-        CONTAINER_CLEANUP.add(() -> blobStoreApi.deleteContainer(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME));
+        CONTAINER_CLEANUP.add(() -> blobStoreApi.deleteContainer(providerStorageAccountName, PROVIDER_CONTAINER_NAME));
 
         // Seed data to provider
-        var assetId = providerClient.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_CONTAINER_NAME, ProviderConstants.ASSET_FILE);
+        var assetId = providerClient.createBlobAsset(providerStorageAccountName, PROVIDER_CONTAINER_NAME, ProviderConstants.ASSET_FILE);
         var policyId = providerClient.createPolicyDefinition(noConstraintPolicy());
         var definitionId = UUID.randomUUID().toString();
         providerClient.createContractDefinition(assetId, definitionId, policyId, policyId);
 
 
-        var blobServiceClient = TestFunctions.getBlobServiceClient(CONSUMER_STORAGE_ACCOUNT_NAME, consumerAccountKey, TestFunctions.getBlobServiceTestEndpoint(format("https://%s.blob.core.windows.net", CONSUMER_STORAGE_ACCOUNT_NAME)));
+        var blobServiceClient = TestFunctions.getBlobServiceClient(consumerStorageAccountName, consumerAccountKey, TestFunctions.getBlobServiceTestEndpoint(format("https://%s.blob.core.windows.net", consumerStorageAccountName)));
 
-        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
+        var transferProcessId = consumerClient.requestAssetAndTransferToBlob(providerClient, assetId, consumerStorageAccountName);
         await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {
             var state = consumerClient.getTransferProcessState(transferProcessId);
             // should be STARTED or some state after that to make it more robust.

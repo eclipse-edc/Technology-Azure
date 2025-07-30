@@ -36,6 +36,7 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -67,6 +68,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @AzureDataFactoryIntegrationTest
 @ExtendWith(RuntimePerMethodExtension.class)
+@Disabled("see .github/workflows/verify.yaml")
 class AzureDataFactoryCopyIntegrationTest {
 
     private static final String RUNTIME_SETTINGS_PATH = "resources/azure/testing/runtime_settings.properties";

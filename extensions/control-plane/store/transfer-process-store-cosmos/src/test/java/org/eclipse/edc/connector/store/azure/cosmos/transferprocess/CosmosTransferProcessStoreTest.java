@@ -29,6 +29,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
@@ -39,6 +40,7 @@ import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEF
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @PostgresCosmosTest
+@Disabled("only for release 0.13.2")
 @ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 

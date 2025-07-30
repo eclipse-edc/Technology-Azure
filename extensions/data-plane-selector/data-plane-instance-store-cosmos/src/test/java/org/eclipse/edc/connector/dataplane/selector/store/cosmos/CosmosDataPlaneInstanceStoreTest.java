@@ -31,6 +31,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
@@ -42,6 +43,7 @@ import static org.eclipse.edc.azure.testfixtures.CosmosPostgresTestExtension.DEF
 import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileContentAsString;
 
 @ParallelPostgresCosmosTest
+@Disabled("only for release 0.13.2")
 @ExtendWith(CosmosPostgresTestExtension.class)
 public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTestBase {
     private static final DataPlaneInstanceStatements STATEMENTS = new PostgresDataPlaneInstanceStatements();

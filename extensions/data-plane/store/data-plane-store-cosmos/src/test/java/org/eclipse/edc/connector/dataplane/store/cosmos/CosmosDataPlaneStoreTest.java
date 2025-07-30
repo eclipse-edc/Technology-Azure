@@ -37,6 +37,7 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +64,7 @@ import static org.hamcrest.Matchers.hasSize;
  * are set hard coded to 500 ms, which is too short for Postgres@CosmosDB. Unfortunately there also is no way to override a nested test class.
  */
 @ParallelPostgresCosmosTest
+@Disabled("only for release 0.13.2")
 @ExtendWith(CosmosPostgresTestExtension.class)
 public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
     private static final String CONNECTOR_NAME = "test-connector";

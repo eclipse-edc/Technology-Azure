@@ -10,7 +10,7 @@
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
  *       ZF Friedrichshafen AG - add management api configurations
- *       Fraunhofer Institute for Software and Systems Engineering - added IDS API context
+ *       Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. - added IDS API context
  *
  */
 

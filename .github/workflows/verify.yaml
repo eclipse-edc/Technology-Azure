@@ -26,7 +26,7 @@ jobs:
   Checkstyle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Run Checkstyle
         run: ./gradlew --refresh-dependencies checkstyleMain checkstyleTest checkstyleTestFixtures
@@ -34,7 +34,7 @@ jobs:
   Unit-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Run unit tests
         run: ./gradlew --refresh-dependencies test
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Azure Storage Tests
         run: ./gradlew --refresh-dependencies test -DincludeTags="AzureStorageIntegrationTest"
@@ -62,7 +62,7 @@ jobs:
   #      contents: read
   #
   #    steps:
-  #      - uses: actions/checkout@v4
+  #      - uses: actions/checkout@v5
   #      - uses: eclipse-edc/.github/.github/actions/setup-build@main
   #
   #      - name: 'Az CLI login'
@@ -89,7 +89,7 @@ jobs:
   Component-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Component Tests
         run: ./gradlew --refresh-dependencies -DincludeTags="ComponentTest"
@@ -97,7 +97,7 @@ jobs:
   End-To-End-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: End to End Integration Tests
         run: ./gradlew --refresh-dependencies test -DincludeTags="EndToEndTest"
@@ -105,7 +105,7 @@ jobs:
   API-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Component Tests
         run: ./gradlew --refresh-dependencies test -DincludeTags="ApiTest"

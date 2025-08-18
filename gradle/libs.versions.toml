@@ -5,7 +5,7 @@ format.version = "1.1"
 edc = "0.14.0-SNAPSHOT"
 
 awaitility = "4.2.2"
-azure-rm = "2.50.0"
+azure-rm = "2.53.1"
 bouncyCastle-jdk18on = "1.81"
 failsafe = "3.3.2"
 postgres = "42.7.5"

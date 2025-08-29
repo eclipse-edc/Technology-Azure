@@ -103,7 +103,7 @@ resource "azurerm_role_assignment" "data_factory" {
 
 ## Store provider storage account accesss key seceret
 resource "azurerm_key_vault_secret" "provider_storage_key" {
-  name         = "${azurerm_storage_account.provider.name}-key1"
+  name         = azurerm_storage_account.provider.name
   value        = azurerm_storage_account.provider.primary_access_key
   key_vault_id = azurerm_key_vault.main.id
   depends_on   = [
@@ -113,7 +113,7 @@ resource "azurerm_key_vault_secret" "provider_storage_key" {
 
 ## Store consumer storage account accesss key seceret
 resource "azurerm_key_vault_secret" "consumer_storage_key" {
-  name         = "${azurerm_storage_account.consumer.name}-key1"
+  name         = azurerm_storage_account.consumer.name
   value        = azurerm_storage_account.consumer.primary_access_key
   key_vault_id = azurerm_key_vault.main.id
   depends_on   = [

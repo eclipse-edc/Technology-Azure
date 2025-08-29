@@ -97,8 +97,8 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
         // Write Key to vault
-        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME), CONSUMER_STORAGE_ACCOUNT_KEY);
-        PROVIDER_RUNTIME.getService(Vault.class).storeSecret(format("%s-key1", PROVIDER_STORAGE_ACCOUNT_NAME), PROVIDER_STORAGE_ACCOUNT_KEY);
+        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY);
+        PROVIDER_RUNTIME.getService(Vault.class).storeSecret(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_KEY);
 
         var transferProcessId = CONSUMER.requestAssetAndTransferToBlob(PROVIDER, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
         await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {

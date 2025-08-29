@@ -44,7 +44,7 @@ public class AccountCacheImpl implements AccountCache {
             return getAccount(accountName);
         }
 
-        var accountKey = vault.resolveSecret(accountName + "-key1");
+        var accountKey = vault.resolveSecret(accountName);
 
         return saveAccount(accountName, accountKey);
     }

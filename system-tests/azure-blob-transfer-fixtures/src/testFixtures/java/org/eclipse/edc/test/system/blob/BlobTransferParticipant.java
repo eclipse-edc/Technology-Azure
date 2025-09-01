@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static jakarta.json.Json.createObjectBuilder;
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Map.entry;
 import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;
@@ -69,7 +68,7 @@ public class BlobTransferParticipant extends Participant {
                 AzureBlobStoreSchema.ACCOUNT_NAME, accountName,
                 AzureBlobStoreSchema.CONTAINER_NAME, containerName,
                 AzureBlobStoreSchema.BLOB_NAME, blobName,
-                "keyName", format("%s-key1", accountName)
+                "keyName", accountName
         );
 
         Map<String, Object> properties = Map.of(
@@ -89,7 +88,7 @@ public class BlobTransferParticipant extends Participant {
                 AzureBlobStoreSchema.ACCOUNT_NAME, accountName,
                 AzureBlobStoreSchema.CONTAINER_NAME, containerName,
                 AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix,
-                "keyName", format("%s-key1", accountName)
+                "keyName", accountName
         );
 
         Map<String, Object> properties = Map.of(

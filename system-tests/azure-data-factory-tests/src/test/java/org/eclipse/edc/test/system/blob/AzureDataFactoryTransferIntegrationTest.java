@@ -148,7 +148,7 @@ class AzureDataFactoryTransferIntegrationTest {
                 .credential(new DefaultAzureCredentialBuilder().build())
                 .buildClient();
         var vault = new AzureVault(new ConsoleMonitor(), secretClient);
-        var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(format("%s-key1", consumerStorageAccountName)));
+        var consumerAccountKey = Objects.requireNonNull(vault.resolveSecret(consumerStorageAccountName));
         var blobStoreApi = new BlobStoreApiImpl(vault, BLOB_STORE_CORE_EXTENSION_CONFIG);
 
         // Upload a blob with test data on provider blob container

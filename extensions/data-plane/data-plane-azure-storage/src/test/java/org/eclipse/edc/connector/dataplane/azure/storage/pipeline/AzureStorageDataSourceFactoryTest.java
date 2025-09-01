@@ -49,7 +49,7 @@ class AzureStorageDataSourceFactoryTest {
     @Test
     void validate_whenBlobRequestValid_succeeds() {
         assertThat(factory.validateRequest(request.sourceDataAddress(dataAddress
-                                .keyName(accountName + "-key1")
+                                .keyName(accountName)
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                                 .property(AzureBlobStoreSchema.BLOB_NAME, blobName)
@@ -61,7 +61,7 @@ class AzureStorageDataSourceFactoryTest {
     @Test
     void validate_whenBlobFolderRequestValid_succeeds() {
         assertThat(factory.validateRequest(request.sourceDataAddress(dataAddress
-                                .keyName(accountName + "-key1")
+                                .keyName(accountName)
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                                 .property(AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix)

@@ -124,7 +124,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
                 .keyName(account2KeyName)
                 .build();
 
-        when(vault.resolveSecret(CONSUMER_STORAGE_ACCOUNT_NAME + "-key1"))
+        when(vault.resolveSecret(CONSUMER_STORAGE_ACCOUNT_NAME))
                 .thenReturn(CONSUMER_STORAGE_ACCOUNT_KEY);
 
         var account2SasToken = account2Api.createContainerSasToken(CONSUMER_STORAGE_ACCOUNT_NAME, sinkContainerName,

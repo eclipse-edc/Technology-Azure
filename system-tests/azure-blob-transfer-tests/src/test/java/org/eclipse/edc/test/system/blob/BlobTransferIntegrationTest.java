@@ -38,7 +38,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
@@ -97,8 +96,8 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
 
         // Write Key to vault
-        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(format("%s-key1", CONSUMER_STORAGE_ACCOUNT_NAME), CONSUMER_STORAGE_ACCOUNT_KEY);
-        PROVIDER_RUNTIME.getService(Vault.class).storeSecret(format("%s-key1", PROVIDER_STORAGE_ACCOUNT_NAME), PROVIDER_STORAGE_ACCOUNT_KEY);
+        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY);
+        PROVIDER_RUNTIME.getService(Vault.class).storeSecret(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_KEY);
 
         var transferProcessId = CONSUMER.requestAssetAndTransferToBlob(PROVIDER, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
         await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {

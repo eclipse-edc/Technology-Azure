@@ -32,7 +32,7 @@ public class TestFunctions {
         var srcStorageAccount = createAccountName();
         return DataAddress.Builder.newInstance()
                 .type(AzureBlobStoreSchema.TYPE)
-                .keyName(srcStorageAccount + "-key1")
+                .keyName(srcStorageAccount)
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, srcStorageAccount)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, createContainerName())
                 .property(AzureBlobStoreSchema.BLOB_NAME, createBlobName())
@@ -45,7 +45,7 @@ public class TestFunctions {
 
         return DataAddress.Builder.newInstance()
                 .type(AzureBlobStoreSchema.TYPE)
-                .keyName(destStorageAccount + "-key1")
+                .keyName(destStorageAccount)
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, destStorageAccount)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, createContainerName())
                 .build()

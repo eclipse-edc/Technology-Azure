@@ -87,6 +87,11 @@ An example destination address:
 
 The `folderName` and the `blobName` are optional properties in destination address.
 
+### Transfer Provisioning
+
+When provisioning a transfer, the key with the value of `account` will be resolved from the vault.
+This key will be used to authenticate with Azure. If such a key is not present environment/system variables will be used.
+
 ### AzureStorage Transfer Configuration
 
 The existing implementation takes under consideration transfer of files up to 200GB and that can be accomplished within

@@ -38,7 +38,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;

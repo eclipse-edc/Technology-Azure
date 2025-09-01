@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static jakarta.json.Json.createObjectBuilder;
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Map.entry;
 import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;

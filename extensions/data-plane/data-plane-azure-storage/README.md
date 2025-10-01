@@ -6,11 +6,14 @@ This module contains a Data Plane extension to copy data to and from Azure Blob 
 
 When used as a source, it supports copying a single or multiple blobs.
 
-The source `keyName` should reference a vault entry containing a
-storage [Shared Key](https://docs.microsoft.com/rest/api/storageservices/authorize-with-shared-key).
+Both, the source and destination `keyName` should reference a vault entry containing a
+storage account [Access Key](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage). 
+This access key is used by the consumer connector to create temporary access tokens (SAS Tokens) that it passes
+to the provider connector. The provider connector then uses this token to transfer the data to the consumer. 
 
-The destination `keyName` should reference a vault entry containing a JSON-serialized `AzureSasToken` object wrapping
-a [storage access signature](https://docs.microsoft.com/azure/storage/common/storage-sas-overview).
+> Note: The provider connector needs access to both the provider and consumer storage account.
+> It is necessary to enable _public network access_ for the provider connector IP range. 
+
 
 ### AzureStorage DataAddress Configuration
 

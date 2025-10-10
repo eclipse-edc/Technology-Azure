@@ -47,6 +47,7 @@ include(":extensions:control-plane:provision:provision-blob")
 include(":extensions:data-plane:data-plane-azure-storage")
 include(":extensions:data-plane:store:data-plane-store-cosmos")
 include(":extensions:data-plane:data-plane-azure-data-factory")
+include(":extensions:data-plane:data-plane-provision-blob")
 include(":extensions:data-plane-selector:data-plane-instance-store-cosmos")
 
 // system test modules

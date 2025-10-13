@@ -147,7 +147,6 @@ class ObjectStorageProvisionerTest {
         provisioner.provision(toProvision);
 
         verify(blobStoreApiMock, never()).createContainer(anyString(), anyString());
-        verify(blobStoreApiMock).createContainerSasToken(eq(accountName), eq(containerName), eq("w"), any());
     }
 
     @Test

@@ -25,7 +25,11 @@ import org.eclipse.edc.connector.dataplane.selector.store.sql.schema.postgres.Po
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.lease.BaseSqlLeaseStatements;
+import org.eclipse.edc.sql.lease.SqlLeaseContextBuilderImpl;
+import org.eclipse.edc.sql.lease.spi.LeaseStatements;
 import org.eclipse.edc.sql.testfixtures.LeaseUtil;
+import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
@@ -44,8 +48,9 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 @ParallelPostgresCosmosTest
 @ExtendWith(CosmosPostgresTestExtension.class)
 public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTestBase {
-    private static final DataPlaneInstanceStatements STATEMENTS = new PostgresDataPlaneInstanceStatements();
-    private final DataPlaneInstanceStatements statements = new PostgresDataPlaneInstanceStatements();
+
+    private static final LeaseStatements leaseStatements = new BaseSqlLeaseStatements();
+    private static final DataPlaneInstanceStatements statements = new PostgresDataPlaneInstanceStatements(leaseStatements, Clock.systemUTC());
     private SqlDataPlaneInstanceStore store;
     private LeaseUtil leaseUtil;
 
@@ -56,11 +61,11 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
 
     @AfterAll
     static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.dropTable(STATEMENTS.getDataPlaneInstanceTable());
+        helper.dropTable(statements.getDataPlaneInstanceTable());
     }
 
     @BeforeEach
-    void setUp(DataSourceRegistry reg, DataSource dataSource, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper) {
+    void setUp(DataSourceRegistry reg, PostgresqlStoreSetupExtension extension, DataSource dataSource, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper) {
 
         var clock = Clock.systemUTC();
 
@@ -73,10 +78,11 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }, statements, clock);
+        }, statements.getDataPlaneInstanceTable(), leaseStatements, clock);
 
-        store = new SqlDataPlaneInstanceStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, typeManager.getMapper(), queryExecutor, clock, CONNECTOR_NAME);
-        helper.truncateTable(STATEMENTS.getDataPlaneInstanceTable());
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, statements.getDataPlaneInstanceTable(), leaseStatements, clock, queryExecutor);
+        store = new SqlDataPlaneInstanceStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, statements, leaseContextBuilder, typeManager.getMapper(), queryExecutor);
+        helper.truncateTable(statements.getDataPlaneInstanceTable());
     }
 
     @Override

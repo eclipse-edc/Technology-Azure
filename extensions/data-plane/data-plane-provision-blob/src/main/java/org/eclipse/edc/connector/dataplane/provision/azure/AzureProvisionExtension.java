@@ -25,6 +25,7 @@ import org.eclipse.edc.connector.dataplane.provision.azure.blob.ObjectStorageDep
 import org.eclipse.edc.connector.dataplane.provision.azure.blob.ObjectStorageProvisioner;
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -56,6 +57,9 @@ public class AzureProvisionExtension implements ServiceExtension {
     @Inject
     private ProvisionerManager provisionManager;
 
+    @Inject
+    private Monitor monitor;
+
     @Override
     public String name() {
         return "Dataplane Azure Provisioner";
@@ -65,7 +69,7 @@ public class AzureProvisionExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, azureProvisionConfiguration, vault, typeManager));
         provisionManager.register(new ObjectStorageDeprovisioner());
-        manifestGenerator.registerConsumerGenerator(new ObjectStorageConsumerProvisionResourceGenerator());
+        manifestGenerator.registerConsumerGenerator(new ObjectStorageConsumerProvisionResourceGenerator(monitor.withPrefix("AzureStorageProvisioner")));
 
         registerTypes(typeManager);
     }

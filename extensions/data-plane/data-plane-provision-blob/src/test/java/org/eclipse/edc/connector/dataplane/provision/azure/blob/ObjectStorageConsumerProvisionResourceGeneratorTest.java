@@ -17,21 +17,28 @@ package org.eclipse.edc.connector.dataplane.provision.azure.blob;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.mockito.Mockito.mock;
 
 class ObjectStorageConsumerProvisionResourceGeneratorTest {
 
     private final ObjectStorageConsumerProvisionResourceGenerator generator =
-            new ObjectStorageConsumerProvisionResourceGenerator();
+            new ObjectStorageConsumerProvisionResourceGenerator(mock(Monitor.class));
 
     @Test
     void generate() {
         var destination = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE)
-                .property(AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
-                .property(AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
+                .property(EDC_NAMESPACE + AzureBlobStoreSchema.CONTAINER_NAME, "test-container")
+                .property(EDC_NAMESPACE + AzureBlobStoreSchema.ACCOUNT_NAME, "test-account")
+                .property(EDC_NAMESPACE + AzureBlobStoreSchema.BLOB_NAME, "test-blob")
+                .property(EDC_NAMESPACE + AzureBlobStoreSchema.FOLDER_NAME, "test-folder")
                 .build();
 
         var dataflow = DataFlow.Builder.newInstance()
@@ -46,6 +53,25 @@ class ObjectStorageConsumerProvisionResourceGeneratorTest {
         assertThat(resource.getDataAddress()).isNotNull();
         assertThat(resource.getDataAddress().getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME)).isEqualTo("test-account");
         assertThat(resource.getDataAddress().getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME)).isEqualTo("test-container");
+        assertThat(resource.getDataAddress().getStringProperty(AzureBlobStoreSchema.BLOB_NAME)).isEqualTo("test-blob");
+        assertThat(resource.getDataAddress().getStringProperty(AzureBlobStoreSchema.FOLDER_NAME)).isEqualTo("test-folder");
+    }
+
+    @Test
+    void shouldProvisionRandomUUIDs_whenDestinationIsNull() {
+        var dataflow = DataFlow.Builder.newInstance()
+                .id("flow-id")
+                .destination(null)
+                .build();
+
+        var resource = generator.generate(dataflow);
+
+        assertThat(resource).isInstanceOfSatisfying(ProvisionResource.class, def -> {
+            assertThat(resource.getDataAddress().getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME)).satisfies(UUID::fromString);
+            assertThat(resource.getDataAddress().getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME)).satisfies(UUID::fromString);
+            assertThat(def.getId()).satisfies(UUID::fromString);
+        });
+
     }
 
 

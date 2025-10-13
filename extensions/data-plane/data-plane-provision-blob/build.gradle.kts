@@ -21,6 +21,7 @@ dependencies {
     api(libs.edc.spi.core)
     api(libs.edc.spi.dataplane)
 
+    implementation(libs.edc.lib.util)
     implementation(project(":extensions:common:azure:azure-blob-core"))
     implementation(libs.azure.storageblob)
 

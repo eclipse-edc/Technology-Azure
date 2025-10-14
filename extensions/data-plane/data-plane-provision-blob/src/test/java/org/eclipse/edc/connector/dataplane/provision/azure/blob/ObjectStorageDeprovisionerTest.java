@@ -17,8 +17,8 @@ package org.eclipse.edc.connector.dataplane.provision.azure.blob;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
 import org.eclipse.edc.spi.types.domain.DataAddress;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;

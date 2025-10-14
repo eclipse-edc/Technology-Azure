@@ -19,10 +19,10 @@ import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
+import org.eclipse.edc.connector.dataplane.provision.azure.AzureProvisionConfiguration;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionedResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.Provisioner;
-import org.eclipse.edc.connector.dataplane.provision.azure.AzureProvisionConfiguration;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -88,7 +88,7 @@ public class ObjectStorageProvisioner implements Provisioner {
 
                     try {
                         vault.storeSecret(resourceName, typeManager.getMapper().writeValueAsString(secretToken));
-                    } catch (JsonProcessingException e){
+                    } catch (JsonProcessingException e) {
                         return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot serialize secret token: " + e.getMessage());
                     }
 

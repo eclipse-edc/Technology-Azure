@@ -58,7 +58,7 @@ class ObjectStorageConsumerProvisionResourceGeneratorTest {
     }
 
     @Test
-    void shouldProvisionRandomUUIDs_whenDestinationIsNull() {
+    void shouldProvisionRandomUuids_whenDestinationIsNull() {
         var dataflow = DataFlow.Builder.newInstance()
                 .id("flow-id")
                 .destination(null)

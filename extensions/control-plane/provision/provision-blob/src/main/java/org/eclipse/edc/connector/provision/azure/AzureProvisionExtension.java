@@ -33,6 +33,7 @@ import org.eclipse.edc.spi.types.TypeManager;
 
 /**
  * Provides data transfer {@link Provisioner}s backed by Azure services.
+ *
  * @deprecated "The control-plane based azure provision extension is DEPRECATED. Please use the data-plane based provisioner instead."
  */
 @Deprecated(since = "0.15.0")

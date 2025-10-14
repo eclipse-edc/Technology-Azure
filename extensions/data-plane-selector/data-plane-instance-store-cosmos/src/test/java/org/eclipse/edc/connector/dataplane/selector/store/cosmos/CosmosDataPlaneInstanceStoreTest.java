@@ -49,8 +49,8 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 @ExtendWith(CosmosPostgresTestExtension.class)
 public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTestBase {
 
-    private static final LeaseStatements leaseStatements = new BaseSqlLeaseStatements();
-    private static final DataPlaneInstanceStatements statements = new PostgresDataPlaneInstanceStatements(leaseStatements, Clock.systemUTC());
+    private static final LeaseStatements LEASE_STATEMENTS = new BaseSqlLeaseStatements();
+    private static final DataPlaneInstanceStatements STATEMENTS = new PostgresDataPlaneInstanceStatements(LEASE_STATEMENTS, Clock.systemUTC());
     private SqlDataPlaneInstanceStore store;
     private LeaseUtil leaseUtil;
 
@@ -61,7 +61,7 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
 
     @AfterAll
     static void dropDatabase(CosmosPostgresTestExtension.SqlHelper helper) {
-        helper.dropTable(statements.getDataPlaneInstanceTable());
+        helper.dropTable(STATEMENTS.getDataPlaneInstanceTable());
     }
 
     @BeforeEach
@@ -78,11 +78,11 @@ public class CosmosDataPlaneInstanceStoreTest extends DataPlaneInstanceStoreTest
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }, statements.getDataPlaneInstanceTable(), leaseStatements, clock);
+        }, STATEMENTS.getDataPlaneInstanceTable(), LEASE_STATEMENTS, clock);
 
-        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, statements.getDataPlaneInstanceTable(), leaseStatements, clock, queryExecutor);
-        store = new SqlDataPlaneInstanceStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, statements, leaseContextBuilder, typeManager.getMapper(), queryExecutor);
-        helper.truncateTable(statements.getDataPlaneInstanceTable());
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getDataPlaneInstanceTable(), LEASE_STATEMENTS, clock, queryExecutor);
+        store = new SqlDataPlaneInstanceStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, leaseContextBuilder, typeManager.getMapper(), queryExecutor);
+        helper.truncateTable(STATEMENTS.getDataPlaneInstanceTable());
     }
 
     @Override

@@ -70,9 +70,9 @@ import static org.hamcrest.Matchers.hasSize;
 public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
     private static final String CONNECTOR_NAME = "test-connector";
     private static final int TIMEOUT = 2000;
-    private static final Clock clock = Clock.systemUTC();
-    private static final LeaseStatements leaseStatements = new BaseSqlLeaseStatements();
-    private static final PostgresDataFlowStatements STATEMENTS = new PostgresDataFlowStatements(leaseStatements, clock);
+    private static final Clock CLOCK = Clock.systemUTC();
+    private static final LeaseStatements LEASE_STATEMENTS = new BaseSqlLeaseStatements();
+    private static final PostgresDataFlowStatements STATEMENTS = new PostgresDataFlowStatements(LEASE_STATEMENTS, CLOCK);
     private SqlDataPlaneStore store;
     private LeaseUtil leaseUtil;
 
@@ -91,11 +91,11 @@ public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
         var typeManager = new JacksonTypeManager();
         typeManager.registerTypes(DataPlaneInstance.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
-        leaseUtil = new LeaseUtil(transactionContext, helper.connectionSupplier(), STATEMENTS.getDataPlaneTable(), leaseStatements, clock);
+        leaseUtil = new LeaseUtil(transactionContext, helper.connectionSupplier(), STATEMENTS.getDataPlaneTable(), LEASE_STATEMENTS, CLOCK);
 
-        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getDataPlaneTable(), leaseStatements, clock, queryExecutor);
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getDataPlaneTable(), LEASE_STATEMENTS, CLOCK, queryExecutor);
 
-        store = new SqlDataPlaneStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS,leaseContextBuilder, typeManager.getMapper(), queryExecutor);
+        store = new SqlDataPlaneStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, leaseContextBuilder, typeManager.getMapper(), queryExecutor);
         helper.truncateTable(STATEMENTS.getDataPlaneTable());
     }
 

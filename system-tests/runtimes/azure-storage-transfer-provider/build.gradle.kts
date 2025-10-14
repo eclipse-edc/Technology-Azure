@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.edc.core.dataplane)
     implementation(libs.edc.core.edrstore)
 
+    implementation(libs.edc.core.participantcontext.single)
     implementation(libs.edc.transfer.data.plane.signaling)
     implementation(libs.edc.data.plane.signaling.client)
     implementation(libs.edc.data.plane.self.registration)

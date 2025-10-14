@@ -46,7 +46,7 @@ import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
-@AzureStorageIntegrationTest
+//@AzureStorageIntegrationTest
 public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
 
     private static final BlobTransferParticipant CONSUMER = BlobTransferParticipant.Builder.newInstance()

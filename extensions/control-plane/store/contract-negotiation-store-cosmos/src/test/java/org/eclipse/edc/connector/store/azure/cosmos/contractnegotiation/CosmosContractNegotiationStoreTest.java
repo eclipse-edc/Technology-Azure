@@ -51,8 +51,8 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 @PostgresCosmosTest
 @ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBase {
-    private static final LeaseStatements leaseStatements = new BaseSqlLeaseStatements();
-    private static final BaseSqlDialectStatements STATEMENTS = new PostgresDialectStatements(leaseStatements, Clock.systemUTC());
+    private static final LeaseStatements LEASE_STATEMENTS = new BaseSqlLeaseStatements();
+    private static final BaseSqlDialectStatements STATEMENTS = new PostgresDialectStatements(LEASE_STATEMENTS, Clock.systemUTC());
     private SqlContractNegotiationStore store;
     private LeaseUtil leaseUtil;
 
@@ -60,7 +60,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
     static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
         helper.dropTable(STATEMENTS.getContractNegotiationTable());
         helper.dropTable(STATEMENTS.getContractAgreementTable());
-        helper.dropTable(leaseStatements.getLeaseTableName());
+        helper.dropTable(LEASE_STATEMENTS.getLeaseTableName());
     }
 
     @BeforeAll
@@ -75,7 +75,7 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
 
         manager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getContractNegotiationTable(), leaseStatements, clock, queryExecutor);
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getContractNegotiationTable(), LEASE_STATEMENTS, clock, queryExecutor);
 
         store = new SqlContractNegotiationStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, manager.getMapper(), STATEMENTS, leaseContextBuilder, queryExecutor);
         leaseUtil = new LeaseUtil(transactionContext, () -> {
@@ -84,11 +84,11 @@ class CosmosContractNegotiationStoreTest extends ContractNegotiationStoreTestBas
             } catch (SQLException e) {
                 throw new AssertionError(e);
             }
-        }, STATEMENTS.getContractNegotiationTable(), leaseStatements, clock);
+        }, STATEMENTS.getContractNegotiationTable(), LEASE_STATEMENTS, clock);
 
         helper.truncateTable(STATEMENTS.getContractNegotiationTable());
         helper.truncateTable(STATEMENTS.getContractAgreementTable());
-        helper.truncateTable(leaseStatements.getLeaseTableName());
+        helper.truncateTable(LEASE_STATEMENTS.getLeaseTableName());
     }
 
     @Override

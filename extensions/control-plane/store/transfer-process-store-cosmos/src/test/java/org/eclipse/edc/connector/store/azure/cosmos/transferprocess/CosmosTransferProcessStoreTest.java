@@ -47,8 +47,8 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 @ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
-    private static final LeaseStatements leaseStatements = new BaseSqlLeaseStatements();
-    private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements(leaseStatements, Clock.systemUTC());
+    private static final LeaseStatements LEASE_STATEMENTS = new BaseSqlLeaseStatements();
+    private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements(LEASE_STATEMENTS, Clock.systemUTC());
     private SqlTransferProcessStore store;
     private LeaseUtil leaseUtil;
 
@@ -60,7 +60,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     @AfterAll
     static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
         helper.dropTable(STATEMENTS.getTransferProcessTableName());
-        helper.dropTable(leaseStatements.getLeaseTableName());
+        helper.dropTable(LEASE_STATEMENTS.getLeaseTableName());
     }
 
     @BeforeEach
@@ -70,7 +70,7 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
         typeManager.registerTypes(TestFunctions.TestResourceDef.class, TestFunctions.TestProvisionedResource.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
-        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getTransferProcessTableName(), leaseStatements, clock, queryExecutor);
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getTransferProcessTableName(), LEASE_STATEMENTS, clock, queryExecutor);
 
         store = new SqlTransferProcessStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, typeManager.getMapper(), STATEMENTS, leaseContextBuilder, queryExecutor);
 
@@ -80,10 +80,10 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
             } catch (SQLException e) {
                 throw new AssertionError(e);
             }
-        }, STATEMENTS.getTransferProcessTableName(), leaseStatements, clock);
+        }, STATEMENTS.getTransferProcessTableName(), LEASE_STATEMENTS, clock);
 
         helper.truncateTable(STATEMENTS.getTransferProcessTableName());
-        helper.truncateTable(leaseStatements.getLeaseTableName());
+        helper.truncateTable(LEASE_STATEMENTS.getLeaseTableName());
     }
 
     @Override

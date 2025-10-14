@@ -23,7 +23,11 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.testfixtures.store.Tr
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.lease.BaseSqlLeaseStatements;
+import org.eclipse.edc.sql.lease.SqlLeaseContextBuilderImpl;
+import org.eclipse.edc.sql.lease.spi.LeaseStatements;
 import org.eclipse.edc.sql.testfixtures.LeaseUtil;
+import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
@@ -32,6 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
+import java.time.Clock;
 import java.time.Duration;
 import javax.sql.DataSource;
 
@@ -42,7 +47,8 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.getResourceFileConten
 @ExtendWith(CosmosPostgresTestExtension.class)
 class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
 
-    private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements();
+    private static final LeaseStatements LEASE_STATEMENTS = new BaseSqlLeaseStatements();
+    private static final PostgresDialectStatements STATEMENTS = new PostgresDialectStatements(LEASE_STATEMENTS, Clock.systemUTC());
     private SqlTransferProcessStore store;
     private LeaseUtil leaseUtil;
 
@@ -54,18 +60,19 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
     @AfterAll
     static void dropTables(CosmosPostgresTestExtension.SqlHelper helper) {
         helper.dropTable(STATEMENTS.getTransferProcessTableName());
-        helper.dropTable(STATEMENTS.getLeaseTableName());
+        helper.dropTable(LEASE_STATEMENTS.getLeaseTableName());
     }
 
     @BeforeEach
-    void setUp(DataSourceRegistry reg, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSource datasource) {
+    void setUp(DataSourceRegistry reg, PostgresqlStoreSetupExtension extension, TransactionContext transactionContext, QueryExecutor queryExecutor, CosmosPostgresTestExtension.SqlHelper helper, DataSource datasource) {
 
         var typeManager = new JacksonTypeManager();
         typeManager.registerTypes(TestFunctions.TestResourceDef.class, TestFunctions.TestProvisionedResource.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
 
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getTransferProcessTableName(), LEASE_STATEMENTS, clock, queryExecutor);
 
-        store = new SqlTransferProcessStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, typeManager.getMapper(), STATEMENTS, "test-connector", clock, queryExecutor);
+        store = new SqlTransferProcessStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, typeManager.getMapper(), STATEMENTS, leaseContextBuilder, queryExecutor);
 
         leaseUtil = new LeaseUtil(transactionContext, () -> {
             try {
@@ -73,10 +80,10 @@ class CosmosTransferProcessStoreTest extends TransferProcessStoreTestBase {
             } catch (SQLException e) {
                 throw new AssertionError(e);
             }
-        }, STATEMENTS, clock);
+        }, STATEMENTS.getTransferProcessTableName(), LEASE_STATEMENTS, clock);
 
         helper.truncateTable(STATEMENTS.getTransferProcessTableName());
-        helper.truncateTable(STATEMENTS.getLeaseTableName());
+        helper.truncateTable(LEASE_STATEMENTS.getLeaseTableName());
     }
 
     @Override

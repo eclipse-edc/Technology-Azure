@@ -24,10 +24,12 @@ dependencies {
     implementation(libs.edc.core.connector)
     implementation(libs.edc.core.edrstore)
     implementation(libs.edc.core.controlplane)
+    implementation(libs.edc.core.participantcontext.single)
     implementation(libs.edc.dpf.selector.core)
     implementation(libs.edc.http)
 
     implementation(libs.edc.api.observability)
+
 
     implementation(libs.edc.config.filesystem)
     implementation(libs.edc.iam.mock)

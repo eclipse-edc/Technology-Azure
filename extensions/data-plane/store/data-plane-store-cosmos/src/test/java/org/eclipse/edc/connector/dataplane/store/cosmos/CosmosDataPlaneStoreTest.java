@@ -26,12 +26,15 @@ import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.assertions.AbstractResultAssert;
 import org.eclipse.edc.policy.model.PolicyRegistrationTypes;
 import org.eclipse.edc.spi.entity.Entity;
-import org.eclipse.edc.spi.entity.MutableEntity;
 import org.eclipse.edc.spi.entity.StatefulEntity;
 import org.eclipse.edc.spi.result.StoreFailure;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.lease.BaseSqlLeaseStatements;
+import org.eclipse.edc.sql.lease.SqlLeaseContextBuilderImpl;
+import org.eclipse.edc.sql.lease.spi.LeaseStatements;
 import org.eclipse.edc.sql.testfixtures.LeaseUtil;
+import org.eclipse.edc.sql.testfixtures.PostgresqlStoreSetupExtension;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.AfterAll;
@@ -67,8 +70,9 @@ import static org.hamcrest.Matchers.hasSize;
 public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
     private static final String CONNECTOR_NAME = "test-connector";
     private static final int TIMEOUT = 2000;
-    private static final PostgresDataFlowStatements STATEMENTS = new PostgresDataFlowStatements();
-    private final Clock clock = Clock.systemUTC();
+    private static final Clock CLOCK = Clock.systemUTC();
+    private static final LeaseStatements LEASE_STATEMENTS = new BaseSqlLeaseStatements();
+    private static final PostgresDataFlowStatements STATEMENTS = new PostgresDataFlowStatements(LEASE_STATEMENTS, CLOCK);
     private SqlDataPlaneStore store;
     private LeaseUtil leaseUtil;
 
@@ -83,13 +87,15 @@ public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
     }
 
     @BeforeEach
-    void setUp(TransactionContext transactionContext, QueryExecutor queryExecutor, DataSourceRegistry reg, CosmosPostgresTestExtension.SqlHelper helper) {
+    void setUp(TransactionContext transactionContext, PostgresqlStoreSetupExtension extension, QueryExecutor queryExecutor, DataSourceRegistry reg, CosmosPostgresTestExtension.SqlHelper helper) {
         var typeManager = new JacksonTypeManager();
         typeManager.registerTypes(DataPlaneInstance.class);
         typeManager.registerTypes(PolicyRegistrationTypes.TYPES.toArray(Class<?>[]::new));
-        leaseUtil = new LeaseUtil(transactionContext, helper.connectionSupplier(), STATEMENTS, clock);
+        leaseUtil = new LeaseUtil(transactionContext, helper.connectionSupplier(), STATEMENTS.getDataPlaneTable(), LEASE_STATEMENTS, CLOCK);
 
-        store = new SqlDataPlaneStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, typeManager.getMapper(), clock, queryExecutor, "test-connector");
+        var leaseContextBuilder = SqlLeaseContextBuilderImpl.with(extension.getTransactionContext(), CONNECTOR_NAME, STATEMENTS.getDataPlaneTable(), LEASE_STATEMENTS, CLOCK, queryExecutor);
+
+        store = new SqlDataPlaneStore(reg, DEFAULT_DATASOURCE_NAME, transactionContext, STATEMENTS, leaseContextBuilder, typeManager.getMapper(), queryExecutor);
         helper.truncateTable(STATEMENTS.getDataPlaneTable());
     }
 
@@ -169,7 +175,7 @@ public class CosmosDataPlaneStoreTest /* extends DataPlaneStoreTestBase */ {
                     .isSubsetOf(all.stream().map(Entity::getId).toList())
                     .allMatch(id -> isLeasedBy(id, CONNECTOR_NAME));
 
-            assertThat(leased).extracting(MutableEntity::getUpdatedAt).isSorted();
+            assertThat(leased).extracting(StatefulEntity::getUpdatedAt).isSorted();
         }
 
         @Test

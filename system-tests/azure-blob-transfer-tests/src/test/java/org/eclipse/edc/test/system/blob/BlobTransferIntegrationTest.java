@@ -20,12 +20,14 @@ import com.azure.core.util.BinaryData;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
 import org.eclipse.edc.azure.testfixtures.AzuriteExtension;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.security.Vault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,13 +41,14 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
+import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.PROVISIONED;
 import static org.eclipse.edc.test.system.blob.Constants.POLL_INTERVAL;
 import static org.eclipse.edc.test.system.blob.Constants.TIMEOUT;
 import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
-//@AzureStorageIntegrationTest
+@AzureStorageIntegrationTest
 public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
 
     private static final BlobTransferParticipant CONSUMER = BlobTransferParticipant.Builder.newInstance()
@@ -75,6 +78,58 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
             "consumer",
             ":system-tests:runtimes:azure-storage-transfer-consumer"
     ).configurationProvider(() -> CONSUMER.createConfig(AZURITE_PORT)));
+
+    @Test
+     void shouldProvisionRandomContainer(){
+
+        var assetId = PROVIDER.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER.getContainerName(), "randomBlob");
+        var policyId = PROVIDER.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
+        PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+
+        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY);
+
+        var transferProcessId = CONSUMER.requestAssetAndTransferToBlob(PROVIDER, assetId, CONSUMER_STORAGE_ACCOUNT_NAME);
+        await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
+            // should be STARTED or some state after that to make it more robust.
+            assertThat(TransferProcessStates.valueOf(state).code()).isGreaterThanOrEqualTo(PROVISIONED.code());
+        });
+
+        var dataDestination = CONSUMER.getDataDestination(transferProcessId);
+        var provisionedContainerName = dataDestination.get("container");
+        assertThat(consumerBlobServiceClient.listBlobContainers().stream()
+                .anyMatch(b -> b.getName().equals(provisionedContainerName)))
+                .isTrue();
+
+    }
+
+    @Test
+    void shouldUseExistingContainer(){
+
+        var existingContainerName = UUID.randomUUID().toString();
+        createContainer(consumerBlobServiceClient, existingContainerName);
+
+        var assetId = PROVIDER.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER.getContainerName(), "randomBlob");
+        var policyId = PROVIDER.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
+        PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+
+        CONSUMER_RUNTIME.getService(Vault.class).storeSecret(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY);
+
+        var transferProcessId = CONSUMER.requestAssetAndTransferToBlob(PROVIDER, assetId, CONSUMER_STORAGE_ACCOUNT_NAME, existingContainerName);
+        await().pollInterval(POLL_INTERVAL).atMost(TIMEOUT).untilAsserted(() -> {
+            var state = CONSUMER.getTransferProcessState(transferProcessId);
+            // should be STARTED or some state after that to make it more robust.
+            assertThat(TransferProcessStates.valueOf(state).code()).isGreaterThanOrEqualTo(PROVISIONED.code());
+        });
+
+        var dataDestination = CONSUMER.getDataDestination(transferProcessId);
+        var provisionedContainerName = dataDestination.get("container");
+        assertThat(existingContainerName).isEqualTo(provisionedContainerName);
+        assertThat(consumerBlobServiceClient.listBlobContainers().stream()
+                .anyMatch(b -> b.getName().equals(provisionedContainerName)))
+                .isTrue();
+
+    }
 
     @ParameterizedTest
     @ArgumentsSource(BlobNamesToTransferProvider.class)

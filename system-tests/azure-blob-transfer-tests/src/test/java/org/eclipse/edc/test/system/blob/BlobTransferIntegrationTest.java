@@ -20,6 +20,7 @@ import com.azure.core.util.BinaryData;
 import org.eclipse.edc.azure.testfixtures.AbstractAzureBlobTest;
 import org.eclipse.edc.azure.testfixtures.AzuriteExtension;
 import org.eclipse.edc.azure.testfixtures.TestFunctions;
+import org.eclipse.edc.azure.testfixtures.annotations.AzureStorageIntegrationTest;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
@@ -47,7 +48,7 @@ import static org.eclipse.edc.test.system.blob.ProviderConstants.BLOB_CONTENT;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Testcontainers
-//@AzureStorageIntegrationTest
+@AzureStorageIntegrationTest
 public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
 
     private static final BlobTransferParticipant CONSUMER = BlobTransferParticipant.Builder.newInstance()

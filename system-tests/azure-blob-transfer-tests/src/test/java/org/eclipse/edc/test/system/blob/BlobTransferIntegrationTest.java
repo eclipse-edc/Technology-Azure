@@ -80,7 +80,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
     ).configurationProvider(() -> CONSUMER.createConfig(AZURITE_PORT)));
 
     @Test
-     void shouldProvisionRandomContainer(){
+     void shouldProvisionRandomContainer() {
 
         var assetId = PROVIDER.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER.getContainerName(), "randomBlob");
         var policyId = PROVIDER.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
@@ -103,7 +103,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
     }
 
     @Test
-    void shouldUseExistingContainer(){
+    void shouldUseExistingContainer() {
 
         var existingContainerName = UUID.randomUUID().toString();
         createContainer(consumerBlobServiceClient, existingContainerName);

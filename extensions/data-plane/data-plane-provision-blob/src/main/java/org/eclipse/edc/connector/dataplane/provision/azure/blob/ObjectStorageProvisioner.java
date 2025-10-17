@@ -71,7 +71,7 @@ public class ObjectStorageProvisioner implements Provisioner {
 
         OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(this.azureProvisionConfiguration.tokenExpiryTime());
 
-        return with(retryPolicy).getAsync(() -> blobStoreApi.exists(accountName, containerName))
+        return checkContainerExists(accountName, containerName)
                 .thenCompose(exists -> {
                     if (exists) {
                         return reusingExistingContainer(containerName);
@@ -101,6 +101,11 @@ public class ObjectStorageProvisioner implements Provisioner {
                             .build();
                     return StatusResult.success(response);
                 });
+    }
+
+    @NotNull
+    private CompletableFuture<Boolean> checkContainerExists(String accountName, String containerName) {
+        return with(retryPolicy).getAsync(() -> blobStoreApi.exists(accountName, containerName));
     }
 
     @NotNull

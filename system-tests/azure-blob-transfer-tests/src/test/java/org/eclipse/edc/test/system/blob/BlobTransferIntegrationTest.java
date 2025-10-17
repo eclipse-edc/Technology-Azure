@@ -80,7 +80,7 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
     ).configurationProvider(() -> CONSUMER.createConfig(AZURITE_PORT)));
 
     @Test
-     void shouldProvisionRandomContainer() {
+    void shouldProvisionNotExistingContainer() {
 
         var assetId = PROVIDER.createBlobAsset(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER.getContainerName(), "randomBlob");
         var policyId = PROVIDER.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());

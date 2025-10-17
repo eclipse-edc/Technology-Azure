@@ -33,7 +33,10 @@ import org.eclipse.edc.spi.types.TypeManager;
 
 /**
  * Provides data transfer {@link Provisioner}s backed by Azure services.
+ *
+ * @deprecated "The control-plane based azure provision extension is DEPRECATED. Please use the data-plane based provisioner instead."
  */
+@Deprecated(since = "0.15.0")
 public class AzureProvisionExtension implements ServiceExtension {
 
     @Configuration
@@ -59,12 +62,14 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public String name() {
-        return "Azure Provision";
+        return "DEPRECATED: Azure Provision";
     }
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, azureProvisionConfiguration));
+        var monitor = context.getMonitor();
+        monitor.warning("The control-plane based azure provision extension is DEPRECATED. Please use the data-plane based provisioner instead.");
+        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, monitor, blobStoreApi, azureProvisionConfiguration));
         manifestGenerator.registerGenerator(new ObjectStorageConsumerResourceDefinitionGenerator(transferTypeParser));
 
         registerTypes(typeManager);

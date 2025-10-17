@@ -111,10 +111,17 @@ public class BlobTransferParticipant extends Participant {
     }
 
     public String requestAssetAndTransferToBlob(Participant provider, String assetId, String accountName) {
+        return requestAssetAndTransferToBlob(provider, assetId, accountName, null);
+    }
+
+    public String requestAssetAndTransferToBlob(Participant provider, String assetId, String accountName, String containerName) {
+        var destinationProps = createObjectBuilder().add(AzureBlobStoreSchema.ACCOUNT_NAME, accountName);
+        if (containerName != null) {
+            destinationProps.add(AzureBlobStoreSchema.CONTAINER_NAME, containerName);
+        }
         var destination = createObjectBuilder()
                 .add("type", AzureBlobStoreSchema.TYPE)
-                .add("properties", createObjectBuilder()
-                        .add(AzureBlobStoreSchema.ACCOUNT_NAME, accountName))
+                .add("properties", destinationProps)
                 .build();
 
         return this.requestAssetFrom(assetId, provider)

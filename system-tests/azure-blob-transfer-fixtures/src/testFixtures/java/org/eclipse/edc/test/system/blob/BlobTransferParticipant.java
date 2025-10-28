@@ -17,8 +17,8 @@ package org.eclipse.edc.test.system.blob;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.restassured.http.ContentType;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 

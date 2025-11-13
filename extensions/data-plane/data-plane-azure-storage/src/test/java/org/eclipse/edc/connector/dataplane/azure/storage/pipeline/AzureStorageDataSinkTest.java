@@ -93,7 +93,6 @@ class AzureStorageDataSinkTest {
                 .thenReturn(destination);
 
         when(context.getComponentId()).thenReturn("connectorId");
-        when(context.getParticipantId()).thenReturn("participantId");
         when(destinationBlobName.resolve(blobName, 1)).thenReturn(blobName);
     }
 

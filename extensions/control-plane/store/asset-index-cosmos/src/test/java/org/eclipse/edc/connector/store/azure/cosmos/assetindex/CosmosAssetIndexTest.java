@@ -48,8 +48,6 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
     @AfterAll
     static void dropTables(CosmosPostgresTestExtension.SqlHelper runner) {
         runner.dropTable(SQL_STATEMENTS.getAssetTable());
-        runner.dropTable(SQL_STATEMENTS.getDataAddressTable());
-        runner.dropTable(SQL_STATEMENTS.getAssetPropertyTable());
     }
 
     @BeforeEach
@@ -61,8 +59,6 @@ public class CosmosAssetIndexTest extends AssetIndexTestBase {
         sqlAssetIndex = new SqlAssetIndex(reg, DEFAULT_DATASOURCE_NAME, transactionContext, new ObjectMapper(), SQL_STATEMENTS, queryExecutor);
 
         runner.truncateTable(SQL_STATEMENTS.getAssetTable());
-        runner.truncateTable(SQL_STATEMENTS.getDataAddressTable());
-        runner.truncateTable(SQL_STATEMENTS.getAssetPropertyTable());
     }
 
     @Override

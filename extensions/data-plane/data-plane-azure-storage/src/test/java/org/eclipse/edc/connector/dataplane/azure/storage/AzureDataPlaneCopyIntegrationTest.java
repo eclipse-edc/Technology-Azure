@@ -34,7 +34,6 @@ import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDa
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -71,7 +70,6 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
     private final RetryPolicy<Object> policy = RetryPolicy.builder().withMaxRetries(1).build();
     private final String sinkContainerName = createContainerName();
     private final String blobName = createBlobName();
-    private final ServiceExtensionContext context = mock();
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Monitor monitor = mock();
     private final Vault vault = mock();
@@ -156,9 +154,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
         };
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
-        metadataProvider.registerDecorator(new CommonBlobMetadataDecorator(typeManager, context));
-        when(context.getComponentId()).thenReturn("connector-id");
-        when(context.getParticipantId()).thenReturn("participant-id");
+        metadataProvider.registerDecorator(new CommonBlobMetadataDecorator("participant-id", "connector-id"));
         var dataSinkFactory = new AzureStorageDataSinkFactory(account2ApiPatched, executor, partitionSize, monitor, vault, typeManager, metadataProvider);
         var dataSink = dataSinkFactory.createSink(request);
 

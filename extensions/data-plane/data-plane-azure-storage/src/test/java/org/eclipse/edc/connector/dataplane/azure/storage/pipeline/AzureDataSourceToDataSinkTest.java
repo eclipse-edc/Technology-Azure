@@ -109,7 +109,6 @@ class AzureDataSourceToDataSinkTest {
         )).thenReturn(fakeCompletionMarker);
 
         when(context.getComponentId()).thenReturn("connectorId");
-        when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
@@ -171,7 +170,6 @@ class AzureDataSourceToDataSinkTest {
         )).thenReturn(fakeSink);
 
         when(context.getComponentId()).thenReturn("connectorId");
-        when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
 
@@ -227,7 +225,6 @@ class AzureDataSourceToDataSinkTest {
                 .thenReturn(blobAdapter);
 
         when(context.getComponentId()).thenReturn("connectorId");
-        when(context.getParticipantId()).thenReturn("participantId");
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
 

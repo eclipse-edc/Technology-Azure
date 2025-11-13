@@ -29,7 +29,6 @@ import java.util.UUID;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.lang.String.valueOf;
 import static java.util.Map.entry;
-import static org.eclipse.edc.boot.BootServicesExtension.PARTICIPANT_ID;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class BlobTransferParticipant extends Participant {
@@ -38,7 +37,7 @@ public class BlobTransferParticipant extends Participant {
 
     public Config createConfig(int blobStoragePort) {
         return ConfigFactory.fromMap(Map.ofEntries(
-                entry(PARTICIPANT_ID, id),
+                entry("edc.participant.id", id),
                 entry("edc.blobstore.endpoint.template", "http://127.0.0.1:" + blobStoragePort + "/%s"),
                 entry("edc.test.asset.container.name", containerName),
                 entry("web.http.port", String.valueOf(getFreePort())),

@@ -20,6 +20,7 @@ dependencies {
     api(project(":extensions:common:azure:azure-blob-core"))
     api(libs.edc.core.dataPlane.util)
     api(libs.edc.spi.dataplane)
+    api(libs.edc.spi.participant.context.single)
     implementation(libs.edc.core.dataPlane.util)
     implementation(libs.edc.lib.util)
 

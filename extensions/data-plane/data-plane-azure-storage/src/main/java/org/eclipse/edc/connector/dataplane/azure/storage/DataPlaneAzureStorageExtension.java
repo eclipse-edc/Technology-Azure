@@ -25,6 +25,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataTransferExecutorServ
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -37,21 +38,20 @@ import org.eclipse.edc.spi.types.TypeManager;
 public class DataPlaneAzureStorageExtension implements ServiceExtension {
 
     public static final String NAME = "Data Plane Azure Storage";
-    @Inject
-    private RetryPolicy retryPolicy;
 
+    @Setting(description = "Configures the participant id this runtime is operating on behalf of", key = "edc.participant.id", defaultValue = "anonymous")
+    public String participantId;
+
+    @Inject
+    private RetryPolicy<Object> retryPolicy;
     @Inject
     private PipelineService pipelineService;
-
     @Inject
     private BlobStoreApi blobStoreApi;
-
     @Inject
     private DataTransferExecutorServiceContainer executorContainer;
-
     @Inject
     private Vault vault;
-
     @Inject
     private TypeManager typeManager;
 
@@ -66,7 +66,7 @@ public class DataPlaneAzureStorageExtension implements ServiceExtension {
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
         context.registerService(BlobMetadataProvider.class, metadataProvider);
-        metadataProvider.registerDecorator(new CommonBlobMetadataDecorator(typeManager, context));
+        metadataProvider.registerDecorator(new CommonBlobMetadataDecorator(participantId, context.getComponentId()));
 
         var sourceFactory = new AzureStorageDataSourceFactory(blobStoreApi, retryPolicy, monitor, vault);
         pipelineService.registerFactory(sourceFactory);

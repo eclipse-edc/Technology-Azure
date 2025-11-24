@@ -30,7 +30,7 @@ jobs:
       PG_CONNECTION_STRING: ${{ secrets.PG_CONNECTION_STRING }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Cosmos PostgreSQL Tests (parallelizable)

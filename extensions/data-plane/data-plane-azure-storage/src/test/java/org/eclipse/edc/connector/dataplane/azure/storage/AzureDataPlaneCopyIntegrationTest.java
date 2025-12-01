@@ -32,7 +32,10 @@ import org.eclipse.edc.connector.dataplane.azure.storage.metadata.CommonBlobMeta
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSinkFactory;
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSourceFactory;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -91,6 +94,12 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
             new AzuriteExtension.Account(PROVIDER_STORAGE_ACCOUNT_NAME, PROVIDER_STORAGE_ACCOUNT_KEY),
             new AzuriteExtension.Account(CONSUMER_STORAGE_ACCOUNT_NAME, CONSUMER_STORAGE_ACCOUNT_KEY)
     );
+
+    private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
+            .participantContextId("participant-id")
+            .identity("identity")
+            .build();
+    private final SingleParticipantContextSupplier participantContextSupplier = ()  -> ServiceResult.success(participantContext);
 
     @BeforeEach
     void setUp() {
@@ -155,7 +164,7 @@ class AzureDataPlaneCopyIntegrationTest extends AbstractAzureBlobTest {
 
         var metadataProvider = new BlobMetadataProviderImpl(monitor);
         metadataProvider.registerDecorator(new CommonBlobMetadataDecorator("participant-id", "connector-id"));
-        var dataSinkFactory = new AzureStorageDataSinkFactory(account2ApiPatched, executor, partitionSize, monitor, vault, typeManager, metadataProvider);
+        var dataSinkFactory = new AzureStorageDataSinkFactory(participantContextSupplier, account2ApiPatched, executor, partitionSize, monitor, vault, typeManager, metadataProvider);
         var dataSink = dataSinkFactory.createSink(request);
 
         assertThat(dataSink.transfer(dataSource))

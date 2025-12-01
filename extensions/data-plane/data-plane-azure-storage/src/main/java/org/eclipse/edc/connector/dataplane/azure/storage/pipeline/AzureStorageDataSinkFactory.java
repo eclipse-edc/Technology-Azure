@@ -21,6 +21,7 @@ import org.eclipse.edc.connector.dataplane.azure.storage.DestinationBlobName;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSink;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSinkFactory;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -43,6 +44,7 @@ import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validat
  * Instantiates {@link AzureStorageDataSink}s for requests whose source data type is {@link AzureBlobStoreSchema#TYPE}.
  */
 public class AzureStorageDataSinkFactory implements DataSinkFactory {
+    private final SingleParticipantContextSupplier singleParticipantContextSupplier;
     private final BlobStoreApi blobStoreApi;
     private final ExecutorService executorService;
     private final int partitionSize;
@@ -51,7 +53,9 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     private final TypeManager typeManager;
     private final BlobMetadataProvider metadataProvider;
 
-    public AzureStorageDataSinkFactory(BlobStoreApi blobStoreApi, ExecutorService executorService, int partitionSize, Monitor monitor, Vault vault, TypeManager typeManager, BlobMetadataProvider metadataProvider) {
+    public AzureStorageDataSinkFactory(SingleParticipantContextSupplier singleParticipantContextSupplier,
+                                       BlobStoreApi blobStoreApi, ExecutorService executorService, int partitionSize, Monitor monitor, Vault vault, TypeManager typeManager, BlobMetadataProvider metadataProvider) {
+        this.singleParticipantContextSupplier = singleParticipantContextSupplier;
         this.blobStoreApi = blobStoreApi;
         this.executorService = executorService;
         this.partitionSize = partitionSize;
@@ -76,7 +80,10 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         var dataAddress = request.getDestinationDataAddress();
         var requestId = request.getId();
 
-        var secret = vault.resolveSecret(dataAddress.getKeyName());
+        var participantContext = singleParticipantContextSupplier.get()
+                .orElseThrow(f -> new EdcException("Failed to obtain participant context for data sink creation"));
+
+        var secret = vault.resolveSecret(participantContext.getParticipantContextId(), dataAddress.getKeyName());
 
         if (secret == null) {
             throw new EdcException("SAS token for the Azure Blob DataSink not found in Vault (alias = '%s')".formatted(dataAddress.getKeyName()));

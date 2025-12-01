@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDa
 import org.eclipse.edc.connector.dataplane.azure.storage.pipeline.AzureStorageDataSourceFactory;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataTransferExecutorServiceContainer;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -54,6 +55,8 @@ public class DataPlaneAzureStorageExtension implements ServiceExtension {
     private Vault vault;
     @Inject
     private TypeManager typeManager;
+    @Inject
+    private SingleParticipantContextSupplier participantContextSupplier;
 
     @Override
     public String name() {
@@ -70,7 +73,7 @@ public class DataPlaneAzureStorageExtension implements ServiceExtension {
 
         var sourceFactory = new AzureStorageDataSourceFactory(blobStoreApi, retryPolicy, monitor, vault);
         pipelineService.registerFactory(sourceFactory);
-        var sinkFactory = new AzureStorageDataSinkFactory(blobStoreApi, executorContainer.getExecutorService(), 5, monitor, vault, typeManager, metadataProvider);
+        var sinkFactory = new AzureStorageDataSinkFactory(participantContextSupplier, blobStoreApi, executorContainer.getExecutorService(), 5, monitor, vault, typeManager, metadataProvider);
         pipelineService.registerFactory(sinkFactory);
     }
 }

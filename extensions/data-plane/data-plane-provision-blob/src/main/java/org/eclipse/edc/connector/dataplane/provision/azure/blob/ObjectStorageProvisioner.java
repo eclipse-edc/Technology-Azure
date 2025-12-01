@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.dataplane.provision.azure.AzureProvisionConfigu
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionedResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.Provisioner;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
@@ -43,17 +44,19 @@ public class ObjectStorageProvisioner implements Provisioner {
     private final AzureProvisionConfiguration azureProvisionConfiguration;
     private final Vault vault;
     private final TypeManager typeManager;
+    private final SingleParticipantContextSupplier participantContextSupplier;
 
     public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi,
                                     AzureProvisionConfiguration azureProvisionConfiguration,
                                     Vault vault,
-                                    TypeManager typeManager) {
+                                    TypeManager typeManager, SingleParticipantContextSupplier participantContextSupplier) {
         this.retryPolicy = retryPolicy;
         this.monitor = monitor;
         this.blobStoreApi = blobStoreApi;
         this.azureProvisionConfiguration = azureProvisionConfiguration;
         this.vault = vault;
         this.typeManager = typeManager;
+        this.participantContextSupplier = participantContextSupplier;
     }
 
     @Override
@@ -86,20 +89,26 @@ public class ObjectStorageProvisioner implements Provisioner {
 
                     var secretToken = new AzureSasToken("?" + writeOnlySas, expiryTime.toInstant().toEpochMilli());
 
-                    try {
-                        vault.storeSecret(resourceName, typeManager.getMapper().writeValueAsString(secretToken));
-                    } catch (JsonProcessingException e) {
-                        return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot serialize secret token: " + e.getMessage());
-                    }
+                    var participantContext = participantContextSupplier.get();
 
-                    var response = ProvisionedResource.Builder
-                            .from(provisionResource)
-                            .dataAddress(DataAddress.Builder.newInstance()
-                                    .properties(provisionResource.getDataAddress().getProperties())
-                                    .keyName(resourceName)
-                                    .build())
-                            .build();
-                    return StatusResult.success(response);
+                    if (participantContext.succeeded()) {
+                        try {
+                            vault.storeSecret(participantContext.getContent().getParticipantContextId(), resourceName, typeManager.getMapper().writeValueAsString(secretToken));
+                        } catch (JsonProcessingException e) {
+                            return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot serialize secret token: " + e.getMessage());
+                        }
+
+                        var response = ProvisionedResource.Builder
+                                .from(provisionResource)
+                                .dataAddress(DataAddress.Builder.newInstance()
+                                        .properties(provisionResource.getDataAddress().getProperties())
+                                        .keyName(resourceName)
+                                        .build())
+                                .build();
+                        return StatusResult.success(response);
+                    } else {
+                        return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot access participant context: " + participantContext.getFailure().getMessages());
+                    }
                 });
     }
 

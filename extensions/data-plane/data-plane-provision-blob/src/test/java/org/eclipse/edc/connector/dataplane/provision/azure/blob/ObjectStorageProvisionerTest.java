@@ -22,7 +22,10 @@ import org.eclipse.edc.connector.dataplane.provision.azure.AzureProvisionConfigu
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionResource;
 import org.eclipse.edc.connector.dataplane.spi.provision.ProvisionedResource;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -55,10 +58,16 @@ class ObjectStorageProvisionerTest {
     private final TypeManager typeManager = new JacksonTypeManager();
     private ObjectStorageProvisioner provisioner;
 
+    private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
+            .participantContextId("participant-id")
+            .identity("identity")
+            .build();
+    private final SingleParticipantContextSupplier participantContextSupplier = ()  -> ServiceResult.success(participantContext);
+
     @BeforeEach
     void setup() {
         RetryPolicy<Object> retryPolicy = RetryPolicy.builder().withMaxRetries(0).build();
-        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, azureProvisionConfiguration, vault, typeManager);
+        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, azureProvisionConfiguration, vault, typeManager, participantContextSupplier);
     }
 
     @Test
@@ -86,7 +95,7 @@ class ObjectStorageProvisionerTest {
 
         verify(blobStoreApiMock).exists(anyString(), anyString());
         verify(blobStoreApiMock).createContainer(accountName, containerName);
-        verify(vault).storeSecret(anyString(), anyString());
+        verify(vault).storeSecret(eq(participantContext.getParticipantContextId()), anyString(), anyString());
     }
 
     @Test
@@ -110,7 +119,7 @@ class ObjectStorageProvisionerTest {
 
         verify(blobStoreApiMock).exists(anyString(), anyString());
         verify(blobStoreApiMock).createContainer(accountName, containerName);
-        verify(vault).storeSecret(anyString(), anyString());
+        verify(vault).storeSecret(eq(participantContext.getParticipantContextId()), anyString(), anyString());
     }
 
     @Test

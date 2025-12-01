@@ -20,8 +20,11 @@ import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProvider;
 import org.eclipse.edc.connector.dataplane.azure.storage.metadata.BlobMetadataProviderImpl;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -47,7 +50,12 @@ class AzureStorageDataSinkFactoryTest {
     private final TypeManager typeManager = new JacksonTypeManager();
     private final Monitor monitor = mock();
     private final BlobMetadataProvider metadataProvider = new BlobMetadataProviderImpl(monitor);
-    private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(blobStoreApi, Executors.newFixedThreadPool(1), 5, monitor, vault, typeManager, metadataProvider);
+    private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
+            .participantContextId("participant-id")
+            .identity("identity")
+            .build();
+    private final SingleParticipantContextSupplier participantContextSupplier = ()  -> ServiceResult.success(participantContext);
+    private final AzureStorageDataSinkFactory factory = new AzureStorageDataSinkFactory(participantContextSupplier, blobStoreApi, Executors.newFixedThreadPool(1), 5, monitor, vault, typeManager, metadataProvider);
     private final DataFlowStartMessage.Builder request = createRequest(AzureBlobStoreSchema.TYPE);
     private final DataFlowStartMessage.Builder invalidRequest = createRequest("test-type");
     private final DataAddress.Builder dataAddress = DataAddress.Builder.newInstance().type(AzureBlobStoreSchema.TYPE);
@@ -115,7 +123,7 @@ class AzureStorageDataSinkFactoryTest {
 
     @Test
     void createSink_whenValidRequest_succeeds() {
-        when(vault.resolveSecret(keyName)).thenReturn(typeManager.writeValueAsString(token));
+        when(vault.resolveSecret(participantContext.getParticipantContextId(), keyName)).thenReturn(typeManager.writeValueAsString(token));
         var validRequest = request.destinationDataAddress(dataAddress
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)

@@ -20,6 +20,7 @@ plugins {
 dependencies {
     api(libs.edc.spi.core)
     api(libs.edc.spi.dataplane)
+    api(libs.edc.spi.participant.context.single)
 
     implementation(libs.edc.lib.util)
     implementation(project(":extensions:common:azure:azure-blob-core"))

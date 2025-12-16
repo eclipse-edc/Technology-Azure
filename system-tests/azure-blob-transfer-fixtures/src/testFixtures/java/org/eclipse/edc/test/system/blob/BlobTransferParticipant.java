@@ -103,7 +103,7 @@ public class BlobTransferParticipant extends Participant {
         return baseManagementRequest()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .get("/transferprocesses/{id}", transferProcessId)
                 .then()
                 .statusCode(200)
                 .extract().jsonPath().get("'dataDestination'");

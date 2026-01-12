@@ -38,7 +38,6 @@ dependencies {
     implementation(libs.edc.config.filesystem)
     implementation(libs.edc.iam.mock)
     implementation(libs.edc.api.management)
-    implementation(project(":extensions:control-plane:provision:provision-blob"))
     implementation(project(":extensions:common:vault:vault-azure"))
     implementation(libs.edc.dsp)
 

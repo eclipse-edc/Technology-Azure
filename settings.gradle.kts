@@ -41,7 +41,6 @@ include(":extensions:control-plane:store:contract-definition-store-cosmos")
 include(":extensions:control-plane:store:contract-negotiation-store-cosmos")
 include(":extensions:control-plane:store:policy-definition-store-cosmos")
 include(":extensions:control-plane:store:transfer-process-store-cosmos")
-include(":extensions:control-plane:provision:provision-blob")
 
 // dataplane extensions
 include(":extensions:data-plane:data-plane-azure-storage")

@@ -33,7 +33,6 @@ dependencies {
 
     implementation(libs.edc.dsp)
 
-    implementation(project(":extensions:control-plane:provision:provision-blob"))
     implementation(project(":extensions:common:vault:vault-azure"))
     implementation(libs.edc.lib.util)
 }

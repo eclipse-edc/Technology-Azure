@@ -27,8 +27,10 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ExecutorService;
 
@@ -38,7 +40,7 @@ import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_PREFIX;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.CONTAINER_NAME;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
-import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyName;
+import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyNameOrSecret;
 
 /**
  * Instantiates {@link AzureStorageDataSink}s for requests whose source data type is {@link AzureBlobStoreSchema#TYPE}.
@@ -78,15 +80,11 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         }
 
         var dataAddress = request.getDestinationDataAddress();
-        var requestId = request.getId();
-
-        var participantContext = singleParticipantContextSupplier.get()
-                .orElseThrow(f -> new EdcException("Failed to obtain participant context for data sink creation"));
-
-        var secret = vault.resolveSecret(participantContext.getParticipantContextId(), dataAddress.getKeyName());
+        var secret = getSecret(dataAddress);
 
         if (secret == null) {
-            throw new EdcException("SAS token for the Azure Blob DataSink not found in Vault (alias = '%s')".formatted(dataAddress.getKeyName()));
+            throw new EdcException("SAS token for the Azure Blob DataSink not found neither in DataAddresss (property = '%s') nor Vault (alias = '%s')"
+                    .formatted(DataAddress.EDC_DATA_ADDRESS_SECRET, dataAddress.getKeyName()));
         }
 
         var token = typeManager.readValue(secret, AzureSasToken.class);
@@ -99,7 +97,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
                 .containerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME))
                 .destinationBlobName(destinationBlobName)
                 .sharedAccessSignature(token.getSas())
-                .requestId(requestId)
+                .requestId(request.getId())
                 .partitionSize(partitionSize)
                 .blobStoreApi(blobStoreApi)
                 .executorService(executorService)
@@ -117,7 +115,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         try {
             validateAccountName(dataAddress.getStringProperty(ACCOUNT_NAME));
             validateContainerName(dataAddress.getStringProperty(CONTAINER_NAME));
-            validateKeyName(dataAddress.getKeyName());
+            validateKeyNameOrSecret(dataAddress);
             if (dataSourceAddress.hasProperty(BLOB_PREFIX)) {
                 if (dataSourceAddress.hasProperty(BLOB_NAME)) {
                     monitor.warning("Folder transfer (property '%s' is present), will ignore the blob name (property '%s')".formatted(BLOB_PREFIX, BLOB_NAME));
@@ -127,5 +125,22 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
             return Result.failure("AzureStorage destination address is invalid: " + e.getMessage());
         }
         return Result.success();
+    }
+
+    private @Nullable String getSecret(DataAddress dataAddress) {
+        var addressSecret = dataAddress.getStringProperty(DataAddress.EDC_DATA_ADDRESS_SECRET);
+        if (addressSecret != null) {
+            return addressSecret;
+        }
+
+        var keyName = dataAddress.getKeyName();
+        if (keyName == null) {
+            return null;
+        }
+
+        var participantContext = singleParticipantContextSupplier.get()
+                .orElseThrow(f -> new EdcException("Failed to obtain participant context for data sink creation"));
+
+        return vault.resolveSecret(participantContext.getParticipantContextId(), keyName);
     }
 }

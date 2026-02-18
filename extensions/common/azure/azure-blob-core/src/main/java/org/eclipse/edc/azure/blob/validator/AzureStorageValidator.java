@@ -15,6 +15,7 @@
 package org.eclipse.edc.azure.blob.validator;
 
 
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.util.string.StringUtils;
 
 import java.util.regex.Pattern;
@@ -135,9 +136,9 @@ public class AzureStorageValidator {
      * @param keyName A string representing blob key secret.
      * @throws IllegalArgumentException if the string is null or blank.
      */
-    public static void validateKeyName(String keyName) {
-        if (StringUtils.isNullOrBlank(keyName)) {
-            throw new IllegalArgumentException(String.format(INVALID_RESOURCE_NAME, KEY_NAME));
+    public static void validateKeyNameOrSecret(DataAddress keyName) {
+        if (StringUtils.isNullOrBlank(keyName.getKeyName()) && StringUtils.isNullOrBlank(keyName.getStringProperty(DataAddress.EDC_DATA_ADDRESS_SECRET))) {
+            throw new IllegalArgumentException(String.format(INVALID_RESOURCE_NAME, KEY_NAME + " or " + DataAddress.EDC_DATA_ADDRESS_SECRET));
         }
     }
 

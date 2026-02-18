@@ -18,6 +18,7 @@ plugins {
 }
 
 dependencies {
+    api(libs.edc.spi.core)
     api(libs.edc.controlplane.spi)
     implementation(libs.azure.storageblob)
     implementation(libs.azure.identity)

@@ -17,7 +17,6 @@ package org.eclipse.edc.connector.dataplane.provision.azure;
 import dev.failsafe.RetryPolicy;
 import org.eclipse.edc.azure.blob.AzureSasToken;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
-import org.eclipse.edc.connector.controlplane.transfer.spi.provision.Provisioner;
 import org.eclipse.edc.connector.dataplane.provision.azure.blob.ObjectStorageConsumerProvisionResourceGenerator;
 import org.eclipse.edc.connector.dataplane.provision.azure.blob.ObjectStorageDeprovisioner;
 import org.eclipse.edc.connector.dataplane.provision.azure.blob.ObjectStorageProvisioner;
@@ -27,13 +26,12 @@ import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSup
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 
 /**
- * Provides data transfer {@link Provisioner}s backed by Azure services.
+ * Provides data transfer provisioners backed by Azure services.
  */
 public class AzureProvisionExtension implements ServiceExtension {
 
@@ -53,9 +51,6 @@ public class AzureProvisionExtension implements ServiceExtension {
     private TypeManager typeManager;
 
     @Inject
-    private Vault vault;
-
-    @Inject
     private ProvisionerManager provisionManager;
 
     @Inject
@@ -71,7 +66,7 @@ public class AzureProvisionExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, azureProvisionConfiguration, vault, typeManager, participantContextSupplier));
+        provisionManager.register(new ObjectStorageProvisioner(retryPolicy, context.getMonitor(), blobStoreApi, azureProvisionConfiguration, typeManager, participantContextSupplier));
         provisionManager.register(new ObjectStorageDeprovisioner());
         manifestGenerator.registerConsumerGenerator(new ObjectStorageConsumerProvisionResourceGenerator(monitor.withPrefix("AzureStorageProvisioner")));
 

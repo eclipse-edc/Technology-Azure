@@ -27,7 +27,6 @@ import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSup
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.jetbrains.annotations.NotNull;
@@ -42,19 +41,16 @@ public class ObjectStorageProvisioner implements Provisioner {
     private final Monitor monitor;
     private final BlobStoreApi blobStoreApi;
     private final AzureProvisionConfiguration azureProvisionConfiguration;
-    private final Vault vault;
     private final TypeManager typeManager;
     private final SingleParticipantContextSupplier participantContextSupplier;
 
     public ObjectStorageProvisioner(RetryPolicy<Object> retryPolicy, Monitor monitor, BlobStoreApi blobStoreApi,
                                     AzureProvisionConfiguration azureProvisionConfiguration,
-                                    Vault vault,
                                     TypeManager typeManager, SingleParticipantContextSupplier participantContextSupplier) {
         this.retryPolicy = retryPolicy;
         this.monitor = monitor;
         this.blobStoreApi = blobStoreApi;
         this.azureProvisionConfiguration = azureProvisionConfiguration;
-        this.vault = vault;
         this.typeManager = typeManager;
         this.participantContextSupplier = participantContextSupplier;
     }
@@ -67,12 +63,12 @@ public class ObjectStorageProvisioner implements Provisioner {
     @Override
     public CompletableFuture<StatusResult<ProvisionedResource>> provision(ProvisionResource provisionResource) {
         var dataAddress = provisionResource.getDataAddress();
-        String containerName = dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME);
-        String accountName = dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
+        var containerName = dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME);
+        var accountName = dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME);
 
         monitor.debug("Azure Storage Container request submitted: " + containerName);
 
-        OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(this.azureProvisionConfiguration.tokenExpiryTime());
+        var expiryTime = OffsetDateTime.now().plusHours(this.azureProvisionConfiguration.tokenExpiryTime());
 
         return checkContainerExists(accountName, containerName)
                 .thenCompose(exists -> {
@@ -84,30 +80,25 @@ public class ObjectStorageProvisioner implements Provisioner {
                 })
                 .thenCompose(empty -> createContainerSasToken(containerName, accountName, expiryTime))
                 .thenApply(writeOnlySas -> {
-                    // Ensure resource name is unique to avoid key collisions in local and remote vaults
-                    String resourceName = provisionResource.getFlowId() + "-container-secret";
-
-                    var secretToken = new AzureSasToken("?" + writeOnlySas, expiryTime.toInstant().toEpochMilli());
 
                     var participantContext = participantContextSupplier.get();
+                    if (participantContext.failed()) {
+                        return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot access participant context: " + participantContext.getFailure().getMessages());
+                    }
 
-                    if (participantContext.succeeded()) {
-                        try {
-                            vault.storeSecret(participantContext.getContent().getParticipantContextId(), resourceName, typeManager.getMapper().writeValueAsString(secretToken));
-                        } catch (JsonProcessingException e) {
-                            return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot serialize secret token: " + e.getMessage());
-                        }
+                    try {
+                        var secretToken = new AzureSasToken("?" + writeOnlySas, expiryTime.toInstant().toEpochMilli());
 
                         var response = ProvisionedResource.Builder
                                 .from(provisionResource)
                                 .dataAddress(DataAddress.Builder.newInstance()
                                         .properties(provisionResource.getDataAddress().getProperties())
-                                        .keyName(resourceName)
+                                        .property(DataAddress.EDC_DATA_ADDRESS_SECRET, typeManager.getMapper().writeValueAsString(secretToken))
                                         .build())
                                 .build();
                         return StatusResult.success(response);
-                    } else {
-                        return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot access participant context: " + participantContext.getFailure().getMessages());
+                    } catch (JsonProcessingException e) {
+                        return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot serialize secret token: " + e.getMessage());
                     }
                 });
     }

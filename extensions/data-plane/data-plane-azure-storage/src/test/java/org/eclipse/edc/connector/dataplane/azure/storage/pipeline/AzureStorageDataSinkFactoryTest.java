@@ -40,9 +40,7 @@ import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.c
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createBlobPrefix;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createContainerName;
 import static org.eclipse.edc.azure.blob.testfixtures.AzureStorageTestFixtures.createRequest;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class AzureStorageDataSinkFactoryTest {
     private final BlobStoreApi blobStoreApi = mock();
@@ -62,7 +60,6 @@ class AzureStorageDataSinkFactoryTest {
 
     private final String accountName = createAccountName();
     private final String containerName = createContainerName();
-
 
     private final String blobPrefix = createBlobPrefix();
     private final String keyName = "test-keyname";
@@ -123,10 +120,10 @@ class AzureStorageDataSinkFactoryTest {
 
     @Test
     void createSink_whenValidRequest_succeeds() {
-        when(vault.resolveSecret(participantContext.getParticipantContextId(), keyName)).thenReturn(typeManager.writeValueAsString(token));
         var validRequest = request.destinationDataAddress(dataAddress
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
+                .property(DataAddress.EDC_DATA_ADDRESS_SECRET, typeManager.writeValueAsString(token))
                 .keyName(keyName)
                 .build());
         assertThat(factory.createSink(validRequest.build())).isNotNull();
@@ -141,7 +138,6 @@ class AzureStorageDataSinkFactoryTest {
 
     @Test
     void createSink_whenSecretNotFoundRequest_fails() {
-        when(vault.resolveSecret(anyString())).thenReturn(null);
         var validRequest = request.destinationDataAddress(dataAddress
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
@@ -149,6 +145,6 @@ class AzureStorageDataSinkFactoryTest {
                 .build());
         assertThatThrownBy(() -> factory.createSink(validRequest.build()))
                 .isInstanceOf(EdcException.class)
-                .hasMessageStartingWith("SAS token for the Azure Blob DataSink not found in Vault");
+                .hasMessageStartingWith("SAS token for the Azure Blob DataSink not found");
     }
 }

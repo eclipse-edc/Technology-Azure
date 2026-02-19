@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateAccountName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateBlobName;
 import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateContainerName;
-import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyName;
+import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validateKeyNameOrSecret;
 
 /**
  * Validator for {@link AzureDataFactoryTransferService}.
@@ -63,6 +63,6 @@ public class AzureDataFactoryTransferRequestValidator {
     private void validateCommon(DataAddress dataAddress) {
         validateAccountName(dataAddress.getStringProperty(AzureBlobStoreSchema.ACCOUNT_NAME));
         validateContainerName(dataAddress.getStringProperty(AzureBlobStoreSchema.CONTAINER_NAME));
-        validateKeyName(dataAddress.getKeyName());
+        validateKeyNameOrSecret(dataAddress);
     }
 }

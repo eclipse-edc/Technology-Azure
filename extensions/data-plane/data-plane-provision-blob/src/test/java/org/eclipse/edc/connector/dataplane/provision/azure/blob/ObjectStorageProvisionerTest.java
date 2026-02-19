@@ -26,7 +26,6 @@ import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSup
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +53,6 @@ class ObjectStorageProvisionerTest {
 
     private final BlobStoreApi blobStoreApiMock = mock(BlobStoreApi.class);
     private final AzureProvisionConfiguration azureProvisionConfiguration = mock(AzureProvisionConfiguration.class);
-    private final Vault vault = mock(Vault.class);
     private final TypeManager typeManager = new JacksonTypeManager();
     private ObjectStorageProvisioner provisioner;
 
@@ -66,8 +64,8 @@ class ObjectStorageProvisionerTest {
 
     @BeforeEach
     void setup() {
-        RetryPolicy<Object> retryPolicy = RetryPolicy.builder().withMaxRetries(0).build();
-        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, azureProvisionConfiguration, vault, typeManager, participantContextSupplier);
+        var retryPolicy = RetryPolicy.builder().withMaxRetries(0).build();
+        provisioner = new ObjectStorageProvisioner(retryPolicy, mock(Monitor.class), blobStoreApiMock, azureProvisionConfiguration, typeManager, participantContextSupplier);
     }
 
     @Test
@@ -95,7 +93,6 @@ class ObjectStorageProvisionerTest {
 
         verify(blobStoreApiMock).exists(anyString(), anyString());
         verify(blobStoreApiMock).createContainer(accountName, containerName);
-        verify(vault).storeSecret(eq(participantContext.getParticipantContextId()), anyString(), anyString());
     }
 
     @Test
@@ -115,30 +112,11 @@ class ObjectStorageProvisionerTest {
         assertThat(provisioned).isInstanceOfSatisfying(ProvisionedResource.class, resource -> {
             assertThat(resource.getFlowId()).isEqualTo("some-flow-id");
             assertThat(resource.getDataAddress().getStringProperty(EDC_NAMESPACE + FOLDER_NAME)).isNull();
+            assertThat(resource.getDataAddress().getStringProperty(DataAddress.EDC_DATA_ADDRESS_SECRET)).isNotBlank();
         });
 
         verify(blobStoreApiMock).exists(anyString(), anyString());
         verify(blobStoreApiMock).createContainer(accountName, containerName);
-        verify(vault).storeSecret(eq(participantContext.getParticipantContextId()), anyString(), anyString());
-    }
-
-    @Test
-    void provision_unique_secret() {
-        var accountName = "test-account";
-        var containerName = "test-container";
-        Map<String, Object> destinationProps = Map.of(
-                ACCOUNT_NAME, accountName,
-                CONTAINER_NAME, containerName
-        );
-        when(blobStoreApiMock.exists(accountName, containerName)).thenReturn(true);
-        when(blobStoreApiMock.createContainerSasToken(eq(accountName), eq(containerName), eq("w"), any())).thenReturn("some-sas");
-
-        var toProvision = createProvisionedResource(destinationProps).flowId("some-flow-id").build();
-        var provisioned = provisioner.provision(toProvision).join().getContent();
-
-        var toProvision2 = createProvisionedResource(destinationProps).flowId("some-flow-id-2").build();
-        var provisioned2 = provisioner.provision(toProvision2).join().getContent();
-        assertThat(provisioned.getDataAddress().getKeyName()).isNotEqualTo(provisioned2.getDataAddress().getKeyName());
     }
 
     @Test

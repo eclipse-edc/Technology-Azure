@@ -14,7 +14,6 @@
 
 package org.eclipse.edc.azure.blob.validator;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -62,18 +61,6 @@ class AzureStorageValidatorTest {
     void validateContainerName_fail(String input) {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> AzureStorageValidator.validateContainerName(input));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void validateKeyName_fail(String input) {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> AzureStorageValidator.validateKeyName(input));
-    }
-
-    @Test
-    void validateKeyName_success() {
-        AzureStorageValidator.validateKeyName("test random key name");
     }
 
     @ParameterizedTest

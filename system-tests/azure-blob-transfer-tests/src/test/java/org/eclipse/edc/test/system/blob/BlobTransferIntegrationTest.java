@@ -99,7 +99,6 @@ public class BlobTransferIntegrationTest extends AbstractAzureBlobTest {
         assertThat(consumerBlobServiceClient.listBlobContainers().stream()
                 .anyMatch(b -> b.getName().equals(provisionedContainerName)))
                 .isTrue();
-
     }
 
     @Test

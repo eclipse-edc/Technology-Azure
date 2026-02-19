@@ -20,17 +20,8 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.core.runtime)
-    implementation(libs.edc.core.connector)
-    implementation(libs.edc.lib.util)
-    implementation(libs.edc.http)
+    implementation(libs.edc.controlplane.base.bom)
 
-    implementation(libs.edc.core.controlplane)
-    implementation(libs.edc.dpf.selector.core)
-    implementation(libs.edc.core.dataplane)
-    implementation(libs.edc.core.edrstore)
-
-    implementation(libs.edc.core.participantcontext.single)
     implementation(libs.edc.transfer.data.plane.signaling)
     implementation(libs.edc.data.plane.signaling.client)
     implementation(libs.edc.data.plane.self.registration)
@@ -39,17 +30,11 @@ dependencies {
 
     implementation(libs.edc.spi.dataplane)
 
-    implementation(libs.edc.api.observability)
-    implementation(libs.edc.api.control.config)
-
-    implementation(libs.edc.config.filesystem)
     implementation(libs.edc.iam.mock)
     implementation(libs.edc.api.management)
 
-    implementation(libs.edc.dsp)
     implementation(libs.edc.core.controlplane.apiclient)
     implementation(libs.edc.core.controlplane.api)
-    implementation(libs.edc.transaction.local)
 }
 
 application {

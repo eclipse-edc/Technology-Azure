@@ -26,6 +26,8 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.ACCOUNT_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_NAME;
 import static org.eclipse.edc.azure.blob.AzureBlobStoreSchema.BLOB_PREFIX;
@@ -72,12 +74,12 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
                 .retryPolicy(retryPolicy)
                 .monitor(monitor);
 
-        if (null != dataAddress.getKeyName() && !dataAddress.getKeyName().isEmpty()) {
-            monitor.debug("Attempting to use shared key authentication for Azure Storage data source");
-            builder.sharedKey(vault.resolveSecret(dataAddress.getKeyName()));
-        } else {
-            monitor.debug("Attempting to use default identity for Azure Storage data source");
-        }
+        Optional.ofNullable(dataAddress.getKeyName())
+                .filter(it -> !it.isBlank())
+                .ifPresentOrElse(keyName -> {
+                    monitor.debug("Attempting to use shared key authentication for Azure Storage data source");
+                    builder.sharedKey(vault.resolveSecret(dataAddress.getKeyName()));
+                }, () -> monitor.debug("Attempting to use default identity for Azure Storage data source"));
 
         return builder.build();
     }

@@ -16,10 +16,9 @@ package org.eclipse.edc.azure.blob;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.SecretToken;
 
 @JsonTypeName("dataspaceconnector:azuretoken")
-public class AzureSasToken implements SecretToken {
+public class AzureSasToken {
     private final String sas;
     private final long expiration;
 
@@ -32,8 +31,4 @@ public class AzureSasToken implements SecretToken {
         return sas;
     }
 
-    @Override
-    public long getExpiration() {
-        return expiration;
-    }
 }

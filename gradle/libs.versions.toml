@@ -87,4 +87,4 @@ azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version 
 
 [plugins]
 edc-build = { id = "org.eclipse.edc.edc-build", version = "1.4.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.1" }

@@ -44,7 +44,7 @@ public class AzureVaultExtension implements ServiceExtension {
     @Setting(description = "If valid, ignore " + VAULT_NAME + " and use this URL as an Azure vault.")
     private static final String VAULT_URL_OVERRIDE = "edc.vault.url.override";
 
-    @Setting(description = "If true, allow the usage of non-azure domains for the vault.", type = "boolean", defaultValue = "false")
+    @Setting(description = "If true, allow the usage of non-azure domains for the vault.", defaultValue = "false")
     private static final String VAULT_URL_OVERRIDE_UNSAFE = "edc.vault.url.override.unsafe";
 
     @Inject

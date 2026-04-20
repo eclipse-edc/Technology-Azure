@@ -86,5 +86,5 @@ azure-resourcemanager-storage = { group = "com.azure.resourcemanager", name = "a
 azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.30.0" }
 
 [plugins]
-edc-build = { id = "org.eclipse.edc.edc-build", version = "1.4.0" }
+edc-build = { id = "org.eclipse.edc.edc-build", version = "1.5.1" }
 shadow = { id = "com.gradleup.shadow", version = "9.4.1" }

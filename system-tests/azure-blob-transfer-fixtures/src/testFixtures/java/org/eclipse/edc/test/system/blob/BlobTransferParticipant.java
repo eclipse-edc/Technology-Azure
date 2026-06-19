@@ -29,6 +29,9 @@ import java.util.UUID;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.lang.String.valueOf;
 import static java.util.Map.entry;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class BlobTransferParticipant extends Participant {
@@ -114,13 +117,14 @@ public class BlobTransferParticipant extends Participant {
     }
 
     public String requestAssetAndTransferToBlob(Participant provider, String assetId, String accountName, String containerName) {
-        var destinationProps = createObjectBuilder().add(AzureBlobStoreSchema.ACCOUNT_NAME, accountName);
+        var destinationProps = createObjectBuilder().add(EDC_NAMESPACE + AzureBlobStoreSchema.ACCOUNT_NAME, accountName);
         if (containerName != null) {
-            destinationProps.add(AzureBlobStoreSchema.CONTAINER_NAME, containerName);
+            destinationProps.add(EDC_NAMESPACE + AzureBlobStoreSchema.CONTAINER_NAME, containerName);
         }
         var destination = createObjectBuilder()
-                .add("type", AzureBlobStoreSchema.TYPE)
-                .add("properties", destinationProps)
+                .add(CONTEXT, EDC_CONNECTOR_MANAGEMENT_CONTEXT_V2)
+                .add(EDC_NAMESPACE + "type", AzureBlobStoreSchema.TYPE)
+                .add(EDC_NAMESPACE + "properties", destinationProps)
                 .build();
 
         return this.requestAssetFrom(assetId, provider)

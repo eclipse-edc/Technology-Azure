@@ -29,10 +29,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractAzureBlobTest {
 
-    protected static final String PROVIDER_STORAGE_ACCOUNT_NAME = "account1";
-    protected static final String PROVIDER_STORAGE_ACCOUNT_KEY = "key1";
-    protected static final String CONSUMER_STORAGE_ACCOUNT_NAME = "account2";
-    protected static final String CONSUMER_STORAGE_ACCOUNT_KEY = "key2";
+    protected static final String DEV_STORAGE_ACCOUNT_NAME = "devstoreaccount1";
+    protected static final String DEV_STORAGE_ACCOUNT_KEY = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+
+    protected static final String PROVIDER_STORAGE_ACCOUNT_NAME = DEV_STORAGE_ACCOUNT_NAME;
+    protected static final String PROVIDER_STORAGE_ACCOUNT_KEY = DEV_STORAGE_ACCOUNT_KEY;
+    protected static final String CONSUMER_STORAGE_ACCOUNT_NAME = DEV_STORAGE_ACCOUNT_NAME;
+    protected static final String CONSUMER_STORAGE_ACCOUNT_KEY = DEV_STORAGE_ACCOUNT_KEY;
     protected static final int AZURITE_PORT = getFreePort();
     protected BlobServiceClient providerBlobServiceClient;
     protected BlobServiceClient consumerBlobServiceClient;

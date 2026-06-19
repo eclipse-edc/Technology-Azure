@@ -20,7 +20,10 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.controlplane.base.bom)
+    implementation(libs.edc.controlplane.base.bom) {
+        exclude("org.eclipse.edc", "data-plane-signaling")
+        exclude("org.eclipse.edc", "data-plane-signaling-oauth2")
+    }
 
     implementation(libs.edc.iam.mock)
 

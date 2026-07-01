@@ -32,12 +32,10 @@ maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-sql/2.50.0, M
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-storage/2.50.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager-trafficmanager/2.50.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure.resourcemanager/azure-resourcemanager/2.50.0, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core-http-netty/1.16.3, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.16.4, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core-http-netty/1.16.5, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-core-management/1.17.0, MIT, approved, #20595
 maven/mavencentral/com.azure/azure-core/1.55.3, MIT, approved, clearlydefined
-maven/mavencentral/com.azure/azure-core/1.57.1, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.58.0, MIT, approved, clearlydefined
 maven/mavencentral/com.azure/azure-core/1.58.1, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-identity/1.18.4, , restricted, clearlydefined
@@ -46,7 +44,7 @@ maven/mavencentral/com.azure/azure-json/1.5.0, MIT AND Apache-2.0, approved, #26
 maven/mavencentral/com.azure/azure-json/1.5.1, MIT AND Apache-2.0, approved, #26444
 maven/mavencentral/com.azure/azure-messaging-eventgrid/4.31.6, MIT, approved, #29120
 maven/mavencentral/com.azure/azure-security-keyvault-keys/4.9.4, MIT, approved, #16934
-maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.10.6, MIT, approved, #29124
+maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.11.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-security-keyvault-secrets/4.9.4, MIT, approved, #16850
 maven/mavencentral/com.azure/azure-storage-blob/12.35.0, , restricted, clearlydefined
 maven/mavencentral/com.azure/azure-storage-common/12.29.0, MIT, approved, #20440

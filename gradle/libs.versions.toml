@@ -42,7 +42,7 @@ azure-identity = { group = "com.azure", name = "azure-identity", version = "1.18
 azure-keyvault = { group = "com.azure", name = "azure-security-keyvault-secrets", version = "4.10.6" }
 azure-resourcemanager = { group = "com.azure.resourcemanager", name = "azure-resourcemanager", version.ref = "azure-rm" }
 azure-resourcemanager-authorization = { group = "com.azure.resourcemanager", name = "azure-resourcemanager-authorization", version.ref = "azure-rm" }
-azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.30.0" }
+azure-storageblob = { group = "com.azure", name = "azure-storage-blob", version = "12.35.0" }
 
 [plugins]
 edc-build = { id = "org.eclipse.edc.edc-build", version = "1.5.2" }

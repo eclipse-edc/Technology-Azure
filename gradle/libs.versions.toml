@@ -6,7 +6,7 @@ edc = "v1.0.0-SNAPSHOT"
 awaitility = "4.2.2"
 azure-rm = "2.50.0"
 failsafe = "3.3.2"
-postgres = "42.7.11"
+postgres = "42.7.13"
 testcontainers = "1.21.4"
 
 [libraries]
